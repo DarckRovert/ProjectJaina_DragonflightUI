@@ -2,6 +2,8 @@
 
 > **WoW Perú Ecosystem** · WotLK 3.3.5a compatible · `Interface: 30300`
 
+[![License: Third-Party Notice](https://img.shields.io/badge/License-NOTICE.md-blue.svg)](NOTICE.md)
+
 Reimplementación modular de la interfaz **Dragonflight 10.x** adaptada para World of Warcraft 3.3.5a. Moderniza la experiencia visual del cliente clásico (barras de acción, minimapa, marcos de unidad, bolsas) manteniendo total compatibilidad con el API de WotLK.
 
 ---
@@ -29,11 +31,11 @@ Reimplementación modular de la interfaz **Dragonflight 10.x** adaptada para Wor
 | `DragonflightUIDB` | Global | Configuración de layout y colores |
 | `SOCD` | Por personaje | Estado de la UI por personaje |
 
-## Créditos y Estatus Legal
+## 📄 Licencia y Estatus Legal
 
 - **Autor de adaptación y mantenimiento:** WoW Perú Team / WoWpe
 - **Módulos Upstream:** `s0h2x` (Actionbars y Minimapa), Typodermic Fonts (Expressway).
-- **Estatus Legal:** Consulta el archivo [NOTICE.md](NOTICE.md) para detalles completos de atribución, licencias de librerías y componentes de terceros.
+- **Estatus Legal:** DragonflightUI (cDF) integra componentes de terceros, fuentes y librerías BSD/Public Domain. Consulta el archivo [NOTICE.md](NOTICE.md) para el desglose legal completo de licencias y créditos.
 
 ---
 
