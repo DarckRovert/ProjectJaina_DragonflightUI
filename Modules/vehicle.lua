@@ -20,6 +20,13 @@ local vehicleBarBackground = CreateFrame(
 	UIParent,
 	'VehicleBarUiTemplate'
 );
+
+-- Fallback por introspección defensiva si el engine no hubiera disparado OnLoad
+if not mixin2template.OrganicUi or not mixin2template.MechanicUi then
+	local children = { mixin2template:GetChildren() }
+	if children[1] then mixin2template.OrganicUi = mixin2template.OrganicUi or children[1] end
+	if children[2] then mixin2template.MechanicUi = mixin2template.MechanicUi or children[2] end
+end
 local vehiclebar = CreateFrame(
 	'Frame',
 	'pUiVehicleBar',
@@ -75,8 +82,8 @@ local function vehiclebar_power_setup()
 end
 
 local function vehiclebar_mechanical_setup()
-	mixin2template.OrganicUi:Hide()
-	mixin2template.MechanicUi:Show()
+	if mixin2template.OrganicUi then mixin2template.OrganicUi:Hide() end
+	if mixin2template.MechanicUi then mixin2template.MechanicUi:Show() end
 	
 	VehicleMenuBarLeaveButton:SetNormalTexture(addon._dir..'mechanical2')
 	VehicleMenuBarLeaveButton:GetNormalTexture():SetTexCoord(45/512, 84/512, 185/512, 224/512)
@@ -96,7 +103,11 @@ local function vehiclebar_mechanical_setup()
 	VehicleMenuBarPowerBarOverlay:SetTexture(addon._dir..'mechanical2')
 	VehicleMenuBarPowerBarOverlay:SetTexCoord(4/512, 44/512, 263/512, 354/512)
 	
-	VehicleMenuBarPitchUpButton:SetParent(mixin2template.MechanicUi)
+	if mixin2template.MechanicUi then
+		VehicleMenuBarPitchUpButton:SetParent(mixin2template.MechanicUi)
+		VehicleMenuBarPitchDownButton:SetParent(mixin2template.MechanicUi)
+		VehicleMenuBarPitchSlider:SetParent(mixin2template.MechanicUi)
+	end
 	VehicleMenuBarPitchUpButton:SetSize(32, 31)
 	VehicleMenuBarPitchUpButton:SetClearPoint('BOTTOMLEFT', 156, 46)
 	VehicleMenuBarPitchUpButton:SetNormalTexture(addon._dir..'mechanical2')
@@ -104,7 +115,6 @@ local function vehiclebar_mechanical_setup()
 	VehicleMenuBarPitchUpButton:GetNormalTexture():SetTexCoord(1/512, 34/512, 227/512, 259/512)
 	VehicleMenuBarPitchUpButton:GetPushedTexture():SetTexCoord(36/512, 69/512, 227/512, 259/512)
 
-	VehicleMenuBarPitchDownButton:SetParent(mixin2template.MechanicUi)
 	VehicleMenuBarPitchDownButton:SetSize(32, 31)
 	VehicleMenuBarPitchDownButton:SetClearPoint('BOTTOMLEFT', 156, 8)
 	VehicleMenuBarPitchDownButton:SetNormalTexture(addon._dir..'mechanical2')
@@ -112,11 +122,13 @@ local function vehiclebar_mechanical_setup()
 	VehicleMenuBarPitchDownButton:GetNormalTexture():SetTexCoord(148/512, 180/512, 289/512, 320/512)
 	VehicleMenuBarPitchDownButton:GetPushedTexture():SetTexCoord(148/512, 180/512, 323/512, 354/512)
 
-	VehicleMenuBarPitchSlider:SetParent(mixin2template.MechanicUi)
 	VehicleMenuBarPitchSlider:SetSize(20, 82)
 	VehicleMenuBarPitchSlider:SetClearPoint('BOTTOMLEFT', 124, 2)
 	
-	mixin2templateBACKGROUND1:SetDrawLayer('BACKGROUND', -1)
+	local bgTex = _G['mixin2templateBACKGROUND1']
+	if bgTex and bgTex.SetDrawLayer then
+		bgTex:SetDrawLayer('BACKGROUND', -1)
+	end
 	
 	VehicleMenuBarPitchSliderBG:SetTexture([[Interface\Vehicles\UI-Vehicles-Endcap]]);
 	VehicleMenuBarPitchSliderBG:SetTexCoord(0.46875, 0.50390625, 0.31640625, 0.62109375)
@@ -132,8 +144,8 @@ local function vehiclebar_mechanical_setup()
 end
 
 local function vehiclebar_organic_setup()
-	mixin2template.OrganicUi:Show();
-	mixin2template.MechanicUi:Hide();
+	if mixin2template.OrganicUi then mixin2template.OrganicUi:Show() end
+	if mixin2template.MechanicUi then mixin2template.MechanicUi:Hide() end
 	VehicleMenuBarHealthBar:SetSize(38, 74)
 	VehicleMenuBarPowerBar:SetSize(38, 74)
 	VehicleMenuBarPowerBar:SetClearPoint('BOTTOMRIGHT', -119, 3)
