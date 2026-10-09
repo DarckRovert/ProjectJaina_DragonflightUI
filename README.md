@@ -1,8 +1,8 @@
-# 🇵🇪 WoW Perú — DragonflightUI (cDF)
+# 🇵🇪 Project Jaina — DragonflightUI (cDF)
 
-[![GitHub](https://img.shields.io/badge/GitHub-DarckRovert%2FWoWPeru_DragonflightUI-black?logo=github)](https://github.com/DarckRovert/WoWPeru_DragonflightUI)
+[![GitHub](https://img.shields.io/badge/GitHub-DarckRovert%2FWanos_DragonflightUI-black?logo=github)](https://github.com/DarckRovert/Wanos_DragonflightUI)
 
-> **WoW Perú Ecosystem** · WotLK 3.3.5a compatible · `Interface: 30300`
+> **Project Jaina Ecosystem** · WotLK 3.3.5a compatible · `Interface: 30300`
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -35,7 +35,7 @@ Reimplementación modular de la interfaz **Dragonflight 10.x** adaptada para Wor
 
 ## 📄 Licencia y Estatus Legal
 
-- **Autor de adaptación y mantenimiento:** WoW Perú Team / WoWpe
+- **Autor de adaptación y mantenimiento:** Project Jaina Team / WoWpe
 - **Módulos Upstream:** `s0h2x` (Actionbars y Minimapa), Typodermic Fonts (Expressway).
 - **Estatus Legal:** DragonflightUI (cDF) integra componentes de terceros, fuentes y librerías BSD/Public Domain. Consulta el archivo [NOTICE.md](NOTICE.md) para el desglose legal completo de licencias y créditos.
 
@@ -50,4 +50,4 @@ Reimplementación modular de la interfaz **Dragonflight 10.x** adaptada para Wor
 
 ---
 
-*Parte del [ecosistema WoW Perú](https://github.com/DarckRovert)*
+*Parte del [ecosistema Project Jaina](https://github.com/DarckRovert)*

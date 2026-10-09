@@ -21,6 +21,44 @@ local bagslots = {
     _G.CharacterBag2Slot,
     _G.CharacterBag3Slot
 };
+
+-- Integración nativa de Colecciones Project Jaina (Sin plantillas rotas)
+if not _G.CollectionsMicroButton then
+	local btn = CreateFrame('Button', 'CollectionsMicroButton', UIParent)
+	btn:SetNormalTexture(btn:CreateTexture(nil, 'ARTWORK'))
+	btn:SetPushedTexture(btn:CreateTexture(nil, 'ARTWORK'))
+	btn:SetDisabledTexture(btn:CreateTexture(nil, 'ARTWORK'))
+	btn:SetHighlightTexture(btn:CreateTexture(nil, 'HIGHLIGHT'))
+
+	btn:RegisterForClicks('LeftButtonUp', 'RightButtonUp')
+	btn:SetScript('OnClick', function(self, mouseButton)
+		if mouseButton == 'RightButton' then
+			if SlashCmdList['WPCOMP'] then
+				SlashCmdList['WPCOMP']('')
+			elseif ToggleSpellBook then
+				ToggleSpellBook(BOOKTYPE_MOUNT or 'mount')
+			end
+		else
+			if SlashCmdList['WP_WARDROBEV2'] then
+				SlashCmdList['WP_WARDROBEV2']('')
+			elseif SlashCmdList['WPCOMP'] then
+				SlashCmdList['WPCOMP']('')
+			end
+		end
+	end)
+	btn:SetScript('OnEnter', function(self)
+		GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
+		GameTooltip:SetText('|cFFD4AF37Colecciones de Project Jaina|r', 1, 1, 1)
+		GameTooltip:AddLine('|cFFFFFFFFClic izquierdo:|r Abrir Guardarropa (Transfiguración)', 0.8, 0.8, 0.8)
+		GameTooltip:AddLine('|cFFFFFFFFClic derecho:|r Abrir Monturas y Compañeros', 0.8, 0.8, 0.8)
+		GameTooltip:Show()
+	end)
+	btn:SetScript('OnLeave', function(self)
+		GameTooltip:Hide()
+	end)
+	_G.CollectionsMicroButton = btn
+end
+
 local MICRO_BUTTONS = {
 	_G.CharacterMicroButton,
 	_G.SpellbookMicroButton,
@@ -254,7 +292,15 @@ hooksecurefunc('CharacterMicroButton_SetNormal',function()
 	MicroButtonPortrait:SetAlpha(0);
 end)
 
+local PERFORMANCEBAR_UPDATE_INTERVAL = 10.0;
+
 function MainMenuMicroButtonMixin:OnUpdate(elapsed)
+	self.elapsedTimer = (self.elapsedTimer or 0) + elapsed;
+	if ( self.elapsedTimer < PERFORMANCEBAR_UPDATE_INTERVAL ) then
+		return;
+	end
+	self.elapsedTimer = 0;
+
 	local _, _, latencyHome = GetNetStats();
 	local latency = latencyHome;
 	if ( latency > PERFORMANCEBAR_MEDIUM_LATENCY ) then
@@ -267,14 +313,20 @@ function MainMenuMicroButtonMixin:OnUpdate(elapsed)
 end
 
 function MainMenuMicroButtonMixin:CreateBar()
-	local latencybar = CreateFrame('Statusbar', nil, UIParent)
-	latencybar:SetParent(HelpMicroButton)
+	local latencybar = CreateFrame('StatusBar', nil, HelpMicroButton)
 	latencybar:SetSize(14, 39)
 	latencybar:SetPoint('BOTTOM', HelpMicroButton, 'BOTTOM', 0, -4)
 	latencybar:SetStatusBarTexture(addon._dir..'ui-mainmenubar-performancebar')
-	latencybar:SetStatusBarColor(1, 1, 0)
-	latencybar:GetStatusBarTexture():SetBlendMode('ADD')
-	latencybar:GetStatusBarTexture():SetDrawLayer('OVERLAY')
+	latencybar:SetMinMaxValues(0, 1)
+	latencybar:SetValue(1)
+	latencybar:SetStatusBarColor(0, 1, 0)
+	
+	local tex = latencybar:GetStatusBarTexture()
+	if tex then
+		tex:SetBlendMode('ADD')
+		tex:SetDrawLayer('OVERLAY')
+	end
+	
 	latencybar:SetScript('OnUpdate', MainMenuMicroButtonMixin.OnUpdate)
 end
 MainMenuMicroButtonMixin:CreateBar();
@@ -313,12 +365,9 @@ local function setupMicroButtons(xOffset)
 end
 
 addon.package:RegisterEvents(function()
-	local xOffset
-	if IsAddOnLoaded('ezCollections') then
-		xOffset = -180
+	local xOffset = -180
+	if _G.CollectionsMicroButton and _G.CollectionsMicroButton.UnregisterEvent then
 		_G.CollectionsMicroButton:UnregisterEvent('UPDATE_BINDINGS')
-	else
-		xOffset = -166
 	end
 	setupMicroButtons(xOffset + config.micromenu.x_position);
 	if config.micromenu.hide_on_vehicle then

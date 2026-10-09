@@ -1,7 +1,7 @@
-# 🤖 Directrices de Ingeniería y Restricciones para Agentes IA — WoWPeru_DragonflightUI
+# 🤖 Directrices de Ingeniería y Restricciones para Agentes IA — Wanos_DragonflightUI
 
-**Addon:** `WoWPeru_DragonflightUI`  
-**Repositorio Oficial:** [https://github.com/DarckRovert/WoWPeru_DragonflightUI](https://github.com/DarckRovert/WoWPeru_DragonflightUI)  
+**Addon:** `Wanos_DragonflightUI`  
+**Repositorio Oficial:** [https://github.com/DarckRovert/Wanos_DragonflightUI](https://github.com/DarckRovert/Wanos_DragonflightUI)  
 **Motor Gráfico y Runtime:** WoW 3.3.5a WotLK (Build 12340) / Lua 5.1 (Blizzard VM)
 
 ---

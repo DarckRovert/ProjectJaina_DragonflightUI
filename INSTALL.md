@@ -1,11 +1,11 @@
-# 📦 Guía de Instalación y Despliegue — WoWPeru_DragonflightUI
+# 📦 Guía de Instalación y Despliegue — Wanos_DragonflightUI
 
-[![WoW Version](https://img.shields.io/badge/WoW-3.3.5a%20(12340)-blue.svg)](https://wow-peru.lat/)
-[![Repositorio](https://img.shields.io/badge/GitHub-DarckRovert%2FWoWPeru_DragonflightUI-black?logo=github)](https://github.com/DarckRovert/WoWPeru_DragonflightUI)
+[![WoW Version](https://img.shields.io/badge/WoW-3.3.5a%20(12340)-blue.svg)](https://worldofwanos.com/)
+[![Repositorio](https://img.shields.io/badge/GitHub-DarckRovert%2FWanos_DragonflightUI-black?logo=github)](https://github.com/DarckRovert/Wanos_DragonflightUI)
 
 ## 📋 Requisitos Previos
 - **Cliente:** World of Warcraft 3.3.5a (Build 12340), en español (`esES`) o inglés (`enUS`).
-- **Servidor:** AzerothCore con Eluna habilitado (**WoW Perú — Reino Andino**).
+- **Servidor:** AzerothCore con Eluna habilitado (**Project Jaina — Project Jaina**).
 
 ---
 
@@ -18,7 +18,7 @@
 2. **Copiar o Clonar el Addon:**  
    Coloca la carpeta del addon dentro de `AddOns\`:  
    ```bash
-   git clone https://github.com/DarckRovert/WoWPeru_DragonflightUI.git
+   git clone https://github.com/DarckRovert/Wanos_DragonflightUI.git
    ```
 
 3. **Verificación de Estructura:**  
@@ -27,7 +27,7 @@
 
 4. **Activación en el Juego:**  
    - Inicia el cliente del juego o escribe `/reload` si ya estás conectado.
-   - En la pantalla de selección de personajes, haz clic en el botón **Accesorios** (esquina inferior izquierda) y marca la casilla de `WoWPeru_DragonflightUI`.
+   - En la pantalla de selección de personajes, haz clic en el botón **Accesorios** (esquina inferior izquierda) y marca la casilla de `Wanos_DragonflightUI`.
    - Asegúrate de tener marcada la opción **"Cargar accesorios antiguos"**.
 
 5. **Prueba de Funcionamiento:**  

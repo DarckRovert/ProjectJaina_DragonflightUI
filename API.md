@@ -1,7 +1,7 @@
-# 🔌 Especificación Técnica y API — WoWPeru_DragonflightUI
+# 🔌 Especificación Técnica y API — Wanos_DragonflightUI
 
-[![GitHub](https://img.shields.io/badge/GitHub-DarckRovert%2FWoWPeru_DragonflightUI-black?logo=github)](https://github.com/DarckRovert/WoWPeru_DragonflightUI)
-[![Ecosistema](https://img.shields.io/badge/Ecosistema-WoW%20Per%C3%BA%203.3.5a-gold.svg)](https://wow-peru.lat/)
+[![GitHub](https://img.shields.io/badge/GitHub-DarckRovert%2FWanos_DragonflightUI-black?logo=github)](https://github.com/DarckRovert/Wanos_DragonflightUI)
+[![Ecosistema](https://img.shields.io/badge/Ecosistema-WoW%20Per%C3%BA%203.3.5a-gold.svg)](https://worldofwanos.com/)
 
 ## 📌 Resumen Arquitectónico
 Rediseño visual compacto y moderno de la interfaz de usuario en WoW 3.3.5a inspirado en la interfaz Dragonflight 10.x, optimizado para alto rendimiento y legibilidad.
@@ -36,4 +36,4 @@ Rediseño visual compacto y moderno de la interfaz de usuario en WoW 3.3.5a insp
 ## 🛠️ Buenas Prácticas de Integración
 1. Toda invocación a funciones públicas debe verificar previamente la existencia del espacio de nombres en `_G`.
 2. Las tablas de configuración deben consultarse en modo lectura sin sobreescribir valores por omisión no validados.
-3. El intercambio de datos con otros addons debe efectuarse a través del bus oficial `WoWPeru_Companion` o hooks de eventos estándar.
+3. El intercambio de datos con otros addons debe efectuarse a través del bus oficial `Wanos_Companion` o hooks de eventos estándar.
