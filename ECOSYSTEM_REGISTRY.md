@@ -42,7 +42,7 @@ Ficha técnica oficial de registro en la infraestructura multi-addon de **Projec
 | Sistema Coexistente | Modo de Interacción | Flujo de Datos |
 |---|---|---|
 | **`ProjectJaina_AbbreviatedStatus`** | Integración Visual | Formatea textos de vida/maná superpuestos en los marcos de unidad de cDF. |
-| **`Jaina_BattlePass`** | Botón de Minimapa | El botón del Pase de Batalla se ancla al perímetro del minimapa de cDF. |
+| **`ProjectJaina_BattlePass`** | Botón de Minimapa | El botón del Pase de Batalla se ancla al perímetro del minimapa de cDF. |
 | **`ProjectJaina_VisualShop`** | Botón de Minimapa | El botón de la tienda se ancla al minimapa sin solaparse con botones de rastreo. |
 | **`ProjectJaina_Companion`** | Telemetría / Detección | Compatible con el motor de escaneo de presencia social. |
 
@@ -63,7 +63,7 @@ Ficha técnica oficial de registro en la infraestructura multi-addon de **Projec
 | # | Repositorio GitHub | Carpeta Local | Versión | Tipo / Licencia | Propósito en el Ecosistema |
 |:---:|---|---|:---:|:---:|---|
 | 01 | [ProjectJaina_AbbreviatedStatus](https://github.com/DarckRovert/ProjectJaina_AbbreviatedStatus) | `AbbreviatedStatus` | 1.2.1 | MIT / Fork | Abreviación compacta y formateo legible de salud y maná sin división por cero. |
-| 02 | [Jaina_BattlePass](https://github.com/DarckRovert/Jaina_BattlePass) | `Jaina_BattlePass` | 2.0.0 | MIT | Pase de Batalla estacional de 50 niveles con backend Eluna y bitmask de progreso. |
+| 02 | [ProjectJaina_BattlePass](https://github.com/DarckRovert/ProjectJaina_BattlePass) | `ProjectJaina_BattlePass` | 2.0.0 | MIT | Pase de Batalla estacional de 50 niveles con backend Eluna y bitmask de progreso. |
 | 03 | [ProjectJaina_Carbonite](https://github.com/DarckRovert/ProjectJaina_Carbonite) | `ProjectJaina_Carbonite` | 3.3.4-WP | Other / EULA | Suite satelital HD de cartografía, navegación multi-zona y misiones. |
 | 04 | [ProjectJaina_Companion](https://github.com/DarckRovert/ProjectJaina_Companion) | `ProjectJaina_Companion` | 1.0.3 | MIT | Hub social ligero, cross-faction (/comerciar, /invitar) y telemetría de grupo. |
 | 05 | [ProjectJaina_DragonflightUI](https://github.com/DarckRovert/ProjectJaina_DragonflightUI) | `cDF` | 1.0.0 | MIT / BSD | Re-implementación visual moderna estilo Dragonflight 10.x para cliente 3.3.5a. |
