@@ -1,7 +1,7 @@
 # 🔌 Especificación Técnica y API — Wanos_DragonflightUI
 
 [![GitHub](https://img.shields.io/badge/GitHub-DarckRovert%2FWanos_DragonflightUI-black?logo=github)](https://github.com/DarckRovert/Wanos_DragonflightUI)
-[![Ecosistema](https://img.shields.io/badge/Ecosistema-WoW%20Per%C3%BA%203.3.5a-gold.svg)](https://worldofwanos.com/)
+[![Ecosistema](https://img.shields.io/badge/Ecosistema-WoW%20Per%C3%BA%203.3.5a-gold.svg)](https://projectjaina.com/)
 
 ## 📌 Resumen Arquitectónico
 Rediseño visual compacto y moderno de la interfaz de usuario en WoW 3.3.5a inspirado en la interfaz Dragonflight 10.x, optimizado para alto rendimiento y legibilidad.

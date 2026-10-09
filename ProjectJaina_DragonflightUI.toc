@@ -1,5 +1,5 @@
 ## Interface: 30300
-## Title: Chromie - [|cffff0000WoW -Perú|r] 
+## Title: Chromie - [|cffff0000Project Jaina|r] 
 ## Author: WoWpe
 ## Notes: The Dragonflight UI for Chromie Craft.
 ## Version: GIT
