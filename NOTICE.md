@@ -1,4 +1,4 @@
-# Aviso Legal y Créditos de Código de Terceros — Wanos_DragonflightUI (cDF)
+# Aviso Legal y Créditos de Código de Terceros — ProjectJaina_DragonflightUI (cDF)
 
 Este repositorio forma parte del ecosistema oficial de **Project Jaina - Project Jaina**.
 Contiene adaptaciones, compilación modular y personalización de la interfaz estilo **Dragonflight** para el cliente World of Warcraft 3.3.5a (Build 12340).
@@ -13,7 +13,7 @@ La suite `cDF` integra y refactoriza múltiples módulos comunitarios de moderni
 * **Minimapa Integrado (`pretty_minimap`):** Arquitectura y capas de atlas por **s0h2x** (`s0h2x/pretty_minimap`).
 * **Organizador de Bolsas (`SushiSort`):** Utilidad comunitaria de ordenamiento de inventario para 3.3.5a.
 * **Tipografía Embebida (`assets/expressway.ttf`):** Familia tipográfica *Expressway* creada por **Ray Larabie / Typodermic Fonts** (distribuida bajo licencia freeware/desktop de uso libre).
-* **Adaptación y Correcciones Project Jaina:** DarckRovert (Elnazzareno) & Project Jaina Team (refactorización de atributos XML incompatibles como `parentKey` en vehículos a asignaciones `OnLoad`).
+* **Adaptación y Correcciones Project Jaina:** DarckRovert (Elnazzareno) & Antigravity (Mythos 5) (refactorización de atributos XML incompatibles como `parentKey` en vehículos a asignaciones `OnLoad`).
 
 ---
 

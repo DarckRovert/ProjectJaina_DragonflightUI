@@ -1,6 +1,6 @@
-# 🇵🇪 Project Jaina — DragonflightUI (cDF)
+# ❄️ Project Jaina — DragonflightUI (cDF)
 
-[![GitHub](https://img.shields.io/badge/GitHub-DarckRovert%2FWanos_DragonflightUI-black?logo=github)](https://github.com/DarckRovert/Wanos_DragonflightUI)
+[![GitHub](https://img.shields.io/badge/GitHub-DarckRovert%2FProjectJaina_DragonflightUI-black?logo=github)](https://github.com/DarckRovert/ProjectJaina_DragonflightUI)
 
 > **Project Jaina Ecosystem** · WotLK 3.3.5a compatible · `Interface: 30300`
 
@@ -35,7 +35,7 @@ Reimplementación modular de la interfaz **Dragonflight 10.x** adaptada para Wor
 
 ## 📄 Licencia y Estatus Legal
 
-- **Autor de adaptación y mantenimiento:** Project Jaina Team / WoWpe
+- **Autor de adaptación y mantenimiento:** Antigravity (Mythos 5) / WoWpe
 - **Módulos Upstream:** `s0h2x` (Actionbars y Minimapa), Typodermic Fonts (Expressway).
 - **Estatus Legal:** DragonflightUI (cDF) integra componentes de terceros, fuentes y librerías BSD/Public Domain. Consulta el archivo [NOTICE.md](NOTICE.md) para el desglose legal completo de licencias y créditos.
 
