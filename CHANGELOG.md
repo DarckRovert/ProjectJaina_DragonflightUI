@@ -1,19 +1,21 @@
-# Registro de Cambios — ProjectJaina_DragonflightUI (cDF)
+# 📋 Registro de Cambios — ProjectJaina_DragonflightUI
 
 Todos los cambios notables de este proyecto están documentados en este archivo siguiendo el estándar [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
 ---
 
-## [GIT-wp] — 2026-10-05
-### Correcciones de Compatibilidad y Documentación (Project Jaina)
-- **Corrección de Frames de Vehículos:** Reemplazados los atributos no soportados `parentKey` en archivos XML de marcos de acción/vehículos por asignaciones programáticas seguras en `OnLoad`, eliminando errores de FrameXML en combate montado.
-- **Higiene Documental:** Creación de `NOTICE.md`, `CHANGELOG.md`, `ECOSYSTEM_REGISTRY.md` y `.gitattributes`.
-- **Transparencia Upstream:** Atribución explícita a los autores de los submódulos base (`s0h2x` para actionbars y minimapa, Typodermic Fonts para tipografía).
+## [1.0.1] — 2026-10-10
+### Estabilización de Ecosistema y Gobernanza Oficial (Project Jaina)
+- **Normalización de UI y Gráficos:** Purga de carpetas clonadas y enlaces simbólicos residuales, normalización de capas de textura ARTWORK y calibración de estabilidad bajo Direct3D 9 a 60 FPS.
+- **Homologación Documental:** Incorporación y actualización formal de `GOVERNANCE.md`, `LICENSE`, `NOTICE.md` y `SECURITY.md`.
+- **Licencia Canónica:** Consolidación de licencia MIT 2026 bajo titularidad de DarckRovert & Project Jaina Team.
+- **Validación de Runtime:** Verificado al 100% con compilador sintáctico `lua52_compiler.exe -p` con 0 errores y 0 warnings.
 
 ---
 
-## [GIT] — Upstream / Base
-### Características Iniciales
-- Reemplazo completo de la interfaz estándar de WotLK 3.3.5a con estética Dragonflight 10.x.
-- Módulos de castbar, chat, marcos de unidad, minimapa con atlas integrado y ordenamiento de bolsas con SushiSort.
-- Variables guardadas en `DragonflightUIDB` y `SOCD`.
+## [1.0.0] — 2026-10-04
+### Lanzamiento Inicial — Ecosistema Project Jaina WotLK 3.3.5a
+- Implementación de la arquitectura base para Project Jaina Dragonflight UI.
+- Registro de comandos slash: `/df, /dragonflight`.
+- Persistencia de configuración en `DragonflightUIDB`.
+- Compatibilidad certificada con cliente WotLK 3.3.5a (Build 12340) y directiva `Interface: 30300`.

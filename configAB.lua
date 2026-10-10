@@ -1,5 +1,5 @@
 local addon = select(2,...);
-addon._dir = [[Interface\AddOns\cDF\assets\]];
+addon._dir = [[Interface\AddOns\ProjectJaina_DragonflightUI\assets\]];
 addon.config = {
 	-- @desc: mainbar settings
 	-- @param: number of scale

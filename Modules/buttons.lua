@@ -39,10 +39,14 @@ local function actionbuttons_iterator()
 end
 
 local function actionbuttons_grid()
-	for index=1, NUM_ACTIONBAR_BUTTONS do
-		local ActionButtons = _G[format('ActionButton%d', index)]
-		ActionButtons:SetAttribute('showgrid', 1)
-		ActionButton_ShowGrid(ActionButtons)
+	for _, bar in ipairs({'ActionButton', 'MultiBarBottomLeftButton', 'MultiBarBottomRightButton'}) do
+		for index=1, NUM_ACTIONBAR_BUTTONS do
+			local ActionButtons = _G[format('%s%d', bar, index)]
+			if ActionButtons then
+				ActionButtons:SetAttribute('showgrid', 1)
+				ActionButton_ShowGrid(ActionButtons)
+			end
+		end
 	end
 end
 
@@ -72,7 +76,7 @@ local function setup_background(button, anchor, shadow)
 	background:Hide();
 
 	local parent = button:GetParent():GetName();
-	local isAction = parent == 'pUiMainBar' and config.buttons.only_actionbackground;
+	local isAction = (parent == 'pUiMainBar' or parent == 'MultiBarBottomLeft' or parent == 'MultiBarBottomRight') and config.buttons.only_actionbackground;
 	if isAction then
 		background:set_atlas('ui-hud-actionbar-iconframe-slot');
 		background:Show();

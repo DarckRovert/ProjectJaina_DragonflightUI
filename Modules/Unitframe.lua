@@ -1370,13 +1370,13 @@ function Module.GetCoords(key)
 end
 
 function Module.CreatePlayerFrameTextures()
-    local base = 'Interface\\Addons\\cDF\\Textures\\uiunitframe'
+    local base = 'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\uiunitframe'
 
     if not frame.PlayerFrameBackground then
         local background = PlayerFrame:CreateTexture('DragonflightUIPlayerFrameBackground')
         background:SetDrawLayer('BACKGROUND', 2)
         background:SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\UI-HUD-UnitFrame-Player-PortraitOn-BACKGROUND'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\UI-HUD-UnitFrame-Player-PortraitOn-BACKGROUND'
         )
         background:SetPoint('LEFT', PlayerFrameHealthBar, 'LEFT', -67, -28.5)
 
@@ -1390,7 +1390,7 @@ function Module.CreatePlayerFrameTextures()
     if not frame.PlayerFrameBorder then
         local border = PlayerFrameHealthBar:CreateTexture('DragonflightUIPlayerFrameBorder')
         border:SetDrawLayer('ARTWORK', 2)
-        border:SetTexture('Interface\\Addons\\cDF\\Textures\\UI-HUD-UnitFrame-Player-PortraitOn-BORDER')
+        border:SetTexture('Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\UI-HUD-UnitFrame-Player-PortraitOn-BORDER')
         border:SetPoint('LEFT', PlayerFrameHealthBar, 'LEFT', -67, -28.5)
         border:SetDrawLayer('OVERLAY', 5)
         frame.PlayerFrameBorder = border
@@ -1410,7 +1410,7 @@ function Module.CreatePlayerFrameTextures()
 end
 
 function Module.ChangeStatusIcons()
-    local base = 'Interface\\Addons\\cDF\\Textures\\uiunitframe'
+    local base = 'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\uiunitframe'
 
     PlayerAttackIcon:SetTexture(base)
     PlayerAttackIcon:SetTexCoord(Module.GetCoords('UI-HUD-UnitFrame-Player-CombatIcon'))
@@ -1484,14 +1484,14 @@ function Module.HookVertexColor()
         function(self)
             if Module.db.profile.player.classcolor then
                 PlayerFrameHealthBar:GetStatusBarTexture():SetTexture(
-                    'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health-Status'
+                    'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health-Status'
                 )
 
                 local localizedClass, englishClass, classIndex = UnitClass('player')
                 PlayerFrameHealthBar:SetStatusBarColor(DF:GetClassColor(englishClass, 1))
             else
                 PlayerFrameHealthBar:GetStatusBarTexture():SetTexture(
-                    'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health'
+                    'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health'
                 )
                 PlayerFrameHealthBar:SetStatusBarColor(1, 1, 1, 1)
             end
@@ -1503,13 +1503,13 @@ function Module.HookVertexColor()
         function(self)
             if Module.db.profile.target.classcolor and UnitIsPlayer('target') then
                 TargetFrameHealthBar:GetStatusBarTexture():SetTexture(
-                    'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Status'
+                    'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Status'
                 )
                 local localizedClass, englishClass, classIndex = UnitClass('target')
                 TargetFrameHealthBar:SetStatusBarColor(DF:GetClassColor(englishClass, 1))
             else
                 TargetFrameHealthBar:GetStatusBarTexture():SetTexture(
-                    'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health'
+                    'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health'
                 )
                 TargetFrameHealthBar:SetStatusBarColor(1, 1, 1, 1)
             end
@@ -1522,13 +1522,13 @@ function Module.HookVertexColor()
             function(self)
                 if Module.db.profile.focus.classcolor and UnitIsPlayer('focus') then
                     FocusFrameHealthBar:GetStatusBarTexture():SetTexture(
-                        'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Status'
+                        'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Status'
                     )
                     local localizedClass, englishClass, classIndex = UnitClass('focus')
                     FocusFrameHealthBar:SetStatusBarColor(DF:GetClassColor(englishClass, 1))
                 else
                     FocusFrameHealthBar:GetStatusBarTexture():SetTexture(
-                        'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health'
+                        'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health'
                     )
                     FocusFrameHealthBar:SetStatusBarColor(1, 1, 1, 1)
                 end
@@ -1538,7 +1538,7 @@ function Module.HookVertexColor()
 end
 
 function Module.ChangePlayerframe()
-    local base = 'Interface\\Addons\\cDF\\Textures\\uiunitframe'
+    local base = 'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\uiunitframe'
 
     PlayerFrameTexture:Hide()
     PlayerFrameBackground:Hide()
@@ -1563,14 +1563,14 @@ function Module.ChangePlayerframe()
 
     if Module.db.profile.player.classcolor then
         PlayerFrameHealthBar:GetStatusBarTexture():SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health-Status'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health-Status'
         )
 
         local localizedClass, englishClass, classIndex = UnitClass('player')
         PlayerFrameHealthBar:SetStatusBarColor(DF:GetClassColor(englishClass, 1))
     else
         PlayerFrameHealthBar:GetStatusBarTexture():SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health'
         )
         PlayerFrameHealthBar:SetStatusBarColor(1, 1, 1, 1)
     end
@@ -1594,23 +1594,23 @@ function Module.ChangePlayerframe()
 
     if powerTypeString == 'MANA' then
         PlayerFrameManaBar:GetStatusBarTexture():SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana'
         )
     elseif powerTypeString == 'RAGE' then
         PlayerFrameManaBar:GetStatusBarTexture():SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Player-PortraitOn-Bar-Rage'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Player-PortraitOn-Bar-Rage'
         )
     elseif powerTypeString == 'FOCUS' then
         PlayerFrameManaBar:GetStatusBarTexture():SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Player-PortraitOn-Bar-Focus'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Player-PortraitOn-Bar-Focus'
         )
     elseif powerTypeString == 'ENERGY' then
         PlayerFrameManaBar:GetStatusBarTexture():SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Player-PortraitOn-Bar-Energy'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Player-PortraitOn-Bar-Energy'
         )
     elseif powerTypeString == 'RUNIC_POWER' then
         PlayerFrameManaBar:GetStatusBarTexture():SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Player-PortraitOn-Bar-RunicPower'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Player-PortraitOn-Bar-RunicPower'
         )
     end
 
@@ -1699,7 +1699,7 @@ function Module.MovePlayerFrame(anchor, anchorOther, dx, dy)
 end
 
 function Module.ChangeTargetFrame()
-    local base = 'Interface\\Addons\\cDF\\Textures\\uiunitframe'
+    local base = 'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\uiunitframe'
 
     TargetFrameTextureFrameTexture:Hide()
     TargetFrameBackground:Hide()
@@ -1708,7 +1708,7 @@ function Module.ChangeTargetFrame()
         local background = TargetFrame:CreateTexture('DragonflightUITargetFrameBackground')
         background:SetDrawLayer('BACKGROUND', 2)
         background:SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\UI-HUD-UnitFrame-Target-PortraitOn-BACKGROUND'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\UI-HUD-UnitFrame-Target-PortraitOn-BACKGROUND'
         )
         background:SetPoint('LEFT', TargetFrame, 'LEFT', 0, -32.5 + 10)
         frame.TargetFrameBackground = background
@@ -1717,7 +1717,7 @@ function Module.ChangeTargetFrame()
     if not frame.TargetFrameBorder then
         local border = TargetFrame:CreateTexture('DragonflightUITargetFrameBorder')
         border:SetDrawLayer('ARTWORK', 2)
-        border:SetTexture('Interface\\Addons\\cDF\\Textures\\UI-HUD-UnitFrame-Target-PortraitOn-BORDER')
+        border:SetTexture('Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\UI-HUD-UnitFrame-Target-PortraitOn-BORDER')
         border:SetPoint('LEFT', TargetFrame, 'LEFT', 0, -32.5 + 10)
         border:SetDrawLayer('OVERLAY', 5)
         frame.TargetFrameBorder = border
@@ -1743,7 +1743,7 @@ function Module.ChangeTargetFrame()
     TargetFrameHealthBar:SetSize(125, 20)
     TargetFrameHealthBar:SetPoint('RIGHT', TargetFramePortrait, 'LEFT', -1, 0)
     --[[     TargetFrameHealthBar:GetStatusBarTexture():SetTexture(
-        'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health'
+        'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health'
     )
     TargetFrameHealthBar:SetStatusBarColor(1, 1, 1, 1) ]]
     -- Mana 119,12
@@ -1779,7 +1779,7 @@ function Module.ChangeTargetFrame()
             local flash = TargetFrame:CreateTexture('DragonflightUITargetFrameFlash')
             flash:SetDrawLayer('BACKGROUND', 2)
             flash:SetTexture(
-                'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-InCombat'
+                'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-InCombat'
             )
             flash:SetPoint('CENTER', TargetFrame, 'CENTER', 20 + CorrectionX, -20 + CorrectionY)
             flash:SetSize(256, 128)
@@ -1821,7 +1821,7 @@ function Module.ChangeTargetFrame()
 
     if not frame.PortraitExtra then
         local extra = TargetFrame:CreateTexture('DragonflightUITargetFramePortraitExtra')
-        extra:SetTexture('Interface\\Addons\\cDF\\Textures\\uiunitframeboss2x')
+        extra:SetTexture('Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\uiunitframeboss2x')
         extra:SetTexCoord(0.001953125, 0.314453125, 0.322265625, 0.630859375)
         extra:SetSize(80, 79)
         extra:SetDrawLayer('OVERLAY', 3)
@@ -1865,13 +1865,13 @@ end
 function Module.ReApplyTargetFrame()
     if Module.db.profile.target.classcolor and UnitIsPlayer('target') then
         TargetFrameHealthBar:GetStatusBarTexture():SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Status'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Status'
         )
         local localizedClass, englishClass, classIndex = UnitClass('target')
         TargetFrameHealthBar:SetStatusBarColor(DF:GetClassColor(englishClass, 1))
     else
         TargetFrameHealthBar:GetStatusBarTexture():SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health'
         )
         TargetFrameHealthBar:SetStatusBarColor(1, 1, 1, 1)
     end
@@ -1880,23 +1880,23 @@ function Module.ReApplyTargetFrame()
 
     if powerTypeString == 'MANA' then
         TargetFrameManaBar:GetStatusBarTexture():SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Mana'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Mana'
         )
     elseif powerTypeString == 'FOCUS' then
         TargetFrameManaBar:GetStatusBarTexture():SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Focus'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Focus'
         )
     elseif powerTypeString == 'RAGE' then
         TargetFrameManaBar:GetStatusBarTexture():SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Rage'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Rage'
         )
     elseif powerTypeString == 'ENERGY' then
         TargetFrameManaBar:GetStatusBarTexture():SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Energy'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Energy'
         )
     elseif powerTypeString == 'RUNIC_POWER' then
         TargetFrameManaBar:GetStatusBarTexture():SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-RunicPower'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-RunicPower'
         )
     end
 
@@ -1929,7 +1929,7 @@ function Module.ChangeToT()
         local background = TargetFrameToTTextureFrame:CreateTexture('DragonflightUITargetFrameToTBackground')
         background:SetDrawLayer('BACKGROUND', 1)
         background:SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-BACKGROUND'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-BACKGROUND'
         )
         background:SetPoint('LEFT', TargetFrameToTPortrait, 'CENTER', -25 + 1, -10)
         frame.TargetFrameToTBackground = background
@@ -1939,7 +1939,7 @@ function Module.ChangeToT()
         local border = TargetFrameToTHealthBar:CreateTexture('DragonflightUITargetFrameToTBorder')
         border:SetDrawLayer('OVERLAY', 2)
         border:SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-BORDER'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-BORDER'
         )
         border:SetPoint('LEFT', TargetFrameToTPortrait, 'CENTER', -25 + 1, -10)
         frame.TargetFrameToTBorder = border
@@ -1962,7 +1962,7 @@ function Module.ChangeToT()
         f:SetPoint('LEFT', TargetFrameToTPortrait, 'RIGHT', 1 - 2 - 1.5 + 1, 2 - 10 - 1)
         f:SetFrameLevel(10)
         f:SetStatusBarTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Mana'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Mana'
         )
         f:SetStatusBarColor(1, 1, 1, 1)
 
@@ -1981,23 +1981,23 @@ function Module.ChangeToT()
 
             if powerTypeString == 'MANA' then
                 frame.ToTManaBar:GetStatusBarTexture():SetTexture(
-                    'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Mana'
+                    'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Mana'
                 )
             elseif powerTypeString == 'FOCUS' then
                 frame.ToTManaBar:GetStatusBarTexture():SetTexture(
-                    'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Focus'
+                    'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Focus'
                 )
             elseif powerTypeString == 'RAGE' then
                 frame.ToTManaBar:GetStatusBarTexture():SetTexture(
-                    'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Rage'
+                    'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Rage'
                 )
             elseif powerTypeString == 'ENERGY' then
                 frame.ToTManaBar:GetStatusBarTexture():SetTexture(
-                    'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Energy'
+                    'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Energy'
                 )
             elseif powerTypeString == 'RUNIC_POWER' then
                 frame.ToTManaBar:GetStatusBarTexture():SetTexture(
-                    'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-RunicPower'
+                    'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-RunicPower'
                 )
             end
 
@@ -2043,7 +2043,7 @@ function Module.ReApplyToT()
         --frame.ToTManaBar:Show()
 
         TargetFrameToTHealthBar:GetStatusBarTexture():SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Health'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Health'
         )
 
         TargetFrameToTHealthBar:SetStatusBarColor(1, 1, 1, 1)
@@ -2058,7 +2058,7 @@ function Module.ReApplyToT()
 end
 
 function Module.ChangeFocusFrame()
-    local base = 'Interface\\Addons\\cDF\\Textures\\uiunitframe'
+    local base = 'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\uiunitframe'
 
     FocusFrameTextureFrameTexture:Hide()
     FocusFrameBackground:Hide()
@@ -2067,7 +2067,7 @@ function Module.ChangeFocusFrame()
         local background = FocusFrame:CreateTexture('DragonflightUITargetFrameBackground')
         background:SetDrawLayer('BACKGROUND', 2)
         background:SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\UI-HUD-UnitFrame-Target-PortraitOn-BACKGROUND'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\UI-HUD-UnitFrame-Target-PortraitOn-BACKGROUND'
         )
         background:SetPoint('LEFT', FocusFrame, 'LEFT', 0, -32.5 + 10)
         frame.FocusFrameBackground = background
@@ -2076,7 +2076,7 @@ function Module.ChangeFocusFrame()
     if not frame.FocusFrameBorder then
         local border = FocusFrame:CreateTexture('DragonflightUITargetFrameBorder')
         border:SetDrawLayer('ARTWORK', 2)
-        border:SetTexture('Interface\\Addons\\cDF\\Textures\\UI-HUD-UnitFrame-Target-PortraitOn-BORDER')
+        border:SetTexture('Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\UI-HUD-UnitFrame-Target-PortraitOn-BORDER')
         border:SetPoint('LEFT', FocusFrame, 'LEFT', 0, -32.5 + 10)
         border:SetDrawLayer('OVERLAY', 5)
         frame.FocusFrameBorder = border
@@ -2121,7 +2121,7 @@ function Module.ChangeFocusFrame()
     FocusFrameHealthBar:SetSize(125, 20)
     FocusFrameHealthBar:SetPoint('RIGHT', FocusFramePortrait, 'LEFT', -1, 0)
     --[[    FocusFrameHealthBar:GetStatusBarTexture():SetTexture(
-        'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Player-PortraitOff-Bar-Health'
+        'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Player-PortraitOff-Bar-Health'
     )
     FocusFrameHealthBar:SetStatusBarColor(1, 1, 1, 1) ]]
     -- Mana 119,12
@@ -2129,7 +2129,7 @@ function Module.ChangeFocusFrame()
     FocusFrameManaBar:SetPoint('RIGHT', FocusFramePortrait, 'LEFT', -1 + 8 - 0.5, -18 + 1 + 0.5)
     FocusFrameManaBar:SetSize(132, 9)
     FocusFrameManaBar:GetStatusBarTexture():SetTexture(
-        'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Mana'
+        'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Mana'
     )
     FocusFrameManaBar:SetStatusBarColor(1, 1, 1, 1)
 
@@ -2217,7 +2217,7 @@ function Module.ChangeFocusFrame()
         local flash = FocusFrame:CreateTexture('DragonflightUIFocusFrameFlash')
         flash:SetDrawLayer('BACKGROUND', 2)
         flash:SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-InCombat'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-InCombat'
         )
         flash:SetPoint('CENTER', FocusFrame, 'CENTER', 20 + CorrectionX, -20 + CorrectionY)
         flash:SetSize(256, 128)
@@ -2258,7 +2258,7 @@ function Module.ChangeFocusFrame()
 
     if not frame.FocusExtra then
         local extra = FocusFrame:CreateTexture('DragonflightUIFocusFramePortraitExtra')
-        extra:SetTexture('Interface\\Addons\\cDF\\Textures\\uiunitframeboss2x')
+        extra:SetTexture('Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\uiunitframeboss2x')
         extra:SetTexCoord(0.001953125, 0.314453125, 0.322265625, 0.630859375)
         extra:SetSize(80, 79)
         extra:SetDrawLayer('ARTWORK', 3)
@@ -2311,13 +2311,13 @@ end
 function Module.ReApplyFocusFrame()
     if Module.db.profile.focus.classcolor and UnitIsPlayer('focus') then
         FocusFrameHealthBar:GetStatusBarTexture():SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Status'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Status'
         )
         local localizedClass, englishClass, classIndex = UnitClass('focus')
         FocusFrameHealthBar:SetStatusBarColor(DF:GetClassColor(englishClass, 1))
     else
         FocusFrameHealthBar:GetStatusBarTexture():SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health'
         )
         FocusFrameHealthBar:SetStatusBarColor(1, 1, 1, 1)
     end
@@ -2326,23 +2326,23 @@ function Module.ReApplyFocusFrame()
 
     if powerTypeString == 'MANA' then
         FocusFrameManaBar:GetStatusBarTexture():SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Mana'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Mana'
         )
     elseif powerTypeString == 'FOCUS' then
         FocusFrameManaBar:GetStatusBarTexture():SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Focus'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Focus'
         )
     elseif powerTypeString == 'RAGE' then
         FocusFrameManaBar:GetStatusBarTexture():SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Rage'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Rage'
         )
     elseif powerTypeString == 'ENERGY' then
         FocusFrameManaBar:GetStatusBarTexture():SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Energy'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Energy'
         )
     elseif powerTypeString == 'RUNIC_POWER' then
         FocusFrameManaBar:GetStatusBarTexture():SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-RunicPower'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-RunicPower'
         )
     end
 
@@ -2365,7 +2365,7 @@ function Module.ChangeFocusToT()
         local background = FocusFrameToTTextureFrame:CreateTexture('DragonflightUIFocusFrameToTBackground')
         background:SetDrawLayer('BACKGROUND', 1)
         background:SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-BACKGROUND'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-BACKGROUND'
         )
         background:SetPoint('LEFT', FocusFrameToTPortrait, 'CENTER', -25 + 1, -10 + 1)
         frame.FocusFrameToTBackground = background
@@ -2375,7 +2375,7 @@ function Module.ChangeFocusToT()
         local border = FocusFrameToTHealthBar:CreateTexture('DragonflightUIFocusFrameToTBorder')
         border:SetDrawLayer('ARTWORK', 2)
         border:SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-BORDER'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-BORDER'
         )
         border:SetPoint('LEFT', FocusFrameToTPortrait, 'CENTER', -25 + 1, -10 + 1)
         frame.FocusFrameToTBorder = border
@@ -2426,7 +2426,7 @@ function Module.HookFunctions()
 end
 
 function Module.ChangePetFrame()
-    local base = 'Interface\\Addons\\cDF\\Textures\\uiunitframe'
+    local base = 'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\uiunitframe'
 
     PetFrame:SetPoint('TOPLEFT', PlayerFrame, 'TOPLEFT', 100, -70)
     PetFrameTexture:SetTexture('')
@@ -2436,7 +2436,7 @@ function Module.ChangePetFrame()
         local background = PetFrame:CreateTexture('DragonflightUIPetFrameBackground')
         background:SetDrawLayer('BACKGROUND', 1)
         background:SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-BACKGROUND'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-BACKGROUND'
         )
         background:SetPoint('LEFT', PetPortrait, 'CENTER', -25 + 1, -10)
         frame.PetFrameBackground = background
@@ -2446,7 +2446,7 @@ function Module.ChangePetFrame()
         local border = PetFrameHealthBar:CreateTexture('DragonflightUIPetFrameBorder')
         border:SetDrawLayer('OVERLAY', 2)
         border:SetTexture(
-            'Interface\\Addons\\cDF\\Textures\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-BORDER'
+            'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-BORDER'
         )
         border:SetPoint('LEFT', PetPortrait, 'CENTER', -25 + 1, -10)
         frame.PetFrameBorder = border
@@ -2456,7 +2456,7 @@ function Module.ChangePetFrame()
     PetFrameHealthBar:SetPoint('LEFT', PetPortrait, 'RIGHT', 1 + 1 - 2 + 0.5, 0)
     PetFrameHealthBar:SetSize(70.5, 10)
     PetFrameHealthBar:GetStatusBarTexture():SetTexture(
-        'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Health'
+        'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Health'
     )
     PetFrameHealthBar:SetStatusBarColor(1, 1, 1, 1)
     PetFrameHealthBar.SetStatusBarColor = noop
@@ -2467,7 +2467,7 @@ function Module.ChangePetFrame()
     PetFrameManaBar:SetPoint('LEFT', PetPortrait, 'RIGHT', 1 - 2 - 1.5 + 1 - 2 + 0.5, 2 - 10 - 1)
     PetFrameManaBar:SetSize(74, 7.5)
     PetFrameManaBar:GetStatusBarTexture():SetTexture(
-        'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Mana'
+        'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Mana'
     )
     PetFrameManaBar:GetStatusBarTexture():SetVertexColor(1, 1, 1, 1)
 
@@ -2476,23 +2476,23 @@ function Module.ChangePetFrame()
 
         if powerTypeString == 'MANA' then
             PetFrameManaBar:GetStatusBarTexture():SetTexture(
-                'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Mana'
+                'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Mana'
             )
         elseif powerTypeString == 'FOCUS' then
             PetFrameManaBar:GetStatusBarTexture():SetTexture(
-                'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Focus'
+                'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Focus'
             )
         elseif powerTypeString == 'RAGE' then
             PetFrameManaBar:GetStatusBarTexture():SetTexture(
-                'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Rage'
+                'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Rage'
             )
         elseif powerTypeString == 'ENERGY' then
             PetFrameManaBar:GetStatusBarTexture():SetTexture(
-                'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Energy'
+                'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Energy'
             )
         elseif powerTypeString == 'RUNIC_POWER' then
             PetFrameManaBar:GetStatusBarTexture():SetTexture(
-                'Interface\\Addons\\cDF\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-RunicPower'
+                'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-RunicPower'
             )
         end
 
@@ -2543,7 +2543,7 @@ function Module.CreateRestFlipbook()
             local restTexture = rest:CreateTexture('DragonflightUIRestFlipbookTexture')
             restTexture:SetAllPoints()
             restTexture:SetTexture(1, 1, 1, 1)
-            restTexture:SetTexture('Interface\\Addons\\cDF\\Textures\\uiunitframerestingflipbook')
+            restTexture:SetTexture('Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\uiunitframerestingflipbook')
 
             local animationGroup = restTexture:CreateAnimationGroup()
             local animation = animationGroup:CreateAnimation('Flipbook', 'RestFlipbookAnimation')
@@ -2568,7 +2568,7 @@ function Module.CreateRestFlipbook()
             local restTexture = rest:CreateTexture('DragonflightUIRestFlipbookTexture')
             restTexture:SetAllPoints()
             restTexture:SetTexture(1, 1, 1, 1)
-            restTexture:SetTexture('Interface\\Addons\\cDF\\Textures\\uiunitframerestingflipbook')
+            restTexture:SetTexture('Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\uiunitframerestingflipbook')
             restTexture:SetTexCoord(128 / 1024, 192 / 1024, 0, 64 / 128)
 
             local animationGroup = restTexture:CreateAnimationGroup()

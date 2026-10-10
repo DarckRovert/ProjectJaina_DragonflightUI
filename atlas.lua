@@ -1,5 +1,5 @@
 local addon = select(2,...)
-addon._dir = addon._dir or [[Interface\AddOns\cDF\assets\]]
+addon._dir = [[Interface\AddOns\ProjectJaina_DragonflightUI\assets\]]
 local assets = addon._dir
 local unpack = unpack;
 local _ = nil;

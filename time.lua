@@ -1,4 +1,4 @@
-﻿local addon = select(2,...);
+local addon = select(2,...);
 local config = addon.config;
 local map = addon._map;
 local atlas = addon.SetAtlas;
