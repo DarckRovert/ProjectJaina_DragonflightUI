@@ -21,13 +21,13 @@ atlas(Minimap.BorderTop, 'ui-hud-minimap-bordertop', true)
 Minimap.BorderTop:SetAlpha(config.map.border_alpha)
 
 -- poi
-Minimap:SetStaticPOIArrowTexture(addon._dir..'poi-static')
-Minimap:SetCorpsePOIArrowTexture(addon._dir..'poi-corpse')
-Minimap:SetPOIArrowTexture(addon._dir..'poi-guard')
-Minimap:SetPlayerTexture(addon._dir..'poi-player')
+Minimap:SetStaticPOIArrowTexture(addon._dir..'poi-static.tga')
+Minimap:SetCorpsePOIArrowTexture(addon._dir..'poi-corpse.tga')
+Minimap:SetPOIArrowTexture(addon._dir..'poi-guard.tga')
+Minimap:SetPlayerTexture(addon._dir..'poi-player.tga')
 Minimap:SetPlayerTextureHeight(config.map.player_arrow_size);
 Minimap:SetPlayerTextureWidth(config.map.player_arrow_size);
-Minimap:SetBlipTexture(config.map.blip_skin and addon._dir..'objecticons' or blipDefault)
+Minimap:SetBlipTexture(config.map.blip_skin and addon._dir..'objecticons.tga' or blipDefault)
 
 -- mail
 MiniMapMailBorder:SetTexture(nil)
