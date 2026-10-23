@@ -33,14 +33,20 @@ if not _G.CollectionsMicroButton then
 	btn:RegisterForClicks('LeftButtonUp', 'RightButtonUp')
 	btn:SetScript('OnClick', function(self, mouseButton)
 		if mouseButton == 'RightButton' then
-			if SlashCmdList['WPCOMP'] then
+			if SlashCmdList['JAINA_COMP'] then
+				SlashCmdList['JAINA_COMP']('')
+			elseif SlashCmdList['WPCOMP'] then
 				SlashCmdList['WPCOMP']('')
 			elseif ToggleSpellBook then
 				ToggleSpellBook(BOOKTYPE_MOUNT or 'mount')
 			end
 		else
-			if SlashCmdList['WP_WARDROBEV2'] then
+			if SlashCmdList['JAINA_WARDROBE'] then
+				SlashCmdList['JAINA_WARDROBE']('')
+			elseif SlashCmdList['WP_WARDROBEV2'] then
 				SlashCmdList['WP_WARDROBEV2']('')
+			elseif SlashCmdList['JAINA_COMP'] then
+				SlashCmdList['JAINA_COMP']('')
 			elseif SlashCmdList['WPCOMP'] then
 				SlashCmdList['WPCOMP']('')
 			end
