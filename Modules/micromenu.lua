@@ -32,15 +32,20 @@ if not _G.CollectionsMicroButton then
 
 	btn:RegisterForClicks('LeftButtonUp', 'RightButtonUp')
 	btn:SetScript('OnClick', function(self, mouseButton)
-		if mouseButton == 'RightButton' then
+		if IsShiftKeyDown() then
+			-- Acceso directo al Centro de Control del Reino (/hub)
 			if SlashCmdList['JAINA_COMP'] then
 				SlashCmdList['JAINA_COMP']('')
 			elseif SlashCmdList['WPCOMP'] then
 				SlashCmdList['WPCOMP']('')
-			elseif ToggleSpellBook then
-				ToggleSpellBook(BOOKTYPE_MOUNT or 'mount')
+			end
+		elseif mouseButton == 'RightButton' then
+			-- Apertura nativa de la pestaña de Monturas y Compañeros en WoW 3.3.5a
+			if ToggleCharacter then
+				ToggleCharacter("PetPaperDollFrame")
 			end
 		else
+			-- Apertura del Guardarropa (Transfiguración)
 			if SlashCmdList['JAINA_WARDROBE'] then
 				SlashCmdList['JAINA_WARDROBE']('')
 			elseif SlashCmdList['WP_WARDROBEV2'] then
@@ -57,6 +62,7 @@ if not _G.CollectionsMicroButton then
 		GameTooltip:SetText('|cFFD4AF37Colecciones de Project Jaina|r', 1, 1, 1)
 		GameTooltip:AddLine('|cFFFFFFFFClic izquierdo:|r Abrir Guardarropa (Transfiguración)', 0.8, 0.8, 0.8)
 		GameTooltip:AddLine('|cFFFFFFFFClic derecho:|r Abrir Monturas y Compañeros', 0.8, 0.8, 0.8)
+		GameTooltip:AddLine('|cFFFFFFFFShift + Clic:|r Centro de Control del Reino (/hub)', 0.8, 0.8, 0.8)
 		GameTooltip:Show()
 	end)
 	btn:SetScript('OnLeave', function(self)
