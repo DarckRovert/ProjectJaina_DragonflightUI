@@ -190,8 +190,26 @@ MiniMapTrackingButton:HookScript('OnEvent', Tracking_Update)
 
 -- LFG update
 if (not IsAddOnLoaded('pretty_actionbar')) then
-	MiniMapLFGFrame.eye.texture:SetTexture(addon._dir..'uigroupfinderflipbookeye.tga')
-	MiniMapLFGFrameBorder:SetTexture(nil)
+	if MiniMapLFGFrame then
+		if not MiniMapLFGFrame.eye then
+			local eye = _G["MiniMapLFGFrameIconEye"] or MiniMapLFGFrame
+			local tex = (_G["MiniMapLFGFrameIconEye"] and _G["MiniMapLFGFrameIconEye"].texture)
+				or _G["MiniMapLFGFrameIconEyeTexture"]
+				or _G["MiniMapLFGFrameIcon"]
+			MiniMapLFGFrame.eye = eye
+			if not eye.texture and tex then
+				eye.texture = tex
+			end
+		end
+		if MiniMapLFGFrame.eye and MiniMapLFGFrame.eye.texture then
+			MiniMapLFGFrame.eye.texture:SetTexture(addon._dir..'uigroupfinderflipbookeye.tga')
+		elseif _G["MiniMapLFGFrameIcon"] then
+			_G["MiniMapLFGFrameIcon"]:SetTexture(addon._dir..'uigroupfinderflipbookeye.tga')
+		end
+		if MiniMapLFGFrameBorder then
+			MiniMapLFGFrameBorder:SetTexture(nil)
+		end
+	end
 end
 
 -- MiniMap rotate

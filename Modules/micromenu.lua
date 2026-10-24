@@ -224,44 +224,51 @@ do
 	highlight:SetAlpha(.4)
 	highlight:SetBlendMode('ADD')
 
-	arrow:SetScript('OnClick',function(self)
-		local checked = self:GetChecked();
-		if checked then
+	local collapse_state = false
+	local function SetBagsCollapsed(collapsed)
+		collapse_state = collapsed and true or false
+		if collapse_state then
 			normal:set_atlas('bag-arrow-2x')
 			pushed:set_atlas('bag-arrow-2x')
 			highlight:set_atlas('bag-arrow-2x')
 			for _,bags in pairs(bagslots) do bags:Hide(); end
+			arrow:SetChecked(true)
 		else
 			normal:set_atlas('bag-arrow-invert-2x')
 			pushed:set_atlas('bag-arrow-invert-2x')
 			highlight:set_atlas('bag-arrow-invert-2x')
 			for _,bags in pairs(bagslots) do bags:Show(); end
+			arrow:SetChecked(false)
 		end
-		collapse_state = checked
+	end
+
+	arrow:SetScript('OnClick', function(self)
+		SetBagsCollapsed(self:GetChecked())
 	end)
-	
-	addon.package:RegisterEvents(function(self, event)
-		self:UnregisterEvent(event)
-		if not collapse_state then collapse_state = {} end
-		if collapse_state == 1 then
-			for _,bags in pairs(bagslots) do bags:Hide(); end
-			normal:set_atlas('bag-arrow-2x')
-			pushed:set_atlas('bag-arrow-2x')
-			highlight:set_atlas('bag-arrow-2x')
-			arrow:SetChecked(1)
-		else
-			for _,bags in pairs(bagslots) do bags:Show(); end
-			arrow:SetChecked(nil)
-		end
-	end, 'ADDON_LOADED'
-	);
 end
 
 hooksecurefunc('MiniMapLFG_UpdateIsShown',function()
+	if not MiniMapLFGFrame then return end
 	MiniMapLFGFrame:SetClearPoint('LEFT', _G.CharacterMicroButton, -32, 2)
 	MiniMapLFGFrame:SetScale(1.6)
-	MiniMapLFGFrameBorder:SetTexture(nil)
-	MiniMapLFGFrame.eye.texture:SetTexture(addon._dir..'uigroupfinderflipbookeye.tga')
+	if MiniMapLFGFrameBorder then
+		MiniMapLFGFrameBorder:SetTexture(nil)
+	end
+	if not MiniMapLFGFrame.eye then
+		local eye = _G["MiniMapLFGFrameIconEye"] or MiniMapLFGFrame
+		local tex = (_G["MiniMapLFGFrameIconEye"] and _G["MiniMapLFGFrameIconEye"].texture)
+			or _G["MiniMapLFGFrameIconEyeTexture"]
+			or _G["MiniMapLFGFrameIcon"]
+		MiniMapLFGFrame.eye = eye
+		if not eye.texture and tex then
+			eye.texture = tex
+		end
+	end
+	if MiniMapLFGFrame.eye and MiniMapLFGFrame.eye.texture then
+		MiniMapLFGFrame.eye.texture:SetTexture(addon._dir..'uigroupfinderflipbookeye.tga')
+	elseif _G["MiniMapLFGFrameIcon"] then
+		_G["MiniMapLFGFrameIcon"]:SetTexture(addon._dir..'uigroupfinderflipbookeye.tga')
+	end
 end)
 
 MiniMapLFGFrame:SetScript('OnClick',function(self, button)
@@ -349,15 +356,14 @@ local function setupMicroButtons(xOffset)
 	menu:SetScale(config.micromenu.scale_menu)
 	menu:SetSize(10, 10)
 	menu:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMRIGHT', xOffset, config.micromenu.y_position)
+	CharacterMicroButton:SetDisabledTexture('')
+	PVPMicroButton:SetDisabledTexture('')
+
 	for _,button in pairs(MICRO_BUTTONS) do
 		local buttonName = button:GetName():gsub('MicroButton', '')
 		local name = strlower(buttonName);
 
 		button:texture_strip()
-
-		CharacterMicroButton:SetDisabledTexture'' -- doesn't exist by default
-		PVPMicroButton:SetDisabledTexture'' -- doesn't exist by default
-		PVPMicroButton:GetDisabledTexture():set_atlas('ui-hud-micromenu-pvp-disabled-2x')
 
 		button:SetParent(pUiMicroMenu)
 		-- button:SetScale(1.4)
@@ -366,11 +372,23 @@ local function setupMicroButtons(xOffset)
 		button.SetPoint = addon._noop
 		button:SetHitRectInsets(0,0,0,0)
 
-		button:GetNormalTexture():set_atlas('ui-hud-micromenu-'..name..'-up-2x')
-		button:GetPushedTexture():set_atlas('ui-hud-micromenu-'..name..'-down-2x')
-		button:GetDisabledTexture():set_atlas('ui-hud-micromenu-'..name..'-disabled-2x')
-		button:GetHighlightTexture():set_atlas('ui-hud-micromenu-'..name..'-mouseover-2x')
-		button:GetHighlightTexture():SetBlendMode('ADD')
+		local normal = button:GetNormalTexture()
+		if normal then normal:set_atlas('ui-hud-micromenu-'..name..'-up-2x') end
+
+		local pushed = button:GetPushedTexture()
+		if pushed then pushed:set_atlas('ui-hud-micromenu-'..name..'-down-2x') end
+
+		if not button:GetDisabledTexture() then
+			button:SetDisabledTexture('')
+		end
+		local disabled = button:GetDisabledTexture()
+		if disabled then disabled:set_atlas('ui-hud-micromenu-'..name..'-disabled-2x') end
+
+		local highlight = button:GetHighlightTexture()
+		if highlight then
+			highlight:set_atlas('ui-hud-micromenu-'..name..'-mouseover-2x')
+			highlight:SetBlendMode('ADD')
+		end
 
 		buttonxOffset = buttonxOffset + 15
 	end

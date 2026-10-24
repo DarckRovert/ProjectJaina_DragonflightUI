@@ -170,18 +170,23 @@ end
 
 function Module:ApplySettings()
     db = Module.db.profile
+    if not db then return end
 
-    ChatFrame1:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', db.x, db.y)
-    --ChatFrame1:SetSize(db.sizeX, db.sizeY)
-    ChatFrame1:SetSize(400, 150)
+    local x = db.x or defaults.profile.x or 42
+    local y = db.y or defaults.profile.y or 35
+    local w = db.sizeX or defaults.profile.sizeX or 460
+    local h = db.sizeY or defaults.profile.sizeY or 207
+
+    ChatFrame1:ClearAllPoints()
+    ChatFrame1:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', x, y)
+    ChatFrame1:SetSize(w, h)
+    ChatFrame1:SetUserPlaced(true)
 end
 
 local frame = CreateFrame('FRAME', 'ImprovedUIChatFrame', UIParent)
 
 function Module.ChangeSizeAndPosition()
-    ChatFrame1:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', 42, 35)
-    --ChatFrame1:SetSize(420 + 40, 200 + 7)
-    ChatFrame1:SetSize(400, 150)
+    Module:ApplySettings()
 end
 
 function frame:OnEvent(event, arg1)

@@ -91,7 +91,11 @@ local function setup_background(button, anchor, shadow)
 end
 
 local function actionbuttons_hotkey(button)
-	local hotkey = _G[button:GetName()..'HotKey'];
+	if not button then return; end
+	local name = button:GetName();
+	if not name then return; end
+	local hotkey = _G[name..'HotKey'];
+	if not hotkey then return; end
 	local text = hotkey:GetText();
 	if not text then return; end
 	if text == RANGE_INDICATOR then
@@ -113,19 +117,21 @@ local function main_buttons(button)
 	if not button or button.__styled then return; end
 
 	local name = button:GetName();
-	local normal = _G[name..'NormalTexture'] or button:GetNormalTexture();
-	local icon = _G[name..'Icon']
-	local flash = _G[name..'Flash']
-	local count = _G[name..'Count']
-	local macros = _G[name..'Name']
-	local cooldown = _G[name..'Cooldown']
-	local border = _G[name..'Border']
+	local normal = (name and _G[name..'NormalTexture']) or (button.GetNormalTexture and button:GetNormalTexture());
+	local icon = name and _G[name..'Icon']
+	local flash = name and _G[name..'Flash']
+	local count = name and _G[name..'Count']
+	local macros = name and _G[name..'Name']
+	local cooldown = name and _G[name..'Cooldown']
+	local border = name and _G[name..'Border']
 	
-	normal:ClearAllPoints()
-	normal:SetPoint('TOPRIGHT', button, 2.2, 2.3)
-	normal:SetPoint('BOTTOMLEFT', button, -2.2, -2.2)
-	normal:SetVertexColor(1, 1, 1, 1)
-	normal:SetDrawLayer('OVERLAY')
+	if normal then
+		normal:ClearAllPoints()
+		normal:SetPoint('TOPRIGHT', button, 2.2, 2.3)
+		normal:SetPoint('BOTTOMLEFT', button, -2.2, -2.2)
+		normal:SetVertexColor(1, 1, 1, 1)
+		normal:SetDrawLayer('OVERLAY')
+	end
 
 	if macros then
 		if not config.buttons.macros.show then macros:SetAlpha(0) end
@@ -159,7 +165,7 @@ local function main_buttons(button)
 	
 	if border then
 		border:set_atlas('_ui-hud-actionbar-iconborder-checked')
-		border:SetAllPoints(normal)
+		if normal then border:SetAllPoints(normal) end
 		if IsEquippedAction(button.action) then
 			border:SetAlpha(1)
 		else
@@ -168,16 +174,29 @@ local function main_buttons(button)
 	end
 	
 	-- apply textures
-	button:GetCheckedTexture():set_atlas('_ui-hud-actionbar-iconborder-checked')
-	button:GetPushedTexture():set_atlas('_ui-hud-actionbar-iconborder-pushed')
-	button:SetHighlightTexture(config.assets.highlight)
-	button:GetCheckedTexture():SetAllPoints(normal)
-	button:GetPushedTexture():SetAllPoints(normal)
-	button:GetHighlightTexture():SetAllPoints(normal)
-	button:GetCheckedTexture():SetDrawLayer('OVERLAY')
-	button:GetPushedTexture():SetDrawLayer('OVERLAY')
+	local checked = button:GetCheckedTexture()
+	if checked then
+		checked:set_atlas('_ui-hud-actionbar-iconborder-checked')
+		if normal then checked:SetAllPoints(normal) end
+		checked:SetDrawLayer('OVERLAY')
+	end
 
-	button.background = setup_background(button, normal, true)
+	local pushed = button:GetPushedTexture()
+	if pushed then
+		pushed:set_atlas('_ui-hud-actionbar-iconborder-pushed')
+		if normal then pushed:SetAllPoints(normal) end
+		pushed:SetDrawLayer('OVERLAY')
+	end
+
+	if config.assets.highlight then
+		button:SetHighlightTexture(config.assets.highlight)
+		local highlight = button:GetHighlightTexture()
+		if highlight and normal then
+			highlight:SetAllPoints(normal)
+		end
+	end
+
+	button.background = setup_background(button, normal or button, true)
 	
 	button.__styled = true
 	-- button:SetSize(37, 37)
@@ -190,23 +209,38 @@ local function additional_buttons(button)
 	if button.background then return; end
 
 	local name = button:GetName();
-	local icon = _G[name..'Icon']
-	local flash = _G[name..'Flash']
-	local normal = _G[name..'NormalTexture2'] or _G[name..'NormalTexture']
-	local cooldown = _G[name..'Cooldown']
-	local castable = _G[name..'AutoCastable']
+	local icon = name and _G[name..'Icon']
+	local flash = name and _G[name..'Flash']
+	local normal = (name and (_G[name..'NormalTexture2'] or _G[name..'NormalTexture'])) or (button.GetNormalTexture and button:GetNormalTexture())
+	local cooldown = name and _G[name..'Cooldown']
+	local castable = name and _G[name..'AutoCastable']
 
-	normal:ClearAllPoints()
-	normal:SetPoint('TOPRIGHT', button, 2.2, 2.3)
-	normal:SetPoint('BOTTOMLEFT', button, -2.2, -2.2)
+	if normal then
+		normal:ClearAllPoints()
+		normal:SetPoint('TOPRIGHT', button, 2.2, 2.3)
+		normal:SetPoint('BOTTOMLEFT', button, -2.2, -2.2)
+	end
 
-	-- apply textures
-	button:GetCheckedTexture():set_atlas('_ui-hud-actionbar-iconborder-checked')
-	button:GetPushedTexture():set_atlas('_ui-hud-actionbar-iconborder-pushed')
-	button:SetHighlightTexture(config.assets.highlight)
-	button:GetCheckedTexture():SetAllPoints(normal)
-	button:GetPushedTexture():SetAllPoints(normal)
-	button:GetHighlightTexture():SetAllPoints(normal)
+	-- apply textures defensivamente
+	local checked = button:GetCheckedTexture()
+	if checked then
+		checked:set_atlas('_ui-hud-actionbar-iconborder-checked')
+		if normal then checked:SetAllPoints(normal) end
+	end
+
+	local pushed = button:GetPushedTexture()
+	if pushed then
+		pushed:set_atlas('_ui-hud-actionbar-iconborder-pushed')
+		if normal then pushed:SetAllPoints(normal) end
+	end
+
+	if config.assets.highlight then
+		button:SetHighlightTexture(config.assets.highlight)
+		local highlight = button:GetHighlightTexture()
+		if highlight and normal then
+			highlight:SetAllPoints(normal)
+		end
+	end
 
 	if cooldown then
 		cooldown:ClearAllPoints()
@@ -235,13 +269,13 @@ local function additional_buttons(button)
 	if is_petaction(button, 'PetActionButton') then
 		hooksecurefunc(button, "SetNormalTexture", fix_texture)
 	end
-	button.background = setup_background(button, normal, false)
+	button.background = setup_background(button, normal or button, false)
 end
 
 local function actionbuttons_update(button)
 	if not button then return; end
 	local name = button:GetName();
-	if name:find('MultiCast') then return; end
+	if not name or name:find('MultiCast') then return; end
 	button:SetNormalTexture(config.assets.normal);
 end
 
@@ -292,7 +326,12 @@ end
 
 -- setup grid
 local function actionbuttons_showgrid(button)
-	_G[button:GetName()..'NormalTexture']:SetVertexColor(unpack(config.buttons.border_color))
+	if not button then return end
+	local name = button:GetName()
+	local normal = (name and _G[name..'NormalTexture']) or (button.GetNormalTexture and button:GetNormalTexture())
+	if normal and normal.SetVertexColor then
+		normal:SetVertexColor(unpack(config.buttons.border_color))
+	end
 end
 
 addon.package:RegisterEvents(function()

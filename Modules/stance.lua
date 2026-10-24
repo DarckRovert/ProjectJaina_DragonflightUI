@@ -44,6 +44,7 @@ function anchor:stancebar_update()
 	local leftbar = MultiBarBottomLeft:IsShown();
 	local rightbar = MultiBarBottomRight:IsShown();
 	if not InCombatLockdown() and not UnitAffectingCombat('player') then
+		self:ClearAllPoints();
 		if leftbar and rightbar then
 			self:SetPoint('TOPLEFT', pUiMainBar, 'TOPLEFT', offsetX, leftOffset);
 		elseif leftbar then
@@ -62,30 +63,23 @@ end,
 	'PLAYER_LOGIN','ADDON_LOADED'
 );
 
-for _,bar in pairs({MultiBarBottomLeft,MultiBarBottomRight}) do
-	if notRequired then return; end
-	if InCombatLockdown() and UnitAffectingCombat('player') then return; end
-	
-	local yOffset = select(5, anchor:GetPoint());
-	if (yOffset == nobar) then notRequired = true end
-	
-	bar:HookScript('OnShow',function()
-		if (yOffset ~= nobar) then
+for _,bar in pairs({MultiBarBottomLeft, MultiBarBottomRight}) do
+	if bar then
+		bar:HookScript('OnShow', function()
 			anchor:stancebar_update();
-		end
-	end);
-	bar:HookScript('OnHide',function()
-		if (yOffset ~= nobar) then
+		end);
+		bar:HookScript('OnHide', function()
 			anchor:stancebar_update();
-		end
-	end);
+		end);
+	end
 end;
 
 local stancebar = CreateFrame('Frame', 'pUiStanceBar', anchor, 'SecureHandlerStateTemplate')
 stancebar:SetAllPoints(anchor)
 
 local function stancebutton_update()
-	if not InCombatLockdown() then
+	if not InCombatLockdown() and _G.ShapeshiftButton1 then
+		_G.ShapeshiftButton1:ClearAllPoints()
 		_G.ShapeshiftButton1:SetPoint('BOTTOMLEFT', anchor, 'BOTTOMLEFT', 0, 0)
 	end
 end

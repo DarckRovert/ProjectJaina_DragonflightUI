@@ -641,36 +641,36 @@ function Module.MovePlayerTargetPreset(name)
     if name == 'DEFAULT' then
         local orig = defaults.profile
 
-        db.playerOverride = false
-        db.playerAnchor = orig.playerAnchor
-        db.playerAnchorParent = orig.playerAnchorParent
-        db.playerX = orig.playerX
-        db.playerY = orig.playerY
+        db.player.override = false
+        db.player.anchor = orig.player.anchor
+        db.player.anchorParent = orig.player.anchorParent
+        db.player.x = orig.player.x
+        db.player.y = orig.player.y
 
-        db.targetOverride = false
-        db.targetAnchor = orig.targetAnchor
-        db.targetAnchorParent = orig.targetAnchorParent
-        db.targetX = orig.targetX
-        db.targetY = orig.targetY
+        db.target.override = false
+        db.target.anchor = orig.target.anchor
+        db.target.anchorParent = orig.target.anchorParent
+        db.target.x = orig.target.x
+        db.target.y = orig.target.y
 
         Module.ApplySettings()
     elseif name == 'CENTER' then
         local deltaX = 50
         local deltaY = 180
 
-        db.playerOverride = true
-        db.playerAnchor = 'CENTER'
-        db.playerAnchorParent = 'CENTER'
+        db.player.override = true
+        db.player.anchor = 'CENTER'
+        db.player.anchorParent = 'CENTER'
         -- player and target frame center is not perfect/identical
-        db.playerX = -107.5 - deltaX
-        db.playerY = -deltaY
+        db.player.x = -107.5 - deltaX
+        db.player.y = -deltaY
 
-        db.targetOverride = true
-        db.targetAnchor = 'CENTER'
-        db.targetAnchorParent = 'CENTER'
+        db.target.override = true
+        db.target.anchor = 'CENTER'
+        db.target.anchorParent = 'CENTER'
         -- see above
-        db.targetX = 112 + deltaX
-        db.targetY = -deltaY
+        db.target.x = 112 + deltaX
+        db.target.y = -deltaY
 
         Module.ApplySettings()
     end
@@ -1694,8 +1694,16 @@ end
 
 function Module.MovePlayerFrame(anchor, anchorOther, dx, dy)
     PlayerFrame:ClearAllPoints()
-    --PlayerFrame:SetPoint(anchor, UIParent, anchorOther, dx, dy)
-    PlayerFrame:SetPoint("CENTER", ActionButton1, -100, 250)
+    if anchor and anchorOther and dx and dy then
+        PlayerFrame:SetPoint(anchor, UIParent, anchorOther, dx, dy)
+    else
+        local p = (Module.db and Module.db.profile and Module.db.profile.player) or localSettings.player
+        if p and p.anchor and p.anchorParent and p.x and p.y then
+            PlayerFrame:SetPoint(p.anchor, UIParent, p.anchorParent, p.x, p.y)
+        else
+            PlayerFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -19, -4)
+        end
+    end
 end
 
 function Module.ChangeTargetFrame()
@@ -1913,8 +1921,16 @@ end
 
 function Module.MoveTargetFrame(anchor, anchorOther, dx, dy)
     TargetFrame:ClearAllPoints()
-    --TargetFrame:SetPoint(anchor, UIParent, anchorOther, dx, dy)
-    TargetFrame:SetPoint("CENTER", ActionButton12, 100, 250)
+    if anchor and anchorOther and dx and dy then
+        TargetFrame:SetPoint(anchor, UIParent, anchorOther, dx, dy)
+    else
+        local t = (Module.db and Module.db.profile and Module.db.profile.target) or localSettings.target
+        if t and t.anchor and t.anchorParent and t.x and t.y then
+            TargetFrame:SetPoint(t.anchor, UIParent, t.anchorParent, t.x, t.y)
+        else
+            TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -4)
+        end
+    end
 end
 
 function Module.ChangeToT()
@@ -2064,7 +2080,7 @@ function Module.ChangeFocusFrame()
     FocusFrameBackground:Hide()
 
     if not frame.FocusFrameBackground then
-        local background = FocusFrame:CreateTexture('DragonflightUITargetFrameBackground')
+        local background = FocusFrame:CreateTexture('DragonflightUIFocusFrameBackground')
         background:SetDrawLayer('BACKGROUND', 2)
         background:SetTexture(
             'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\UI-HUD-UnitFrame-Target-PortraitOn-BACKGROUND'
@@ -2074,7 +2090,7 @@ function Module.ChangeFocusFrame()
     end
 
     if not frame.FocusFrameBorder then
-        local border = FocusFrame:CreateTexture('DragonflightUITargetFrameBorder')
+        local border = FocusFrame:CreateTexture('DragonflightUIFocusFrameBorder')
         border:SetDrawLayer('ARTWORK', 2)
         border:SetTexture('Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\UI-HUD-UnitFrame-Target-PortraitOn-BORDER')
         border:SetPoint('LEFT', FocusFrame, 'LEFT', 0, -32.5 + 10)
@@ -2305,7 +2321,16 @@ end
 
 function Module.MoveFocusFrame(anchor, anchorOther, dx, dy)
     FocusFrame:ClearAllPoints()
-    FocusFrame:SetPoint(anchor, UIParent, anchorOther, dx, dy)
+    if anchor and anchorOther and dx and dy then
+        FocusFrame:SetPoint(anchor, UIParent, anchorOther, dx, dy)
+    else
+        local f = (Module.db and Module.db.profile and Module.db.profile.focus) or localSettings.focus
+        if f and f.anchor and f.anchorParent and f.x and f.y then
+            FocusFrame:SetPoint(f.anchor, UIParent, f.anchorParent, f.x, f.y)
+        else
+            FocusFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -170)
+        end
+    end
 end
 
 function Module.ReApplyFocusFrame()

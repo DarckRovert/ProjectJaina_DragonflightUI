@@ -4,6 +4,41 @@ Todos los cambios notables de este proyecto están documentados en este archivo 
 
 ---
 
+## [1.1.0] — 2026-10-24
+### Auditoría y Estabilización L9 — Cacería Profunda de Bugs de Runtime
+- **MicroMenú y Bolsas (`micromenu.lua`):**
+  - Corregida destrucción iterativa de la textura deshabilitada de `CharacterMicroButton` que lo volvía invisible en vehículos/cinemáticas.
+  - Eliminada recreación redundante de textura de `PVPMicroButton` dentro del bucle de 11 botones.
+  - Añadidas comprobaciones defensivas de texturas deshabilitadas ausentes para prevenir fallos `attempt to index a nil value`.
+  - Saneada la lógica del botón de flecha de colapso de bolsas (`pUiArrowManager`), eliminando desregistración destructiva sobre `addon.package.events` (`ADDON_LOADED`) y fugas de variables globales.
+- **Botones de Vehículo y Taint (`vehicle.lua`):**
+  - Implementado `SecureActionButtonTemplate` nativo con `type = leavevehicle` para erradicar `ADDON_ACTION_BLOCKED` en combate.
+  - Re-emparentados botones de salida de vehículo al holder principal (`pUiStanceHolder or pUiMainBar`), resolviendo invisibilidad permanente en Cazadores, Magos y Chamanes.
+  - Corregido fallo de inicialización por variable global nula `VehicleMenuBarPitchSliderOverlayThing`.
+- **Marcos de Unidad (`Unitframe.lua`, `Core.lua`):**
+  - Polyfill para API ausente de retail `GetClassColor(class)` en WotLK 3.3.5a evitando crashes en barras de vida.
+  - Corregida colisión de identificadores globales en `ChangeFocusFrame` que secuestraba texturas de `TargetFrame`.
+  - Corrección de fallos en presets `DEFAULT` y `CENTER` adaptándolos al esquema anidado de `db.profile`.
+  - Preservación estricta de coordenadas configuradas por usuario en `/df` frente a resets automáticos en `ZONE_CHANGED`.
+- **Barras de Acción, Cooldowns y Macros (`mainbars.lua`, `stance.lua`, `cooldowns.lua`, `buttons.lua`):**
+  - Erradicada fuga de variable global `_G.notRequired` que deshabilitaba posicionamiento en barras de facultades y mascotas.
+  - Resuelto apilamiento acumulativo de anclas (ClearAllPoints) en reubicación de barras y en `ShapeshiftButton1`.
+  - Eliminada fuga de CPU por `OnUpdate` perpetuo en `cooldowns.lua` y corregida omisión de barras de pet/stance.
+  - Blindaje defensivo en `buttons.lua` ante botones de barra especiales sin frame `HotKey` o texturas pushed/checked.
+- **Auras y Buffs (`auras.lua`):**
+  - Enganchado `BuffFrame:HookScript('OnShow')` para garantizar colapso persistente cuando Blizzard refresca auras vía `UNIT_AURA`.
+  - Corregida firma de llamada en `UpdateDeBuffsAnchor` previniendo concatenación de cadenas nula con sintaxis de método.
+  - Corregido espaciado y cálculo de filas en debuffs cuando los buffs están colapsados.
+- **Minimapa y Buscador de Mazmorras (`map.lua`):**
+  - Polyfill defensivo para `MiniMapLFGFrame.eye.texture` ausente en el FrameXML 3.3.5a, previniendo aborto del script del minimapa.
+- **Rastreo de Calidad de Objetos y Personaje (`itemrarity.lua`, `characterrarity.lua`):**
+  - Corregida indexación del 12º retorno de `GetItemInfo` para evitar `bad argument #1 to 'SetVertexColor'`.
+  - Eliminados marcos fantasma en casillas vacías de equipamiento y forzado refresco inicial en `CharacterFrame.OnShow`.
+- **Clasificador de Bolsas (`SushiSort.lua`):**
+  - Corregido fallo fatal en `SOCD_OptionsPanel_OnOk` por indexación nula en bucles de configuración.
+
+---
+
 ## [1.0.1] — 2026-10-10
 ### Estabilización de Ecosistema y Gobernanza Oficial (Project Jaina)
 - **Normalización de UI y Gráficos:** Purga de carpetas clonadas y enlaces simbólicos residuales, normalización de capas de textura ARTWORK y calibración de estabilidad bajo Direct3D 9 a 60 FPS.

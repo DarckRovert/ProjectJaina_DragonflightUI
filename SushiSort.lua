@@ -527,41 +527,61 @@ function SOCD_MainFrame_OnEvent(self, event, ...)
 end
 
 function SOCD_OptionsPanel_OnOk(self)
-    Log("SOCD_OptionsPanel_OnOk(self)");
-    SOCD.IsEnabled = (SOCD_OptionsPanel_OCDEnabled:GetChecked() ~= nil);
-    if (SOCD.IsEnabled == true) then
-        Log("(SOCD.IsEnabled == true)");
-    	for i=1, NUM_CONTAINER_FRAMES, 1 do
-            Log("i="..i);
-    	    _G["ContainerFrame"..i].sortButton:Show();
+    Log("SOCD_OptionsPanel_OnOk(self)")
+    local isChecked = SOCD_OptionsPanel_OCDEnabled:GetChecked()
+    SOCD.IsEnabled = (isChecked == 1 or isChecked == true)
+
+    -- 1. Actualización segura de contenedores de mochila
+    for i = 1, NUM_CONTAINER_FRAMES do
+        local cf = _G["ContainerFrame" .. i]
+        if cf and cf.sortButton then
+            if SOCD.IsEnabled then
+                cf.sortButton:Show()
+            else
+                cf.sortButton:Hide()
+            end
         end
-	    _G["BankFrame"].sortButton:Show();
-	    _G["GuildBankFrame"].sortButton:Show();
-    else
-        Log("else");
-    	for i=1, NUM_CONTAINER_FRAMES, 1 do
-            Log("i="..i);
-    	    _G["ContainerFrame"..i].sortButton:Hide();
-        end
-	    _G["BankFrame"].sortButton:Hide();
-	    _G["GuildBankFrame"].sortButton:Hide();
     end
- end
+
+    -- 2. Actualización segura de banco personal (si ha sido instanciado)
+    local bankFrame = _G["BankFrame"]
+    if bankFrame and bankFrame.sortButton then
+        if SOCD.IsEnabled then
+            bankFrame.sortButton:Show()
+        else
+            bankFrame.sortButton:Hide()
+        end
+    end
+
+    -- 3. Actualización segura de banco de hermandad (LOD resiliente)
+    local guildBankFrame = _G["GuildBankFrame"]
+    if guildBankFrame and guildBankFrame.sortButton then
+        if SOCD.IsEnabled then
+            guildBankFrame.sortButton:Show()
+        else
+            guildBankFrame.sortButton:Hide()
+        end
+    end
+end
 
 function SOCD_OptionsPanel_OnCancel(self)
-    Log("SOCD_OptionsPanel_OnCancel(self)");
-    SOCD_OptionsPanel_OCDEnabled:SetChecked(SOCD.IsEnabled);
- end
+    Log("SOCD_OptionsPanel_OnCancel(self)")
+    if SOCD and SOCD.IsEnabled ~= nil then
+        SOCD_OptionsPanel_OCDEnabled:SetChecked(SOCD.IsEnabled)
+    else
+        SOCD_OptionsPanel_OCDEnabled:SetChecked(true)
+    end
+end
 
 function SOCD_OptionsPanel_OnDefault(self)
-    Log("SOCD_OptionsPanel_OnDefault(self)");
-    SOCD.IsEnabled = false;
-    SOCD_OptionsPanel_OnCancel()
- end
+    Log("SOCD_OptionsPanel_OnDefault(self)")
+    SOCD.IsEnabled = true
+    SOCD_OptionsPanel_OCDEnabled:SetChecked(SOCD.IsEnabled)
+end
 
 function SOCD_OptionsPanel_OnRefresh(self)
-    Log("SOCD_OptionsPanel_OnRefresh(self)");
-    SOCD_OptionsPanel_OnCancel()
+    Log("SOCD_OptionsPanel_OnRefresh(self)")
+    SOCD_OptionsPanel_OnCancel(self)
 end
 
 function SOCD_OptionsPanel_OnLoad(panel)

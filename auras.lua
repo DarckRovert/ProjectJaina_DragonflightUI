@@ -44,9 +44,14 @@ function AuraFrameMixin:UpdateFirstButton(button)
 end
 
 function AuraFrameMixin:UpdateBuffsAnchor()
+	if self.arrow and self.arrow.collapse then
+		BuffFrame:Hide()
+		return
+	end
+
 	local previousBuff, aboveBuff
 	local numBuffs = 0
-	local numTotal = BuffFrame.numEnchants
+	local numTotal = BuffFrame.numEnchants or 0
 	
 	for index=1, BUFF_ACTUAL_DISPLAY do
 		local buff = _G['BuffButton'..index]
@@ -72,16 +77,23 @@ function AuraFrameMixin:UpdateBuffsAnchor()
 	end
 end
 
-function AuraFrameMixin:UpdateDeBuffsAnchor(index)
-	local numBuffs = BUFF_ACTUAL_DISPLAY + BuffFrame.numEnchants
-	local numRows = ceil(numBuffs/BUFFS_PER_ROW)
-	local buffHeight = TempEnchant1:GetHeight();
+function AuraFrameMixin.UpdateDeBuffsAnchor(buttonName, index)
+	if type(buttonName) == "table" then
+		buttonName = "DebuffButton"
+	end
+	buttonName = buttonName or "DebuffButton"
+	index = index or 1
 
-	local buff = _G[self..index]
+	local isCollapsed = AuraFrameMixin.arrow and AuraFrameMixin.arrow.collapse
+	local numBuffs = isCollapsed and (BuffFrame.numEnchants or 0) or (BUFF_ACTUAL_DISPLAY + (BuffFrame.numEnchants or 0))
+	local numRows = ceil(numBuffs/BUFFS_PER_ROW)
+	local buffHeight = TempEnchant1 and TempEnchant1:GetHeight() or 30
+
+	local buff = _G[buttonName..index]
 	if not buff then return end
 	buff:ClearAllPoints()
 	if index > 1 and mod(index, BUFFS_PER_ROW) == 1 then
-		buff:SetPoint('TOP', _G[self..(index-BUFFS_PER_ROW)], 'BOTTOM', 0, -BUFF_ROW_SPACING);
+		buff:SetPoint('TOP', _G[buttonName..(index-BUFFS_PER_ROW)], 'BOTTOM', 0, -BUFF_ROW_SPACING);
 	elseif index == 1 then
 		if numRows < 2 then
 			buff:SetPoint('TOPRIGHT', ConsolidatedBuffs, 'BOTTOMRIGHT', -80, -1*((2*BUFF_ROW_SPACING)+buffHeight));
@@ -89,7 +101,7 @@ function AuraFrameMixin:UpdateDeBuffsAnchor(index)
 			buff:SetPoint('TOPRIGHT', ConsolidatedBuffs, 'BOTTOMRIGHT', -80, -numRows*(BUFF_ROW_SPACING+buffHeight));
 		end
 	else
-		buff:SetPoint('RIGHT', _G[self..(index-1)], 'LEFT', -5, 0);
+		buff:SetPoint('RIGHT', _G[buttonName..(index-1)], 'LEFT', -5, 0);
 	end
 end
 
@@ -121,25 +133,43 @@ function AuraFrameMixin:UpdateCollapseAndExpandButtonAnchor()
 			atlas(pushed, 'ui-hud-aura-arrow')
 			atlas(highlight, 'ui-hud-aura-arrow')
 			BuffFrame:Hide()
-			-- shown(ConsolidatedBuffs, GetCVar("consolidateBuffs"))
-			-- ConsolidatedBuffs:Hide()
 		else
 			atlas(normal, 'ui-hud-aura-arrow-invert')
 			atlas(pushed, 'ui-hud-aura-arrow-invert')
 			atlas(highlight, 'ui-hud-aura-arrow-invert')
 			BuffFrame:Show()
-			-- shown(ConsolidatedBuffs, GetCVar("consolidateBuffs"))
+		end
+		if AuraFrameMixin.UpdateDeBuffsAnchor then
+			local debuffCount = DEBUFF_ACTUAL_DISPLAY or 16
+			for i = 1, debuffCount do
+				AuraFrameMixin.UpdateDeBuffsAnchor('DebuffButton', i)
+			end
 		end
 	end)
+
+	BuffFrame:HookScript('OnShow', function(self)
+		if arrow and arrow.collapse then
+			self:Hide()
+		end
+	end)
+
 	self.arrow = arrow
 end
 AuraFrameMixin:UpdateCollapseAndExpandButtonAnchor();
 
 function AuraFrameMixin:RefreshCollapseExpandButtonState(numBuffs)
 	shown(self.arrow, numBuffs > 0);
+	if self.arrow and self.arrow.collapse then
+		BuffFrame:Hide()
+	end
 end
 
-hooksecurefunc('BuffFrame_UpdateAllBuffAnchors', AuraFrameMixin.UpdateBuffsAnchor)
+hooksecurefunc('BuffFrame_UpdateAllBuffAnchors', function()
+	AuraFrameMixin:UpdateBuffsAnchor()
+	if AuraFrameMixin.arrow and AuraFrameMixin.arrow.collapse then
+		BuffFrame:Hide()
+	end
+end)
 hooksecurefunc('DebuffButton_UpdateAnchors', AuraFrameMixin.UpdateDeBuffsAnchor)
 
 mixin(addon._map, AuraFrameMixin);

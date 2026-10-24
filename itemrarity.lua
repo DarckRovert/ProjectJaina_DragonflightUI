@@ -1,109 +1,91 @@
--- Create a function to get the item's rarity color
-    local function GetRarityColor(rarity)
-        --if rarity == 0 then -- Poor (gray)
-            --return 0.2, 0.2, 0.2, 1 -- Very subtle gray
-        --elseif rarity == 1 then -- Common (white)
-            --return 0.6, 0.6, 0.6, 1 -- Very subtle white
-        if rarity == 2 then -- Uncommon (green)
-            return 0, 0.5, 0, 1 -- Very subtle green
-        elseif rarity == 3 then -- Rare (blue)
-            return 0, 0.25, 0.5, 1 -- Very subtle blue
-        elseif rarity == 4 then -- Epic (purple)
-            return 0.4, 0.13, 0.58, 1 -- Very subtle purple
-        elseif rarity == 5 then -- Legendary (orange)
-            return 0.8, 0.35, 0, 1 -- Very subtle orange
-        --elseif rarity == 6 then -- Artifact (heirloom yellow)
-            --return 0.7, 0.6, 0.3, 1 -- Very subtle yellow
-        else -- Default to very subtle white if rarity not found
-            --return 0.6, 0.6, 0.6, 1
-        end
+-- Project Jaina - DragonflightUI: Item Rarity Border Engine (3.3.5a WotLK)
+local function GetRarityColor(rarity)
+    if not rarity then return nil end
+    if rarity == 2 then     -- Uncommon (Verde)
+        return 0.12, 0.75, 0.12, 1.0
+    elseif rarity == 3 then -- Rare (Azul)
+        return 0.0, 0.44, 0.87, 1.0
+    elseif rarity == 4 then -- Epic (Púrpura)
+        return 0.64, 0.21, 0.93, 1.0
+    elseif rarity == 5 then -- Legendary (Naranja)
+        return 1.0, 0.50, 0.0, 1.0
+    elseif rarity == 6 then -- Artifact / Heirloom (Dorado)
+        return 0.90, 0.80, 0.50, 1.0
     end
-    
-    -- Function to ensure the frame has a border texture and set its color
-    local function EnsureBorderTexture(frame, r, g, b, a)
-        if not frame.borderTexture then
-            --print("Creating border texture for frame")
-            frame.borderTexture = frame:CreateTexture(nil, "OVERLAY")
-            frame.borderTexture:SetTexture("Interface\\Buttons\\UI-ActionButton-Border")
-            frame.borderTexture:SetBlendMode("ADD")
-            frame.borderTexture:SetSize(68, 68)
-            frame.borderTexture:SetPoint("CENTER", frame, "CENTER", 0, 0)
-        end
-        --print("Setting border color for frame")
-        frame.borderTexture:SetVertexColor(r, g, b, a)
+    -- Rarezas 0 (Pobre) y 1 (Común) no llevan borde resaltado
+    return nil
+end
+
+local function EnsureBorderTexture(frame, r, g, b, a)
+    if not frame then return end
+    if not frame.borderTexture then
+        frame.borderTexture = frame:CreateTexture(nil, "OVERLAY")
+        frame.borderTexture:SetTexture("Interface\\Buttons\\UI-ActionButton-Border")
+        frame.borderTexture:SetBlendMode("ADD")
+        frame.borderTexture:SetSize(68, 68)
+        frame.borderTexture:SetPoint("CENTER", frame, "CENTER", 0, 0)
     end
-    
-    -- Create a function to reset the border color of empty bag slots
-    local function ResetSlotBorderColor(frame)
-        if frame and frame.borderTexture then
-            --print("Resetting border color for frame")
-            frame.borderTexture:SetVertexColor(1, 1, 1, 0) -- Set to transparent
-        end
+    frame.borderTexture:SetVertexColor(r, g, b, a or 1.0)
+    frame.borderTexture:Show()
+end
+
+local function ResetSlotBorderColor(frame)
+    if frame and frame.borderTexture then
+        frame.borderTexture:Hide()
+        frame.borderTexture:SetVertexColor(1, 1, 1, 0)
     end
-    
-    -- Function to check if the item is a Hearthstone or quest item
-    local function IsExcludedItem(itemLink)
-        -- Check for Hearthstone
-        local itemName = GetItemInfo(itemLink)
-        if itemName == "Hearthstone" or itemName == "Skinning Knife" or itemName == "Mining Pick" or itemName == "Symbol of Kings" then
-            return true
-        end
-    
-        -- Check if item is a quest item
-        local itemType = select(12, GetItemInfo(itemLink))
-        if itemType == "Quest" then
-            return true
-        end
-    
-        return false
+end
+
+local function IsExcludedItem(itemLink)
+    if not itemLink then return false end
+    local itemId = tonumber(itemLink:match("item:(%d+)"))
+    if itemId == 6948 or itemId == 7005 or itemId == 2901 or itemId == 21177 then
+        return true -- Hearthstone (es/en), Skinning Knife, Mining Pick, Symbol of Kings
     end
-    
-    -- Create a function to set the border color of bag items based on rarity
-    local function SetItemBorderColor()
-        --print("SetItemBorderColor called")
-        for bag = 0, NUM_BAG_SLOTS do
-            local numSlots = GetContainerNumSlots(bag)
-            --print("Bag", bag, "has", numSlots, "slots")
+
+    -- En 3.3.5a WotLK, itemType es el índice 6 de GetItemInfo
+    local itemType = select(6, GetItemInfo(itemLink))
+    if itemType == "Quest" or itemType == "Misión" then
+        return true
+    end
+
+    return false
+end
+
+local function SetItemBorderColor()
+    for i = 1, NUM_CONTAINER_FRAMES do
+        local container = _G["ContainerFrame"..i]
+        if container and container:IsShown() then
+            local bagID = container:GetID()
+            local numSlots = GetContainerNumSlots(bagID)
+            local frameName = container:GetName()
             for slot = 1, numSlots do
-                local itemLink = GetContainerItemLink(bag, slot)
+                local itemLink = GetContainerItemLink(bagID, slot)
                 local invertedSlot = numSlots - slot + 1
-                local frame = _G["ContainerFrame"..(bag + 1).."Item"..invertedSlot]
-                if itemLink then
-                    -- Skip Hearthstone and quest items
-                    if IsExcludedItem(itemLink) then
-                        if frame then
-                            ResetSlotBorderColor(frame)
-                            --print("Excluding item:", itemLink, "in bag", bag, "slot", slot)
+                local itemBtn = _G[frameName.."Item"..invertedSlot]
+
+                if itemBtn then
+                    if itemLink and not IsExcludedItem(itemLink) then
+                        local _, _, rarity = GetItemInfo(itemLink)
+                        local r, g, b, a = GetRarityColor(rarity)
+                        if r then
+                            EnsureBorderTexture(itemBtn, r, g, b, a)
+                        else
+                            ResetSlotBorderColor(itemBtn)
                         end
                     else
-                        local _, _, rarity = GetItemInfo(itemLink)
-                        --print("Item Link: ", itemLink, " Item Rarity: ", rarity)
-                        local r, g, b, a = GetRarityColor(rarity)
-                        --print("Rarity Color: R=", r, " G=", g, " B=", b, " A=", a)
-                        if frame then
-                            --print("Frame found for bag", bag, "slot", slot, "inverted to slot", invertedSlot)
-                            EnsureBorderTexture(frame, r, g, b, a)
-                        else
-                            --print("Frame not found for bag", bag, "slot", slot, "inverted to slot", invertedSlot)
-                        end
-                    end
-                else
-                    if frame then
-                        ResetSlotBorderColor(frame)
-                        --print("No itemLink found for bag", bag, "slot", slot, " - resetting color")
+                        ResetSlotBorderColor(itemBtn)
                     end
                 end
             end
         end
     end
-    
-    -- Create the frame and hook the functions to the events
-    local f = CreateFrame("Frame")
-    f:RegisterEvent("BAG_UPDATE")
-    f:RegisterEvent("PLAYER_LOGIN")
-    f:SetScript("OnEvent", function(self, event)
-        --print("Event triggered:", event)
-        if event == "BAG_UPDATE" or event == "PLAYER_LOGIN" then
-            SetItemBorderColor()
-        end
-    end)
+end
+
+local f = CreateFrame("Frame", "ProjectJaina_ItemRarity_Watcher")
+f:RegisterEvent("BAG_UPDATE")
+f:RegisterEvent("BAG_UPDATE_COOLDOWN")
+f:RegisterEvent("PLAYER_LOGIN")
+f:SetScript("OnEvent", function(self, event)
+    SetItemBorderColor()
+end)

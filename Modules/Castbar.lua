@@ -243,7 +243,8 @@ local function utf8reverse(s)
         c = strbyte(s, pos)
         while c >= 128 and c <= 191 do
             pos = pos - 1
-            c = strbyte(pos)
+            if pos <= 0 then break end
+            c = strbyte(s, pos)
         end
 
         charbytes = utf8charbytes(s, pos)
@@ -262,6 +263,7 @@ if not string.utf8reverse then
 end
 
 local function subWithDots(str, maxLen)
+    if not str or str == "" then return "" end
     if utf8len(str) <= maxLen then
         return str
     end
@@ -415,7 +417,10 @@ end
 
 function Module:ApplySettings()
     db = Module.db.profile
-    Module.frame.Castbar:SetPoint('CENTER', UIParent, 'BOTTOM', db.x, db.y)
+    if Module.frame and Module.frame.Castbar then
+        Module.frame.Castbar:ClearAllPoints()
+        Module.frame.Castbar:SetPoint('CENTER', UIParent, 'BOTTOM', (db and db.x) or 0, (db and db.y) or 245)
+    end
 end
 
 local frame = CreateFrame('FRAME', 'ImprovedUICastbarFrame', UIParent)
@@ -524,20 +529,19 @@ function Module.CreateNewCastbar()
     f.Background = bg
 
     local text = bg:CreateFontString('ImprovedUICastbarText', 'OVERLAY', 'GameFontHighlight')
-    text:SetText('12')
     text:SetPoint('TOP', f, 'BOTTOM', 0, -1)
-    text:SetText('SHADOW BOLT DEBUG')
+    text:SetText('')
     f.Text = text
 
-    local textValueMax = bg:CreateFontString('ImprovedUICastbarText', 'OVERLAY', 'GameFontHighlight')
+    local textValueMax = bg:CreateFontString('ImprovedUICastbarTextValueMax', 'OVERLAY', 'GameFontHighlight')
     textValueMax:SetPoint('TOP', f, 'BOTTOM', 0, -1)
     textValueMax:SetPoint('RIGHT', f.Background, 'RIGHT', -10, 0)
-    textValueMax:SetText('/ 4.2')
+    textValueMax:SetText('')
     f.TextValueMax = textValueMax
 
-    local textValue = bg:CreateFontString('ImprovedUICastbarText', 'OVERLAY', 'GameFontHighlight')
+    local textValue = bg:CreateFontString('ImprovedUICastbarTextValue', 'OVERLAY', 'GameFontHighlight')
     textValue:SetPoint('RIGHT', f.TextValueMax, 'LEFT', 0, 0)
-    textValue:SetText('0.69')
+    textValue:SetText('')
     f.TextValue = textValue
 
     local UpdateExtratext = function(other)

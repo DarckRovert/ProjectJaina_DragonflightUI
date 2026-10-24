@@ -37,7 +37,7 @@ local vehicleExit = CreateFrame(
 	'CheckButton',
 	'vehicleExit',
 	pUiMainBar,
-	'SecureHandlerClickTemplate,SecureHandlerStateTemplate'
+	'SecureActionButtonTemplate,SecureHandlerClickTemplate,SecureHandlerStateTemplate'
 );
 vehicleBarBackground:SetScale(config.mainbars.scale_vehicle)
 vehiclebar:ClearAllPoints();
@@ -50,7 +50,8 @@ local function vehiclebar_power_setup()
 	VehicleMenuBarLeaveButton:SetHighlightTexture('Interface\\Vehicles\\UI-Vehicles-Button-Highlight')
 	VehicleMenuBarLeaveButton:GetHighlightTexture():SetTexCoord(0.130625, 0.879375, 0.130625, 0.879375)
 	VehicleMenuBarLeaveButton:GetHighlightTexture():SetBlendMode('ADD')
-	VehicleMenuBarLeaveButton:SetScript('OnClick', VehicleExit)
+	VehicleMenuBarLeaveButton:SetAttribute('type', 'leavevehicle')
+	VehicleMenuBarLeaveButton:RegisterForClicks('AnyUp')
 
 	VehicleMenuBarHealthBar:SetParent(vehiclebar)
 	-- VehicleMenuBarHealthBar:SetClearPoint('BOTTOMLEFT', 119, 3)
@@ -85,10 +86,16 @@ local function vehiclebar_mechanical_setup()
 	if mixin2template.OrganicUi then mixin2template.OrganicUi:Hide() end
 	if mixin2template.MechanicUi then mixin2template.MechanicUi:Show() end
 	
-	VehicleMenuBarLeaveButton:SetNormalTexture(addon._dir..'mechanical2')
-	VehicleMenuBarLeaveButton:GetNormalTexture():SetTexCoord(45/512, 84/512, 185/512, 224/512)
-	VehicleMenuBarLeaveButton:SetPushedTexture(addon._dir..'mechanical2')
-	VehicleMenuBarLeaveButton:GetPushedTexture():SetTexCoord(2/512, 40/512, 185/512, 223/512)
+	if VehicleMenuBarLeaveButton then
+		VehicleMenuBarLeaveButton:SetNormalTexture(addon._dir..'mechanical2')
+		if VehicleMenuBarLeaveButton:GetNormalTexture() then
+			VehicleMenuBarLeaveButton:GetNormalTexture():SetTexCoord(45/512, 84/512, 185/512, 224/512)
+		end
+		VehicleMenuBarLeaveButton:SetPushedTexture(addon._dir..'mechanical2')
+		if VehicleMenuBarLeaveButton:GetPushedTexture() then
+			VehicleMenuBarLeaveButton:GetPushedTexture():SetTexCoord(2/512, 40/512, 185/512, 223/512)
+		end
+	end
 	
 	VehicleMenuBarHealthBar:SetSize(38, 84)
 	VehicleMenuBarPowerBar:SetSize(38, 84)
@@ -104,43 +111,65 @@ local function vehiclebar_mechanical_setup()
 	VehicleMenuBarPowerBarOverlay:SetTexCoord(4/512, 44/512, 263/512, 354/512)
 	
 	if mixin2template.MechanicUi then
-		VehicleMenuBarPitchUpButton:SetParent(mixin2template.MechanicUi)
-		VehicleMenuBarPitchDownButton:SetParent(mixin2template.MechanicUi)
-		VehicleMenuBarPitchSlider:SetParent(mixin2template.MechanicUi)
+		if VehicleMenuBarPitchUpButton then VehicleMenuBarPitchUpButton:SetParent(mixin2template.MechanicUi) end
+		if VehicleMenuBarPitchDownButton then VehicleMenuBarPitchDownButton:SetParent(mixin2template.MechanicUi) end
+		if VehicleMenuBarPitchSlider then VehicleMenuBarPitchSlider:SetParent(mixin2template.MechanicUi) end
 	end
-	VehicleMenuBarPitchUpButton:SetSize(32, 31)
-	VehicleMenuBarPitchUpButton:SetClearPoint('BOTTOMLEFT', 156, 46)
-	VehicleMenuBarPitchUpButton:SetNormalTexture(addon._dir..'mechanical2')
-	VehicleMenuBarPitchUpButton:SetPushedTexture(addon._dir..'mechanical2')
-	VehicleMenuBarPitchUpButton:GetNormalTexture():SetTexCoord(1/512, 34/512, 227/512, 259/512)
-	VehicleMenuBarPitchUpButton:GetPushedTexture():SetTexCoord(36/512, 69/512, 227/512, 259/512)
 
-	VehicleMenuBarPitchDownButton:SetSize(32, 31)
-	VehicleMenuBarPitchDownButton:SetClearPoint('BOTTOMLEFT', 156, 8)
-	VehicleMenuBarPitchDownButton:SetNormalTexture(addon._dir..'mechanical2')
-	VehicleMenuBarPitchDownButton:SetPushedTexture(addon._dir..'mechanical2')
-	VehicleMenuBarPitchDownButton:GetNormalTexture():SetTexCoord(148/512, 180/512, 289/512, 320/512)
-	VehicleMenuBarPitchDownButton:GetPushedTexture():SetTexCoord(148/512, 180/512, 323/512, 354/512)
+	if VehicleMenuBarPitchUpButton then
+		VehicleMenuBarPitchUpButton:SetSize(32, 31)
+		VehicleMenuBarPitchUpButton:SetClearPoint('BOTTOMLEFT', 156, 46)
+		VehicleMenuBarPitchUpButton:SetNormalTexture(addon._dir..'mechanical2')
+		VehicleMenuBarPitchUpButton:SetPushedTexture(addon._dir..'mechanical2')
+		if VehicleMenuBarPitchUpButton:GetNormalTexture() then
+			VehicleMenuBarPitchUpButton:GetNormalTexture():SetTexCoord(1/512, 34/512, 227/512, 259/512)
+		end
+		if VehicleMenuBarPitchUpButton:GetPushedTexture() then
+			VehicleMenuBarPitchUpButton:GetPushedTexture():SetTexCoord(36/512, 69/512, 227/512, 259/512)
+		end
+	end
 
-	VehicleMenuBarPitchSlider:SetSize(20, 82)
-	VehicleMenuBarPitchSlider:SetClearPoint('BOTTOMLEFT', 124, 2)
+	if VehicleMenuBarPitchDownButton then
+		VehicleMenuBarPitchDownButton:SetSize(32, 31)
+		VehicleMenuBarPitchDownButton:SetClearPoint('BOTTOMLEFT', 156, 8)
+		VehicleMenuBarPitchDownButton:SetNormalTexture(addon._dir..'mechanical2')
+		VehicleMenuBarPitchDownButton:SetPushedTexture(addon._dir..'mechanical2')
+		if VehicleMenuBarPitchDownButton:GetNormalTexture() then
+			VehicleMenuBarPitchDownButton:GetNormalTexture():SetTexCoord(148/512, 180/512, 289/512, 320/512)
+		end
+		if VehicleMenuBarPitchDownButton:GetPushedTexture() then
+			VehicleMenuBarPitchDownButton:GetPushedTexture():SetTexCoord(148/512, 180/512, 323/512, 354/512)
+		end
+	end
+
+	if VehicleMenuBarPitchSlider then
+		VehicleMenuBarPitchSlider:SetSize(20, 82)
+		VehicleMenuBarPitchSlider:SetClearPoint('BOTTOMLEFT', 124, 2)
+	end
 	
 	local bgTex = _G['mixin2templateBACKGROUND1']
 	if bgTex and bgTex.SetDrawLayer then
 		bgTex:SetDrawLayer('BACKGROUND', -1)
 	end
 	
-	VehicleMenuBarPitchSliderBG:SetTexture([[Interface\Vehicles\UI-Vehicles-Endcap]]);
-	VehicleMenuBarPitchSliderBG:SetTexCoord(0.46875, 0.50390625, 0.31640625, 0.62109375)
-	VehicleMenuBarPitchSliderBG:SetVertexColor(0, 0.85, 0.99)
+	if VehicleMenuBarPitchSliderBG then
+		VehicleMenuBarPitchSliderBG:SetTexture([[Interface\Vehicles\UI-Vehicles-Endcap]])
+		VehicleMenuBarPitchSliderBG:SetTexCoord(0.46875, 0.50390625, 0.31640625, 0.62109375)
+		VehicleMenuBarPitchSliderBG:SetVertexColor(0, 0.85, 0.99)
+	end
 
-	VehicleMenuBarPitchSliderMarker:SetWidth(20)
-	VehicleMenuBarPitchSliderMarker:SetTexture([[Interface\Vehicles\UI-Vehicles-Endcap]]);
-	VehicleMenuBarPitchSliderMarker:SetTexCoord(0.46875, 0.50390625, 0.45, 0.55)
-	VehicleMenuBarPitchSliderMarker:SetVertexColor(1, 0, 0)
+	if VehicleMenuBarPitchSliderMarker then
+		VehicleMenuBarPitchSliderMarker:SetWidth(20)
+		VehicleMenuBarPitchSliderMarker:SetTexture([[Interface\Vehicles\UI-Vehicles-Endcap]])
+		VehicleMenuBarPitchSliderMarker:SetTexCoord(0.46875, 0.50390625, 0.45, 0.55)
+		VehicleMenuBarPitchSliderMarker:SetVertexColor(1, 0, 0)
+	end
 	
-	VehicleMenuBarPitchSliderOverlayThing:SetPoint('TOPLEFT', -5, 2)
-	VehicleMenuBarPitchSliderOverlayThing:SetPoint('BOTTOMRIGHT', 3, -4)
+	local pitchOverlay = VehicleMenuBarPitchSliderOverlay or VehicleMenuBarPitchSliderOverlayThing
+	if pitchOverlay then
+		pitchOverlay:SetPoint('TOPLEFT', -5, 2)
+		pitchOverlay:SetPoint('BOTTOMRIGHT', 3, -4)
+	end
 end
 
 local function vehiclebar_organic_setup()
@@ -207,9 +236,11 @@ local function vehiclebutton_state(self)
 	RegisterStateDriver(self, 'vehicleupdate', '[vehicleui] s1; s2');
 end
 
-local vehicleLeave = CreateFrame('CheckButton','pUiVehicleLeaveButton',pUiMainBar,'SecureHandlerClickTemplate');
-vehicleLeave:SetParent(pUiStanceBar)
+local vehicleLeave = CreateFrame('CheckButton','pUiVehicleLeaveButton',pUiMainBar,'SecureActionButtonTemplate,SecureHandlerClickTemplate');
+local stanceParent = _G.pUiStanceHolder or pUiMainBar
+vehicleLeave:SetParent(stanceParent)
 vehicleLeave:SetSize(btnsize, btnsize)
+vehicleLeave:ClearAllPoints()
 vehicleLeave:SetPoint(unpack(vehicle_pos))
 vehicleLeave:SetNormalTexture('Interface\\Vehicles\\UI-Vehicles-Button-Exit-Up')
 vehicleLeave:GetNormalTexture():SetTexCoord(0.140625, 0.859375, 0.140625, 0.859375)
@@ -218,15 +249,12 @@ vehicleLeave:GetPushedTexture():SetTexCoord(0.140625, 0.859375, 0.140625, 0.8593
 vehicleLeave:SetHighlightTexture('Interface\\Vehicles\\UI-Vehicles-Button-Highlight')
 vehicleLeave:GetHighlightTexture():SetTexCoord(0.130625, 0.879375, 0.130625, 0.879375)
 vehicleLeave:GetHighlightTexture():SetBlendMode('ADD')
+vehicleLeave:SetAttribute('type', 'leavevehicle')
 vehicleLeave:RegisterForClicks('AnyUp')
 vehicleLeave:SetScript('OnEnter', function(self)
 	GameTooltip_AddNewbieTip(self, LEAVE_VEHICLE, 1.0, 1.0, 1.0, nil);
 end)
 vehicleLeave:SetScript('OnLeave', GameTooltip_Hide)
-vehicleLeave:SetScript('OnClick', function(self)
-	VehicleExit();
-	self:SetChecked(true);
-end)
 vehicleLeave:SetScript('OnShow', function(self)
 	self:SetChecked(false)
 end)
@@ -234,8 +262,10 @@ RegisterStateDriver(vehicleLeave, 'visibility', '[vehicleui][target=vehicle,noex
 
 -- vehicle exit for bonusbar page
 local function vehiclebutton_leave()
-	vehicleExit:SetParent(pUiStanceBar)
+	local stanceParent = _G.pUiStanceHolder or pUiMainBar
+	vehicleExit:SetParent(stanceParent)
 	vehicleExit:SetSize(btnsize, btnsize)
+	vehicleExit:ClearAllPoints()
 	vehicleExit:SetPoint(unpack(vehicle_pos))
 	vehicleExit:SetNormalTexture('Interface\\Vehicles\\UI-Vehicles-Button-Exit-Up')
 	vehicleExit:GetNormalTexture():SetTexCoord(0.140625, 0.859375, 0.140625, 0.859375)
@@ -244,15 +274,12 @@ local function vehiclebutton_leave()
 	vehicleExit:SetHighlightTexture('Interface\\Vehicles\\UI-Vehicles-Button-Highlight')
 	vehicleExit:GetHighlightTexture():SetTexCoord(0.130625, 0.879375, 0.130625, 0.879375)
 	vehicleExit:GetHighlightTexture():SetBlendMode('ADD')
+	vehicleExit:SetAttribute('type', 'leavevehicle')
 	vehicleExit:RegisterForClicks('AnyUp')
 	vehicleExit:SetScript('OnEnter', function(self)
 		GameTooltip_AddNewbieTip(self, LEAVE_VEHICLE, 1.0, 1.0, 1.0, nil);
 	end)
 	vehicleExit:SetScript('OnLeave', GameTooltip_Hide)
-	vehicleExit:SetScript('OnClick', function(self)
-		VehicleExit();
-		self:SetChecked(true);
-	end)
 	vehicleExit:SetScript('OnShow', function(self)
 		self:SetChecked(false)
 	end)

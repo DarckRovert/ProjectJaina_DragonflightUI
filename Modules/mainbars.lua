@@ -254,11 +254,10 @@ function pUiMainBar:actionbar_update()
 	local xpbar = MainMenuExpBar:IsShown();
 	local repbar = ReputationWatchBar:IsShown();
 	if not InCombatLockdown() and not UnitAffectingCombat('player') then
+		self:ClearAllPoints();
 		if xpbar and repbar then
 			self:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, both);
-		elseif xpbar then
-			self:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, single);
-		elseif repbar then
+		elseif xpbar or repbar then
 			self:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, single);
 		else
 			self:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, nobar);
@@ -272,23 +271,15 @@ end,
 	'PLAYER_LOGIN','ADDON_LOADED'
 );
 
-for _,bar in pairs({MainMenuExpBar,ReputationWatchBar}) do
-	if notRequired then return; end
-	if InCombatLockdown() and UnitAffectingCombat('player') then return; end
-	
-	local yOffset = select(5, pUiMainBar:GetPoint());
-	if (yOffset == nobar) then notRequired = true; end
-	
-	bar:HookScript('OnShow',function()
-		if (yOffset ~= nobar) then
+for _,bar in pairs({MainMenuExpBar, ReputationWatchBar}) do
+	if bar then
+		bar:HookScript('OnShow', function()
 			pUiMainBar:actionbar_update();
-		end
-	end);
-	bar:HookScript('OnHide',function()
-		if (yOffset ~= nobar) then
+		end);
+		bar:HookScript('OnHide', function()
 			pUiMainBar:actionbar_update();
-		end
-	end);
+		end);
+	end
 end;
 
 function MainMenuBarMixin:initialize()

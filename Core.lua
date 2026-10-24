@@ -70,11 +70,22 @@ function DF:ShowStartMessage()
     print("|cffffd700Chromie |cff1974d2Dragonflight |cffffffffloaded. Welcome " .. UnitName("player") .. "!")
 end
 
-function DF:GetClassColor(class, alpha)
-    local r, g, b, hex = GetClassColor(class)
-    if alpha then
-        return r, g, b, alpha
-    else
-        return r, g, b, 1
+-- Polyfill canónico 3.3.5a para GetClassColor
+if not GetClassColor then
+    GetClassColor = function(class)
+        local color = class and RAID_CLASS_COLORS and RAID_CLASS_COLORS[class]
+        if color then
+            local hex = string.format("ff%02x%02x%02x", color.r * 255, color.g * 255, color.b * 255)
+            return color.r, color.g, color.b, hex
+        end
+        return 1, 1, 1, "ffffffff"
     end
+end
+
+function DF:GetClassColor(class, alpha)
+    local color = class and RAID_CLASS_COLORS and RAID_CLASS_COLORS[class]
+    if color then
+        return color.r, color.g, color.b, alpha or 1
+    end
+    return 1, 1, 1, alpha or 1
 end
