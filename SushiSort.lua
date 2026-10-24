@@ -42,7 +42,7 @@ local function DoMoves()
                 local type, id = GetCursorInfo();
                 Log("type = "..tostring(type)..", id = "..tostring(id));
                 if (current ~= nil and current.id == id) then
-                    if (current.sourcebag ~= nill) then
+                    if (current.sourcebag ~= nil) then
                         Log("PickupContainerItem("..current.targetbag..", "..current.targetslot..")");
 
                         PickupContainerItem(current.targetbag, current.targetslot);
@@ -70,7 +70,7 @@ local function DoMoves()
                     return;
                 end
             else
-                if (current.sourcebag ~= nill) then
+                if (current.sourcebag ~= nil) then
         	        local link = select(7, GetContainerItemInfo(current.targetbag, current.targetslot));
                     if (current.id ~= GetIDFromLink(link)) then
                         return;
@@ -90,7 +90,7 @@ local function DoMoves()
         
                 current = table.remove(moves, 1);
 
-                if (current.sourcebag ~= nill) then
+                if (current.sourcebag ~= nil) then
                     Log("PickupContainerItem("..current.sourcebag..", "..current.sourceslot..")");
                     PickupContainerItem(current.sourcebag, current.sourceslot);
                     if CursorHasItem() == false then
@@ -378,40 +378,70 @@ local function SOCD_GuildSortButton(self)
 end
 
 local function CreateSortCheck(name, parent, x, y)
-    Log("CreateSortButton("..name..", parent, "..x..", "..y..", handler)");
+    Log("CreateSortCheck("..name..", parent, "..x..", "..y..")");
 
-    parent.sortButton = CreateFrame("CheckButton", name, parent, "SOCDCheckTemplate");
-    parent.sortButton.parentFrame = parent;
-    parent.sortButton:SetChecked(true);
-	parent.sortButton.tooltipText = "Include this bag when sorting?";
-    parent.sortButton:ClearAllPoints();
-    parent.sortButton:SetPoint("TOPLEFT", parent, "TOPLEFT", x, y);
-
-    if SOCD.IsEnabled then
-        parent.sortButton:Show();
-    else
-        parent.sortButton:Hide();
-    end
+    parent.sortCheck = CreateFrame("CheckButton", name, parent, "SOCDCheckTemplate");
+    parent.sortCheck.parentFrame = parent;
+    parent.sortCheck:SetChecked(true);
+    parent.sortCheck.tooltipText = "Incluir esta bolsa al organizar?";
+    parent.sortCheck:ClearAllPoints();
+    parent.sortCheck:SetPoint("TOPLEFT", parent, "TOPLEFT", x, y);
+    -- Mantener oculto por defecto para una UI limpia y profesional
+    parent.sortCheck:Hide();
 end
 
-local function CreateSortButton(name, parent, x, y, handler)
+local function CreateSortButton(name, parent, x, y, handler, tooltipTitle, tooltipDesc)
     Log("CreateSortButton("..name..", parent, "..x..", "..y..", handler)");
 
-    parent.sortButton = CreateFrame("Button", name, parent, "UIPanelButtonTemplate");
-    parent.sortButton.parentFrame = parent;
-    parent.sortButton:SetWidth(45);
-    parent.sortButton:SetHeight(18);
-    parent.sortButton:SetText("Sort");
-    parent.sortButton:ClearAllPoints();
-    parent.sortButton:SetPoint("TOPLEFT", parent, "TOPLEFT", x, y);
+    local btn = CreateFrame("Button", name, parent)
+    parent.sortButton = btn
+    btn.parentFrame = parent
+    btn:SetWidth(20)
+    btn:SetHeight(20)
 
-    if SOCD.IsEnabled then
-        parent.sortButton:Show();
+    -- Icono limpio de escoba organizadora (estilo Dragonflight / Clean Bags)
+    local icon = btn:CreateTexture(nil, "ARTWORK")
+    icon:SetAllPoints(btn)
+    icon:SetTexture("Interface\\Icons\\INV_Pet_Broom")
+    icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+    btn.icon = icon
+
+    -- Borde sutil
+    local border = btn:CreateTexture(nil, "OVERLAY")
+    border:SetPoint("TOPLEFT", btn, "TOPLEFT", -2, 2)
+    border:SetPoint("BOTTOMRIGHT", btn, "BOTTOMRIGHT", 2, -2)
+    border:SetTexture("Interface\\Buttons\\UI-ActionButton-Border")
+    border:SetBlendMode("ADD")
+    border:SetVertexColor(0.83, 0.69, 0.22, 0.8) -- Oro Dalaran
+    btn.border = border
+
+    -- Highlight interactivo
+    local hl = btn:CreateTexture(nil, "HIGHLIGHT")
+    hl:SetAllPoints(btn)
+    hl:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+    hl:SetBlendMode("ADD")
+    btn:SetHighlightTexture(hl)
+
+    btn:ClearAllPoints()
+    btn:SetPoint("TOPRIGHT", parent, "TOPRIGHT", x, y)
+
+    btn:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:AddLine(tooltipTitle or "|cFFD4AF37Organizar Inventario|r")
+        GameTooltip:AddLine(tooltipDesc or "Haz clic para ordenar y consolidar los objetos automáticamente.", 1, 1, 1, true)
+        GameTooltip:Show()
+    end)
+    btn:SetScript("OnLeave", function(self)
+        GameTooltip:Hide()
+    end)
+
+    if SOCD and SOCD.IsEnabled then
+        btn:Show()
     else
-        parent.sortButton:Hide();
+        btn:Hide()
     end
 
-    parent.sortButton:SetScript("OnClick", handler);
+    btn:SetScript("OnClick", handler)
 end
 
 function SOCD_MainFrame_OnLoad(self)
@@ -419,22 +449,19 @@ function SOCD_MainFrame_OnLoad(self)
 
     local fEnable = true;
     if (SOCD ~= nil and SOCD.IsEnabled ~= nil) then
-        Log("(SOCD ~= nil and SOCD.IsEnabled ~= nil)");
         fEnable = SOCD.IsEnabled;
     end
 
     SOCD = {};
-    Log("SOCD = {};");
     SOCD.IsEnabled = fEnable;
-    Log("SOCD.IsEnabled = "..tostring(SOCD.IsEnabled));
 
     L = 
     {
-	    SOCD_OPTIONSPANEL_CREDITS1 = "Sushi Sort was designed and built by the guildies of <Sushi Regular> on US-Draka.",
-    	SOCD_OPTIONSPANEL_CREDITS2 = "Check out our website at http://www.sushi-regular.com",
-    	SOCD_OPTIONSPANEL_ENABLE = "Enable Sort",
-    	SOCD_OPTIONSPANEL_ENABLE_TIP = "Enable or disable this addon without uninstalling it.",
-    	SOCD_OPTIONSPANEL_TITLE = "Sushi Sort Settings",
+	    SOCD_OPTIONSPANEL_CREDITS1 = "Integrado en Project Jaina Dragonflight UI.",
+    	SOCD_OPTIONSPANEL_CREDITS2 = "Soporte oficial de economía e inventario.",
+    	SOCD_OPTIONSPANEL_ENABLE = "Activar Ordenador Automático",
+    	SOCD_OPTIONSPANEL_ENABLE_TIP = "Permite ordenar mochilas y banco con 1 clic.",
+    	SOCD_OPTIONSPANEL_TITLE = "Organizador de Bolsas (Project Jaina)",
     }
 
     SOCD_OPTIONSPANEL_TITLE = L["SOCD_OPTIONSPANEL_TITLE"];
@@ -447,22 +474,17 @@ function SOCD_MainFrame_OnLoad(self)
         CreateSortCheck("ContainerFrame"..i.."SortCheck", _G["ContainerFrame"..i], 42, -25)
     end
 
-    CreateSortButton("ContainerFrame1SortButton", _G["ContainerFrame1"], 138, -28, SOCD_BagSortButton);
+    CreateSortButton("ContainerFrame1SortButton", _G["ContainerFrame1"], -32, -28, SOCD_BagSortButton, "|cFFD4AF37Organizar Mochila|r", "Haz clic para ordenar y consolidar los objetos de tu inventario.");
 
-    frame:SetScript("OnUpdate", function()
-        Log("OnUpdate("..arg1..")");
-    	t = t + arg1;
-        Log("t = "..t);
+    frame:SetScript("OnUpdate", function(self, elapsed)
+    	t = t + (elapsed or 0.05);
     	if t > 0.05 then
-            Log("t > 0.05");
-    		t = 0
+    		t = 0;
             DoMoves();
     	end
     end)
     frame:Hide();
 
-    --DEFAULT_CHAT_FRAME:AddMessage("Sushi Sort 3.3.5 Loaded");
-    --DEFAULT_CHAT_FRAME:AddMessage("To access settings use \"/ss\"");
 	self:RegisterEvent("BANKFRAME_OPENED");
 	self:RegisterEvent("GUILDBANKFRAME_OPENED");
     self:RegisterEvent("VARIABLES_LOADED");
@@ -473,30 +495,28 @@ local function hook_GuildBankTab_OnClick(...)
     
     local tab = GetCurrentGuildBankTab();
     if (tab > GetNumGuildBankTabs()) then
-        Log("(tab > GetNumGuildBankTabs())");
-        _G["GuildBankFrame"].sortButton:Disable();
+        if _G["GuildBankFrame"] and _G["GuildBankFrame"].sortButton then
+            _G["GuildBankFrame"].sortButton:Disable();
+        end
     else
-        Log("else");
-        _G["GuildBankFrame"].sortButton:Enable();
+        if _G["GuildBankFrame"] and _G["GuildBankFrame"].sortButton then
+            _G["GuildBankFrame"].sortButton:Enable();
+        end
     end
 end
 
 function SOCD_MainFrame_OnEvent(self, event, ...)
     Log("SOCD_MainFrame_OnEvent(self, "..event..", ...)");
 	if (event == "BANKFRAME_OPENED") then 
-        Log("(event == BANKFRAME_OPENED)");
 	    if (bankSort == false) then
-            Log("(bankSort == false)");
 	        bankSort = true;
             CreateSortCheck("BankFrameSortCheck", _G["BankFrame"], 68, -32)
-    	    CreateSortButton("BankFrameSortButton", _G["BankFrame"], 330, -45, SOCD_BankSortButton);
+    	    CreateSortButton("BankFrameSortButton", _G["BankFrame"], -42, -34, SOCD_BankSortButton, "|cFFD4AF37Organizar Banco|r", "Haz clic para ordenar y agrupar los objetos de tu banco personal.");
 	    end
 	elseif (event == "GUILDBANKFRAME_OPENED") then 
-        Log("(event == GUILDBANKFRAME_OPENED)");
 	    if (guildSort == false) then
-            Log("(guildSort == false)");
 	        guildSort = true;
-    	    CreateSortButton("GBankFrameSortButton", _G["GuildBankFrame"], 700, -42, SOCD_GuildSortButton);
+    	    CreateSortButton("GBankFrameSortButton", _G["GuildBankFrame"], -40, -34, SOCD_GuildSortButton, "|cFFD4AF37Organizar Pestaña de Hermandad|r", "Haz clic para ordenar los objetos de la pestaña activa del banco de hermandad.");
 
             hooksecurefunc("GuildBankTab_OnClick", hook_GuildBankTab_OnClick)
         end
