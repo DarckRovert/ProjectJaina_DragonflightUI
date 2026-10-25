@@ -4,6 +4,31 @@ Todos los cambios notables de este proyecto están documentados en este archivo 
 
 ---
 
+## [1.2.0] — 2026-10-25
+### Auditoría y Estabilización L9 — Sesión de Depuración Profunda y Certificación
+- **Bordes de Calidad de Equipo (`characterrarity.lua`):**
+  - Calibración matemática precisa a `46x46` px en botones de equipamiento de `37x37` px, erradicando 25 px de solapamiento entre ranuras adyacentes de la hoja de personaje.
+  - Añadido soporte nativo para objetos de calidad Reliquia / Heirloom (Calidad 7 WotLK `1.0, 0.82, 0.0`).
+  - Registro del evento `GET_ITEM_INFO_RECEIVED` para evitar pérdida permanente de bordes ante consultas asíncronas de caché en login.
+  - Enganchado hook a `PaperDollItemSlotButton_Update` y `PaperDollFrame:OnShow` para garantizar refresco instantáneo al conmutar pestañas.
+  - Soporte integrado para casillas de equipamiento en la ventana de inspección (`InspectFrame`).
+- **Bordes de Calidad en Contenedores y Banco (`itemrarity.lua`):**
+  - Hook integral al ciclo nativo de apertura de bolsas (`ContainerFrame_Update`).
+  - Cobertura completa para las 28 casillas del banco principal (`BankFrameItem1` a `BankFrameItem28`).
+  - Añadido soporte de Calidad 7 (Reliquia / Heirloom) y calibración a `46x46` px con blend mode `ADD`.
+- **Minimapa y Facción (`map.lua`):**
+  - Resuelto crash fatal `attempt to call global 'strlower' (a nil value)` mediante envoltura `pcall` y refresco reactivo en `PLAYER_ENTERING_WORLD`.
+- **Barra de Casteo (`Castbar.lua`):**
+  - Resuelto crash por `GetSpellInfo` nil en tabla de ticks con inicialización diferida en `InitChannelTicks`.
+  - Normalización de parámetros de `UnitCastingInfo` / `UnitChannelInfo` de 9 a 8 según la API nativa de WotLK 3.3.5a.
+- **Barra de Acción Principal (`Modules/mainbars.lua`):**
+  - Corrección de facción en dracoalcones ornamentales; la Alianza ahora renderiza gárgolas/leones y la Horda dracoalcones con fallback dinámico por raza.
+- **Auras y Tiempo (`auras.lua`, `time.lua`):**
+  - Sanitización de `BUFF_ACTUAL_DISPLAY or 0` acotado a 40 auras y anclaje seguro de `TempEnchant3`.
+  - Safe getter para `CalendarGetDate()` protegiendo de argumentos nil en `string.format`.
+
+---
+
 ## [1.1.0] — 2026-10-24
 ### Auditoría y Estabilización L9 — Cacería Profunda de Bugs de Runtime
 - **MicroMenú y Bolsas (`micromenu.lua`):**

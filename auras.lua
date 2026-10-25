@@ -22,6 +22,11 @@ TempEnchant1:SetPoint('TOPRIGHT', Minimap, 'TOPLEFT', -80, 24)
 TempEnchant2:ClearAllPoints()
 TempEnchant2:SetPoint('TOPRIGHT', TempEnchant1, 'TOPLEFT', -5, 0)
 
+if TempEnchant3 then
+	TempEnchant3:ClearAllPoints()
+	TempEnchant3:SetPoint('TOPRIGHT', TempEnchant2, 'TOPLEFT', -5, 0)
+end
+
 ConsolidatedBuffs:ClearAllPoints()
 ConsolidatedBuffs:SetPoint('TOPRIGHT', TempEnchant1)
 
@@ -32,8 +37,9 @@ function AuraFrameMixin:UpdateFirstButton(button)
 			button:SetPoint('TOPRIGHT', TempEnchant1)
 			return
 		else
-			if BuffFrame.numEnchants > 0 then
-				button:SetPoint('TOPRIGHT', _G['TempEnchant'..BuffFrame.numEnchants], 'TOPLEFT', -5, 0)
+			local numEnchants = BuffFrame.numEnchants or 0
+			if numEnchants > 0 and _G['TempEnchant'..numEnchants] then
+				button:SetPoint('TOPRIGHT', _G['TempEnchant'..numEnchants], 'TOPLEFT', -5, 0)
 				return
 			else
 				button:SetPoint('TOPRIGHT', TempEnchant1)
@@ -52,8 +58,9 @@ function AuraFrameMixin:UpdateBuffsAnchor()
 	local previousBuff, aboveBuff
 	local numBuffs = 0
 	local numTotal = BuffFrame.numEnchants or 0
+	local actualDisplay = BUFF_ACTUAL_DISPLAY or 0
 	
-	for index=1, BUFF_ACTUAL_DISPLAY do
+	for index=1, actualDisplay do
 		local buff = _G['BuffButton'..index]
 		if not buff then return end
 		
@@ -85,7 +92,9 @@ function AuraFrameMixin.UpdateDeBuffsAnchor(buttonName, index)
 	index = index or 1
 
 	local isCollapsed = AuraFrameMixin.arrow and AuraFrameMixin.arrow.collapse
-	local numBuffs = isCollapsed and (BuffFrame.numEnchants or 0) or (BUFF_ACTUAL_DISPLAY + (BuffFrame.numEnchants or 0))
+	local actualBuffs = BUFF_ACTUAL_DISPLAY or 0
+	local numEnchants = BuffFrame.numEnchants or 0
+	local numBuffs = isCollapsed and numEnchants or (actualBuffs + numEnchants)
 	local numRows = ceil(numBuffs/BUFFS_PER_ROW)
 	local buffHeight = TempEnchant1 and TempEnchant1:GetHeight() or 30
 
@@ -158,7 +167,7 @@ end
 AuraFrameMixin:UpdateCollapseAndExpandButtonAnchor();
 
 function AuraFrameMixin:RefreshCollapseExpandButtonState(numBuffs)
-	shown(self.arrow, numBuffs > 0);
+	shown(self.arrow, (numBuffs or 0) > 0);
 	if self.arrow and self.arrow.collapse then
 		BuffFrame:Hide()
 	end

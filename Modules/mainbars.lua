@@ -12,10 +12,19 @@ local UnitFactionGroup = UnitFactionGroup;
 local _G = getfenv(0);
 
 -- const
-local faction = UnitFactionGroup('player');
 local old = (config.style.xpbar == 'old');
 local new = (config.style.xpbar == 'new');
 local MainMenuBarMixin = {};
+
+function MainMenuBarMixin:get_faction()
+	local f = UnitFactionGroup('player')
+	if f and f ~= "" then return f end
+	local _, race = UnitRace('player')
+	if race == 'Orc' or race == 'Scourge' or race == 'Tauren' or race == 'Troll' or race == 'BloodElf' then
+		return 'Horde'
+	end
+	return 'Alliance'
+end
 local pUiMainBar = CreateFrame(
 	'Frame',
 	'pUiMainBar',
@@ -103,7 +112,8 @@ function MainMenuBarMixin:actionbar_art_setup()
 	elseif config.style.gryphons == 'new' then
 		MainMenuBarLeftEndCap:SetClearPoint('BOTTOMLEFT', -95, -23)
 		MainMenuBarRightEndCap:SetClearPoint('BOTTOMRIGHT', 95, -23)
-		if faction == 'Alliance' then
+		local currentFaction = self:get_faction()
+		if currentFaction == 'Alliance' then
 			MainMenuBarLeftEndCap:set_atlas('ui-hud-actionbar-gryphon-thick-left', true)
 			MainMenuBarRightEndCap:set_atlas('ui-hud-actionbar-gryphon-thick-right', true)
 		else
@@ -267,8 +277,9 @@ end
 
 event:RegisterEvents(function()
 	pUiMainBar:actionbar_update();
+	MainMenuBarMixin:actionbar_art_setup();
 end,
-	'PLAYER_LOGIN','ADDON_LOADED'
+	'PLAYER_LOGIN','PLAYER_ENTERING_WORLD','ADDON_LOADED'
 );
 
 for _,bar in pairs({MainMenuExpBar, ReputationWatchBar}) do

@@ -44,9 +44,29 @@ MiniMapBattlefieldFrame:SetPoint('BOTTOMLEFT', Minimap, 0, 18)
 MiniMapBattlefieldFrame:SetNormalTexture''
 MiniMapBattlefieldFrame:SetPushedTexture''
 
-local faction = strlower(UnitFactionGroup('player'))
-atlas(MiniMapBattlefieldFrame:GetNormalTexture(), 'ui-hud-minimap-pvp-'..faction..'-up', true);
-atlas(MiniMapBattlefieldFrame:GetPushedTexture(), 'ui-hud-minimap-pvp-'..faction..'-down', true);
+local function UpdateBattlefieldFaction()
+	local rawFaction = UnitFactionGroup('player')
+	local faction = rawFaction and strlower(rawFaction) or 'alliance'
+	local normTex = MiniMapBattlefieldFrame:GetNormalTexture()
+	if normTex then
+		atlas(normTex, 'ui-hud-minimap-pvp-'..faction..'-up', true)
+	end
+	local pushTex = MiniMapBattlefieldFrame:GetPushedTexture()
+	if pushTex then
+		atlas(pushTex, 'ui-hud-minimap-pvp-'..faction..'-down', true)
+	end
+end
+
+-- Intento seguro inicial (sin romper si el jugador aún no ha cargado)
+pcall(UpdateBattlefieldFaction)
+
+-- Listener autoritativo al materializarse el jugador en el mundo
+local factionWatcher = CreateFrame("Frame")
+factionWatcher:RegisterEvent("PLAYER_ENTERING_WORLD")
+factionWatcher:SetScript("OnEvent", function(self)
+	UpdateBattlefieldFaction()
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+end)
 
 MiniMapBattlefieldFrame:SetScript('OnClick', function(self, button)
 	GameTooltip:Hide();

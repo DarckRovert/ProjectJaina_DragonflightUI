@@ -264,10 +264,26 @@ end
 
 local function subWithDots(str, maxLen)
     if not str or str == "" then return "" end
-    if utf8len(str) <= maxLen then
+    maxLen = maxLen or 22
+
+    -- 1. Intento primario seguro con decodificador UTF-8
+    local okLen, len = pcall(utf8len, str)
+    if okLen and type(len) == "number" then
+        if len <= maxLen then
+            return str
+        end
+        local okSub, sub = pcall(utf8sub, str, 1, maxLen)
+        if okSub and type(sub) == "string" then
+            return sub .. "..."
+        end
+    end
+
+    -- 2. Fallback defensivo a nivel de bytes (protege contra cadenas ANSI/CP1252 en clientes esES/esMX)
+    local byteLen = strlen(str)
+    if byteLen <= maxLen then
         return str
     end
-    return utf8sub(str, 1, maxLen) .. "..."
+    return strsub(str, 1, maxLen) .. "..."
 end
 
 local DF = LibStub('AceAddon-3.0'):GetAddon('cDF')
@@ -599,35 +615,46 @@ function Module.SetBarNormal()
     frame.Castbar.Text:SetPoint('LEFT', frame.Castbar.Background, 'LEFT', 10, 0)
 end
 
-Module.ChannelTicks = {
-    --wl
-    [GetSpellInfo(5740)] = 4, -- rain of fire
-    [GetSpellInfo(5138)] = 5, -- drain mana
-    [GetSpellInfo(689)] = 5, -- drain life
-    [GetSpellInfo(1120)] = 5, -- drain soul
-    [GetSpellInfo(755)] = 10, -- health funnel
-    [GetSpellInfo(1949)] = 15, -- hellfire
-    --priest
-    [GetSpellInfo(47540)] = 2, -- penance
-    [GetSpellInfo(15407)] = 3, -- mind flay
-    [GetSpellInfo(64843)] = 4, -- divine hymn
-    [GetSpellInfo(64901)] = 4, -- hymn of hope
-    [GetSpellInfo(48045)] = 5, -- mind sear
-    --hunter
-    [GetSpellInfo(1510)] = 6, -- volley
-    -- druid
-    [GetSpellInfo(740)] = 4, -- tranquility
-    [GetSpellInfo(16914)] = 10, -- hurricane
-    -- mage
-    [GetSpellInfo(5145)] = 5, -- arcane missiles
-    [GetSpellInfo(10)] = 8 -- blizzard
+Module.ChannelTicks = {}
+
+local channelSpells = {
+    [5740]  = 4,  -- Rain of Fire (Warlock)
+    [5138]  = 5,  -- Drain Mana (Warlock)
+    [689]   = 5,  -- Drain Life (Warlock)
+    [1120]  = 5,  -- Drain Soul (Warlock)
+    [755]   = 10, -- Health Funnel (Warlock)
+    [1949]  = 15, -- Hellfire (Warlock)
+    [47540] = 2,  -- Penance (Priest)
+    [15407] = 3,  -- Mind Flay (Priest)
+    [64843] = 4,  -- Divine Hymn (Priest)
+    [64901] = 4,  -- Hymn of Hope (Priest)
+    [48045] = 5,  -- Mind Sear (Priest)
+    [1510]  = 6,  -- Volley (Hunter)
+    [740]   = 4,  -- Tranquility (Druid)
+    [16914] = 10, -- Hurricane (Druid)
+    [5145]  = 5,  -- Arcane Missiles (Mage)
+    [10]    = 8   -- Blizzard (Mage)
 }
 
+local function InitChannelTicks()
+    for spellId, ticks in pairs(channelSpells) do
+        local ok, spellName = pcall(GetSpellInfo, spellId)
+        if ok and spellName then
+            Module.ChannelTicks[spellName] = ticks
+        end
+        Module.ChannelTicks[spellId] = ticks
+    end
+end
+
+-- Poblado seguro inicial (sin riesgo si el cliente aún no tiene caché)
+pcall(InitChannelTicks)
 
 function Module.HideAllTicks()
-    if frame.Castbar.Ticks then
+    if frame.Castbar and frame.Castbar.Ticks then
         for i = 1, 15 do
-            frame.Castbar.Ticks[i]:Hide()
+            if frame.Castbar.Ticks[i] then
+                frame.Castbar.Ticks[i]:Hide()
+            end
         end
     end
 end
@@ -637,23 +664,34 @@ function Module.SetBarChannel()
     frame.Castbar.Bar:SetStatusBarTexture(channelRef)
 
     frame.Castbar.bChanneling = true
-    local name, _, _, texture, startTimeMS, endTimeMS, isTradeSkill, notInterruptible, spellId =
+    -- En WoW 3.3.5a UnitChannelInfo retorna 8 valores canónicos
+    local name, _, _, texture, startTimeMS, endTimeMS, isTradeSkill, notInterruptible =
         UnitChannelInfo('player')
+        
     frame.Castbar.Text:SetText(subWithDots(name, 22))
     frame.Castbar.Text:ClearAllPoints()
     frame.Castbar.Text:SetPoint('TOP', frame.Castbar, 'BOTTOM', 0, -1)
     frame.Castbar.Text:SetPoint('LEFT', frame.Castbar.Background, 'LEFT', 10, 0)
 
-    local tickCount = Module.ChannelTicks[name]
-    if tickCount then
+    -- Si la tabla aún no resolvió el nombre por carga diferida, reintentar poblar
+    if name and not Module.ChannelTicks[name] then
+        InitChannelTicks()
+    end
+
+    local tickCount = name and Module.ChannelTicks[name]
+    if tickCount and tickCount > 0 and frame.Castbar.Ticks then
         local tickDelta = frame.Castbar:GetWidth() / tickCount
         for i = 1, tickCount - 1 do
-            frame.Castbar.Ticks[i]:Show()
-            frame.Castbar.Ticks[i]:SetPoint('CENTER', frame.Castbar, 'LEFT', i * tickDelta, 0)
+            if frame.Castbar.Ticks[i] then
+                frame.Castbar.Ticks[i]:Show()
+                frame.Castbar.Ticks[i]:SetPoint('CENTER', frame.Castbar, 'LEFT', i * tickDelta, 0)
+            end
         end
 
         for i = tickCount, 15 do
-            frame.Castbar.Ticks[i]:Hide()
+            if frame.Castbar.Ticks[i] then
+                frame.Castbar.Ticks[i]:Hide()
+            end
         end
     else
         Module.HideAllTicks()

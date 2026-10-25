@@ -19,8 +19,8 @@ function map:SetCalendarDate()
 	end
 	
 	local _, _, day = CalendarGetDate();
-  	-- Ensure day is at least 1 and not 0
-	day = max(1, day)
+  	-- Ensure day is at least 1 and not 0, tolerating nil during early loading
+	day = (day and max(1, day)) or 1
   	local atlasFormat = "ui-hud-calendar-%d-%s"
 	
 	GameTimeFrame:ClearAllPoints()
