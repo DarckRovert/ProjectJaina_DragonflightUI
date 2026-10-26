@@ -129,29 +129,49 @@ local function DoMoves()
 end
 
 local function CompareItems(lItem, rItem)
-    Log("CompareItems("..lItem.name..", "..rItem.name..")");
+    Log("CompareItems("..tostring(lItem and lItem.name)..", "..tostring(rItem and rItem.name)..")");
 
-    if (rItem.id == nil) then
+    if (rItem == nil or rItem.id == nil) then
         Log("(rItem.id == nil)");
         return true;
-    elseif (lItem.id == nil) then
+    elseif (lItem == nil or lItem.id == nil) then
         Log("(lItem.id == nil)");
         return false;
-    elseif (lItem.quality ~= rItem.quality) then
+    end
+
+    local lQ = lItem.quality or -1
+    local rQ = rItem.quality or -1
+    if (lQ ~= rQ) then
         Log("(lItem.quality ~= rItem.quality)");
-        return (lItem.quality > rItem.quality);
-    elseif (lItem.class ~= rItem.class) then
+        return (lQ > rQ);
+    end
+
+    local lC = lItem.class or 99
+    local rC = rItem.class or 99
+    if (lC ~= rC) then
         Log("(lItem.class ~= rItem.class)");
-        return (lItem.class < rItem.class);
-    elseif (lItem.subclass ~= rItem.subclass) then
+        return (lC < rC);
+    end
+
+    local lS = lItem.subclass or 99
+    local rS = rItem.subclass or 99
+    if (lS ~= rS) then
         Log("(lItem.subclass ~= rItem.subclass)");
-        return (lItem.subclass < rItem.subclass);
-    elseif (lItem.name ~= rItem.name) then
+        return (lS < rS);
+    end
+
+    local lN = lItem.name or ""
+    local rN = rItem.name or ""
+    if (lN ~= rN) then
         Log("(lItem.name ~= rItem.name)");
-        return (lItem.name < rItem.name);
-    elseif ((lItem.count) ~= (rItem.count)) then
+        return (lN < rN);
+    end
+
+    local lCnt = lItem.count or 0
+    local rCnt = rItem.count or 0
+    if (lCnt ~= rCnt) then
         Log("((lItem.count) ~= (rItem.count))");
-        return ((lItem.count) >= (rItem.count));
+        return (lCnt >= rCnt);
     else
         Log("return true");
         return true;
@@ -238,9 +258,12 @@ local function CreateBagFromID(bagID)
         if (item.id ~= nil) then
             item.count = count;
             item.name, _, item.quality, _, _, item.class, item.subclass, _, item.type, _, item.price = GetItemInfo(item.id);
+            if not item.name then
+                item.name = "Item " .. tostring(item.id)
+            end
         end
 
-        Log("item = "..item.name);
+        Log("item = "..tostring(item.name));
 
         table.insert(bag, item);
     end
@@ -269,10 +292,13 @@ local function CreateBagFromTab(tab)
         if (item.id ~= nil) then
             item.count = count;
             item.name, _, item.quality, _, _, item.class, item.subclass, _, item.type, _, item.price = GetItemInfo(item.id);
+            if not item.name then
+                item.name = "Item " .. tostring(item.id)
+            end
         end
         table.insert(bag, item);
 
-        Log("item = "..item.name);
+        Log("item = "..tostring(item.name));
     end
     return bag;
 end
@@ -285,7 +311,8 @@ local function SOCD_BagSortButton(self)
 
 	for i=0, NUM_BAG_FRAMES, 1 do
 	    local framenum = i + 1;
-        if _G["ContainerFrame"..framenum.."SortCheck"]:GetChecked() then
+        local check = _G["ContainerFrame"..framenum.."SortCheck"]
+        if check and check:GetChecked() then
             Log("Bag #"..i.." is checked");
             local bag = CreateBagFromID(i);
             local type = select(2, GetContainerNumFreeSlots(i));
@@ -325,7 +352,8 @@ local function SOCD_BankSortButton(self)
     Log("SOCD_BankSortButton(self)");
     local bags = {};
 
-    if _G["BankFrameSortCheck"]:GetChecked() then
+    local bankCheck = _G["BankFrameSortCheck"]
+    if bankCheck and bankCheck:GetChecked() then
           Log("Bank is checked");
         bags["ALL"] = CreateBagFromID(-1);
     end

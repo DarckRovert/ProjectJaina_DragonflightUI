@@ -733,6 +733,7 @@ frame:SetScript('OnEvent', frame.OnEvent)
 
 -- Wrath
 function Module.Wrath()
+    frame:RegisterEvent('PLAYER_ENTERING_WORLD')
     frame:RegisterEvent('UNIT_SPELLCAST_INTERRUPTED')
     frame:RegisterEvent('UNIT_SPELLCAST_DELAYED')
     frame:RegisterEvent('UNIT_SPELLCAST_CHANNEL_START')
