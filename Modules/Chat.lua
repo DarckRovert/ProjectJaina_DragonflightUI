@@ -58,8 +58,9 @@ local function getOption(info)
 end
 
 local function setOption(info, value)
-    local key = info[1]
+    local key = info[#info]
     Module.db.profile[key] = value
+    db = Module.db.profile
     Module.ApplySettings()
 end
 
@@ -181,6 +182,10 @@ function Module:ApplySettings()
     ChatFrame1:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', x, y)
     ChatFrame1:SetSize(w, h)
     ChatFrame1:SetUserPlaced(true)
+
+    if FCF_SavePositionAndDimensions then
+        FCF_SavePositionAndDimensions(ChatFrame1)
+    end
 end
 
 local frame = CreateFrame('FRAME', 'ImprovedUIChatFrame', UIParent)
@@ -190,11 +195,13 @@ function Module.ChangeSizeAndPosition()
 end
 
 function frame:OnEvent(event, arg1)
-    --print('event', event)
     if event == 'PLAYER_ENTERING_WORLD' then
-        SetCVar("chatBubbles", "1")
-        SetCVar("chatBubblesParty", "1")
-        --Module.ChangeSizeAndPosition()
+        if GetCVar("chatBubbles") == nil then
+            SetCVar("chatBubbles", "1")
+        end
+        if GetCVar("chatBubblesParty") == nil then
+            SetCVar("chatBubblesParty", "1")
+        end
         Module:ApplySettings()
     end
 end

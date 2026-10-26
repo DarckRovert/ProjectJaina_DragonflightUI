@@ -51,7 +51,11 @@ function DF:RegisterSlashCommands()
 end
 
 function DF:SlashCommand(msg)
-    --self:Print('Slash: ' .. msg)
+    if msg and msg:match('^%s*(%S+)') and msg:match('^%s*(%S+)'):lower() == 'debug' then
+        self.debugMode = not self.debugMode
+        self:Print("Modo depuracion: " .. (self.debugMode and "|cff00ff00ACTIVADO|r" or "|cffff0000DESACTIVADO|r"))
+        return
+    end
     InterfaceOptionsFrame_OpenToCategory('cDF')
     InterfaceOptionsFrame_OpenToCategory('cDF')
 end

@@ -516,8 +516,14 @@ function Module:OnEnable()
         vehicleHardFix:RegisterEvent("PLAYER_CONTROL_GAINED")
         vehicleHardFix:RegisterEvent("PLAYER_CONTROL_LOST")
         vehicleHardFix:SetScript("OnEvent", function(self, event, unit)
-            if event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_CONTROL_LOST" or unit == "player" then
-                Module:ApplySettings()
+            if event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE" then
+                if unit == "player" then
+                    Module:ApplySettings()
+                end
+            elseif (event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_CONTROL_LOST") then
+                if not (InCombatLockdown and InCombatLockdown()) and (UnitHasVehicleUI and UnitHasVehicleUI("player")) then
+                    Module:ApplySettings()
+                end
             end
         end)
 
@@ -582,21 +588,39 @@ function Module:SaveLocalSettings()
     --DevTools_Dump({localSettings})
 end
 
+local pendingSettings = false
+local regenWatcher = CreateFrame("Frame")
+regenWatcher:RegisterEvent("PLAYER_REGEN_ENABLED")
+regenWatcher:SetScript("OnEvent", function()
+    if pendingSettings then
+        pendingSettings = false
+        Module:ApplySettings()
+    end
+end)
+
 function Module:ApplySettings()
+    if InCombatLockdown and InCombatLockdown() then
+        pendingSettings = true
+        return
+    end
+
     db = Module.db.profile
+    if not db then return end
     local orig = defaults.profile
 
     -- playerframe
     do
         local obj = db.player
         local objLocal = localSettings.player
-        if obj.override then
+        if obj and obj.override then
             Module.MovePlayerFrame(obj.anchor, obj.anchorParent, obj.x, obj.y)
             PlayerFrame:SetUserPlaced(true)
-        else
+        elseif objLocal then
             Module.MovePlayerFrame(objLocal.anchor, objLocal.anchorParent, objLocal.x, objLocal.y)
         end
-        PlayerFrame:SetScale(obj.scale)
+        if obj and obj.scale then
+            PlayerFrame:SetScale(obj.scale)
+        end
         Module.ChangePlayerframe()
     end
 
@@ -604,17 +628,14 @@ function Module:ApplySettings()
     do
         local obj = db.target
         local objLocal = localSettings.target
-        if obj.override then
-            TargetFrame:SetMovable(1)
-            TargetFrame:StartMoving()
+        if obj and obj.override then
             Module.MoveTargetFrame(obj.anchor, obj.anchorParent, obj.x, obj.y)
-            --TargetFrame:SetUserPlaced(true)
-            TargetFrame:StopMovingOrSizing()
-            TargetFrame:SetMovable()
-        else
+        elseif objLocal then
             Module.MoveTargetFrame(objLocal.anchor, objLocal.anchorParent, objLocal.x, objLocal.y)
         end
-        TargetFrame:SetScale(obj.scale)
+        if obj and obj.scale then
+            TargetFrame:SetScale(obj.scale)
+        end
         Module.ReApplyTargetFrame()
     end
 
@@ -623,13 +644,15 @@ function Module:ApplySettings()
         do
             local obj = db.focus
             local objLocal = localSettings.focus
-            if obj.override then
+            if obj and obj.override then
                 Module.MoveFocusFrame(obj.anchor, obj.anchorParent, obj.x, obj.y)
                 FocusFrame:SetUserPlaced(true)
-            else
+            elseif objLocal then
                 Module.MoveFocusFrame(objLocal.anchor, objLocal.anchorParent, objLocal.x, objLocal.y)
             end
-            FocusFrame:SetScale(obj.scale)
+            if obj and obj.scale then
+                FocusFrame:SetScale(obj.scale)
+            end
             Module.ReApplyFocusFrame()
         end
     end

@@ -31,10 +31,13 @@ function DF:OnDisable()
 end
 
 function DF:GetModuleEnabled(module)
+    if not db or not db.modules then return false end
     return db.modules[module]
 end
 
 function DF:SetModuleEnabled(module, value)
+    if not db then return end
+    if not db.modules then db.modules = {} end
     local old = db.modules[module]
     db.modules[module] = value
     if old ~= value then
@@ -47,27 +50,23 @@ function DF:SetModuleEnabled(module, value)
     end
 end
 
-local name, realm = UnitName('player')
-local showDebug = name == 'Zimtdev'
+DF.debugMode = false
 function DF:Debug(m, value)
-    if showDebug then
+    if self.debugMode == nil or self.debugMode == false then
+        local name = UnitName('player')
+        if name and (name == 'Zimtdev' or name == 'Darck' or name == 'Jaina' or name == 'Elnazzareno') then
+            self.debugMode = true
+        end
+    end
+    if self.debugMode and m and m.Print then
         m:Print(value)
     end
 end
 
 function DF:ShowStartMessage()
-    local version = ''
---[[
-        if not GetAddOnMetadata then
-        version = C_AddOns.GetAddOnMetadata('DragonflightUI', 'Version')
-    else
-        version = GetAddOnMetadata('DragonflightUI', 'Version')
-    end
-
-    self:Print(version .. " loaded! Type '/dragonflight'or '/df' to open the options menu.")
-]]
-
-    print("|cffffd700Chromie |cff1974d2Dragonflight |cffffffffloaded. Welcome " .. UnitName("player") .. "!")
+    local playerName = UnitName("player") or "Heroe"
+    local ver = (GetAddOnMetadata and (GetAddOnMetadata('ProjectJaina_DragonflightUI', 'Version') or GetAddOnMetadata('DragonflightUI', 'Version'))) or "v5.43.0"
+    print(string.format("|cff00ccff[Project JAIna]|r |cffffd700Dragonflight UI|r |cff888888(%s)|r cargado. Bienvenido, |cffffffff%s|r. Escribe |cff00ff00/df|r para configurar.", ver, playerName))
 end
 
 -- Polyfill canónico 3.3.5a para GetClassColor

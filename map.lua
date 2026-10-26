@@ -124,8 +124,10 @@ for _,regions in ipairs {Minimap:GetChildren()} do
 	regions:SetScale(1/blipScale)
 end
 
-for _,points in ipairs(MINIMAP_POINTS) do
-	Minimap:SetPoint(points[1], points[2], points[3], points[4]/blipScale, points[5]/blipScale)
+for _, points in ipairs(MINIMAP_POINTS) do
+	local dx = (points[4] or 0) / blipScale
+	local dy = (points[5] or 0) / blipScale
+	Minimap:SetPoint(points[1], points[2], points[3], dx, dy)
 end
 
 function GetMinimapShape() return "ROUND" end
@@ -173,39 +175,38 @@ MiniMapTrackingBackground:SetTexture(nil)
 
 local function Tracking_Update()
 	local texture = GetTrackingTexture();
-	--[[
-		if config.map.tracking_icons then
-		if texture == 'Interface\\Minimap\\Tracking\\None' then
-			atlas(MiniMapTrackingIcon, 'ui-hud-minimap-tracking-up', true);
-		else
-			MiniMapTrackingIcon:SetSize(20, 20);
-			MiniMapTrackingIcon:SetTexture(texture);
-			MiniMapTrackingIcon:SetTexCoord(0,0,0,1,1,0,1,1);
-		end
+	if config.map.tracking_icons and texture and texture ~= 'Interface\\Minimap\\Tracking\\None' then
+		MiniMapTrackingIcon:SetSize(20, 20);
+		MiniMapTrackingIcon:SetTexture(texture);
+		MiniMapTrackingIcon:SetTexCoord(0, 0, 0, 1, 1, 0, 1, 1);
 	else
-		MiniMapTrackingButton:SetNormalTexture(addon._dir..'ui-hud-minimap-tracking-up');
-		MiniMapTrackingButton:SetPushedTexture(addon._dir..'ui-hud-minimap-tracking-down');
 		MiniMapTrackingButton:SetSize(17, 15);
-
 		MiniMapTrackingIcon:ClearAllPoints();
 		MiniMapTrackingIcon:SetPoint('CENTER', MiniMapTracking, 'CENTER', 0, 0);
 
 		atlas(MiniMapTrackingIcon, 'ui-hud-minimap-button', true);
-		atlas(MiniMapTrackingButton:GetNormalTexture(), 'ui-hud-minimap-tracking-up');
-		atlas(MiniMapTrackingButton:GetPushedTexture(), 'ui-hud-minimap-tracking-down');
-		atlas(MiniMapTrackingButton:GetHighlightTexture(), 'ui-hud-minimap-tracking-mouseover');
-
-		MiniMapTrackingButton:GetHighlightTexture():SetBlendMode('ADD')
+		if MiniMapTrackingButton:GetNormalTexture() then
+			atlas(MiniMapTrackingButton:GetNormalTexture(), 'ui-hud-minimap-tracking-up');
+		end
+		if MiniMapTrackingButton:GetPushedTexture() then
+			atlas(MiniMapTrackingButton:GetPushedTexture(), 'ui-hud-minimap-tracking-down');
+		end
+		if MiniMapTrackingButton:GetHighlightTexture() then
+			atlas(MiniMapTrackingButton:GetHighlightTexture(), 'ui-hud-minimap-tracking-mouseover');
+			MiniMapTrackingButton:GetHighlightTexture():SetBlendMode('ADD');
+		end
 	end
-	]]
 
-	MiniMapTrackingIconOverlay:SetAlpha(0);
+	if MiniMapTrackingIconOverlay then
+		MiniMapTrackingIconOverlay:SetAlpha(0);
+	end
 end
 Tracking_Update();
--- MiniMapTrackingButton:SetScript('OnClick', function()
-	-- ToggleDropDownMenu(1, nil, MiniMapTrackingDropDown, "MiniMapTracking", 44, 11);
-	-- PlaySound("igMainMenuOptionCheckBoxOn");
--- end)
+
+MiniMapTrackingButton:SetScript('OnClick', function()
+	ToggleDropDownMenu(1, nil, MiniMapTrackingDropDown, "MiniMapTracking", 0, -5);
+	PlaySound("igMainMenuOptionCheckBoxOn");
+end)
 MiniMapTrackingButton:HookScript('OnEvent', Tracking_Update)
 
 -- LFG update
@@ -281,7 +282,11 @@ do
 end
 
 --Quest Objectives
-WatchFrameHeader:ClearAllPoints()
-WatchFrameHeader:SetPoint("CENTER", Minimap, -100, -110)
-WatchFrameCollapseExpandButton:ClearAllPoints()
-WatchFrameCollapseExpandButton:SetPoint("CENTER", WatchFrameHeader, 60, 1)
+if WatchFrameHeader then
+	WatchFrameHeader:ClearAllPoints()
+	WatchFrameHeader:SetPoint("CENTER", Minimap, -100, -110)
+	if WatchFrameCollapseExpandButton then
+		WatchFrameCollapseExpandButton:ClearAllPoints()
+		WatchFrameCollapseExpandButton:SetPoint("CENTER", WatchFrameHeader, 60, 1)
+	end
+end

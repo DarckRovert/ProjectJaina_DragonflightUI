@@ -4,6 +4,49 @@ Todos los cambios notables de este proyecto están documentados en este archivo 
 
 ---
 
+## [1.3.0] — 2026-10-26
+### Auditoría y Estabilización L9 — Resolución Integral de Bugs de Runtime e Integración Canónica
+- **Inicialización y Gobernanza del Addon (`Core.lua`, `Config.lua`):**
+  - Eliminada evaluación prematura de `UnitName('player')` en el root del script que congelaba el sistema de depuración `DF:Debug` en `false`.
+  - Implementada conmutación dinámica en caliente de depuración vía comando `/df debug` con feedback interactivo en chat.
+  - Blindadas funciones `DF:GetModuleEnabled` y `DF:SetModuleEnabled` contra llamadas anticipadas o perfiles corruptos (`nil-check` estricto en tabla de módulos).
+  - Eliminada concatenación nula fatal en `ShowStartMessage()` y modernizado el banner de bienvenida a la identidad institucional de Project JAIna v5.43.0.
+- **Marcos de Unidad y Protección contra Taint (`Modules/Unitframe.lua`):**
+  - Blindaje integral contra excepciones `ADDON_ACTION_BLOCKED` durante combate en `Module:ApplySettings()`. Toda modificación de escala, anclaje o posicionamiento de marcos protegidos (`PlayerFrame`, `TargetFrame`, `FocusFrame`) se aplaza de forma segura a `PLAYER_REGEN_ENABLED` si `InCombatLockdown()` está activo.
+  - Restringido `vehicleHardFix` exclusivamente a monturas y vehículos reales con interfaz activa (`UnitHasVehicleUI("player")`), erradicando taints al recibir efectos de control de masas (miedos, aturdimientos, polimorfias).
+- **Minimapa y Desfase de Coordenadas (`map.lua`):**
+  - Blindaje aritmético ante valores `nil` en cálculo de escala de blips y zoom de minimapa (`(points[4] or 0) / blipScale`).
+  - Restaurado el skin oficial Dragonflight y anclaje del botón de rastreo en `Tracking_Update`.
+  - Protección de cabecera de seguimiento de misiones (`WatchFrameHeader`) frente a desincronización por variables nulas.
+- **MicroMenú y Gestor Central de Eventos (`Modules/micromenu.lua`, `utils/events.lua`):**
+  - Erradicada desregistración destructiva de `PLAYER_ENTERING_WORLD` sobre el frame central `addon.package.events` que apagaba eventos para todo el AddOn.
+  - Normalizada detección de iconos de bolsas vacías a formato insensible a mayúsculas/minúsculas.
+  - Restaurada funcionalidad de teletransporte a mazmorra LFG (`LFGTeleport(IsInLFGDungeon())`) en click izquierdo del icono del minimapa.
+  - Corregido `utils/events.lua` reemplazando `return` prematuro por `break` para garantizar el registro íntegro de múltiples callbacks.
+- **Ventana y Ajustes de Chat (`Modules/Chat.lua`):**
+  - Corregida indexación en setters y getters de sliders AceConfig-3.0 utilizando `info[#info]` en lugar de la raíz `info[1]`, restaurando la persistencia de dimensiones y márgenes.
+  - Eliminado el pisado forzado e intrusivo de CVars de burbujas de chat (`chatBubbles`, `chatBubblesParty`) en cada pantalla de carga.
+  - Integrada llamada a `FCF_SavePositionAndDimensions` para sincronizar dimensiones modificadas con el gestor nativo de Blizzard.
+- **Interfaz de Vehículos (`Modules/vehicle.lua`):**
+  - Resuelto fallo de inicialización en `vehiclebutton_position` que evaluaba falso durante `PLAYER_ENTERING_WORLD`.
+  - Agregada invocación explícita de `vehiclebutton_position()` al dispararse `UNIT_ENTERED_VEHICLE` con filtro estricto sobre la unidad `'player'`.
+- **Barra de Lanzamiento de Hechizos (`Modules/Castbar.lua`):**
+  - Erradicado el micro-stutter y la sobrecarga masiva del recolector de basura (GC thrashing) al condicionar el redibujado de la barra exclusivamente a la unidad jugadora (`arg1 == 'player'`).
+  - Corregida visualización de nombres de hechizo en `UnitCastingInfo` cuando `text` es nulo.
+  - Reemplazada la textura estirada de minimapa en el fondo por un backdrop oscuro calibrado.
+- **Barra de Posturas y Formas (`Modules/stance.lua`):**
+  - Eliminado el retorno anticipado que bloqueaba el posicionamiento y estilizado si el personaje ingresaba al mundo sin posturas aprendidas.
+  - Reemplazado `RegisterStateDriver` estático por la directiva dinámica canónica `[bonusbar:5][vehicleui] hide; show`, ocultando limpiamente las posturas al abordar vehículos.
+  - Corregido offset asimétrico (+90px -> +40px) y registrados ganchos para eventos de regeneración.
+- **Animaciones y Botones de Acción (`Modules/buttons.lua`):**
+  - Corregida colisión de niveles de capa (Z-fighting) en la espiral de cooldown; ahora se indexa sobre el nivel propio del botón para no ocultarse tras el icono.
+  - Añadidas comprobaciones defensivas contra botones huérfanos sin contenedor padre y guardas en `is_petaction` y `setup_background`.
+- **Barra de Mascota (`Modules/petbar.lua`):**
+  - Restaurados los controladores de ciclo de vida en `PLAYER_ENTERING_WORLD` y `PLAYER_REGEN_ENABLED`.
+  - Normalizado el espaciado de barras derechas a +40px para consistencia métrica con el resto de la interfaz.
+
+---
+
 ## [1.2.0] — 2026-10-25
 ### Auditoría y Estabilización L9 — Sesión de Depuración Profunda y Certificación
 - **Bordes de Calidad de Equipo (`characterrarity.lua`):**

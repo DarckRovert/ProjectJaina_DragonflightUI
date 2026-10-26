@@ -13,13 +13,17 @@ function addon.package:RegisterEvents(callback, ...)
 		if not self.events[event] then
 			self.events[event] = {}
 		end
+		local isRegistered = false
 		for _,module in next, self.events[event] do
 			if module == callback then
-				return -- avoid repeat functions
+				isRegistered = true
+				break
 			end
 		end
-		tinsert(self.events[event], callback)
-		self.events:RegisterEvent(event)
+		if not isRegistered then
+			tinsert(self.events[event], callback)
+			self.events:RegisterEvent(event)
+		end
 	end
 end
 

@@ -51,8 +51,8 @@ local function actionbuttons_grid()
 end
 
 local function is_petaction(self, name)
-	local spec = self:GetName():match(name)
-	if (spec) then return true else return false end
+	local btnName = self and self.GetName and self:GetName()
+	return (btnName and btnName:match(name)) and true or false
 end
 
 local function fix_texture(self, texture)
@@ -75,7 +75,8 @@ local function setup_background(button, anchor, shadow)
 	background:SetAllPoints(anchor);
 	background:Hide();
 
-	local parent = button:GetParent():GetName();
+	local parentFrame = button and button.GetParent and button:GetParent()
+	local parent = parentFrame and parentFrame.GetName and parentFrame:GetName()
 	local isAction = (parent == 'pUiMainBar' or parent == 'MultiBarBottomLeft' or parent == 'MultiBarBottomRight') and config.buttons.only_actionbackground;
 	if isAction then
 		background:set_atlas('ui-hud-actionbar-iconframe-slot');
@@ -160,7 +161,8 @@ local function main_buttons(button)
 		cooldown:ClearAllPoints()
 		cooldown:SetPoint('TOPRIGHT', button, -1, -1)
 		cooldown:SetPoint('BOTTOMLEFT', button, 1, 1)
-		cooldown:SetFrameLevel(button:GetParent():GetFrameLevel() +1)
+		local btnLevel = button.GetFrameLevel and button:GetFrameLevel() or 1
+		cooldown:SetFrameLevel(btnLevel + 1)
 	end
 	
 	if border then
@@ -246,7 +248,8 @@ local function additional_buttons(button)
 		cooldown:ClearAllPoints()
 		cooldown:SetPoint('TOPRIGHT', button, -1, -1)
 		cooldown:SetPoint('BOTTOMLEFT', button, 1, 1)
-		cooldown:SetFrameLevel(button:GetParent():GetFrameLevel() +1)
+		local btnLevel = button.GetFrameLevel and button:GetFrameLevel() or 1
+		cooldown:SetFrameLevel(btnLevel + 1)
 	end
 
 	if icon then

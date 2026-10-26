@@ -202,10 +202,9 @@ local function vehiclebar_layout_setup()
 end
 
 local function vehiclebutton_position()
-	local button
-	if pUiVehicleBar:IsShown() or mixin2template:IsShown() then
-		for index=1, VEHICLE_MAX_ACTIONBUTTONS do
-			button = _G['VehicleMenuBarActionButton'..index]
+	for index = 1, VEHICLE_MAX_ACTIONBUTTONS do
+		local button = _G['VehicleMenuBarActionButton'..index]
+		if button then
 			button:ClearAllPoints()
 			button:SetParent(pUiVehicleBar)
 			button:SetSize(52, 52)
@@ -213,8 +212,12 @@ local function vehiclebutton_position()
 			if index == 1 then
 				button:SetPoint('BOTTOMLEFT', pUiVehicleBar, 'BOTTOMRIGHT', -594, 21)
 			else
-				local previous = _G['VehicleMenuBarActionButton'..index-1]
-				button:SetPoint('LEFT', previous, 'RIGHT', 6, 0)
+				local previous = _G['VehicleMenuBarActionButton'..(index - 1)]
+				if previous then
+					button:SetPoint('LEFT', previous, 'RIGHT', 6, 0)
+				else
+					button:SetPoint('BOTTOMLEFT', pUiVehicleBar, 'BOTTOMRIGHT', -594, 21)
+				end
 			end
 		end
 	end
@@ -285,19 +288,28 @@ local function vehiclebutton_leave()
 	end)
 end
 
-local function OnEvent(self,event,...)
+local function OnEvent(self, event, unit, ...)
 	if event == 'PLAYER_LOGIN' then
 		vehiclebutton_state(self);
+		vehiclebutton_position();
 	elseif event == 'PLAYER_ENTERING_WORLD' then
 		vehiclebutton_position();
 	elseif event == 'UNIT_ENTERED_VEHICLE' then
+		if unit ~= 'player' then return end
 		vehiclebar_layout_setup();
+		vehiclebutton_position();
 		addon.vehiclebuttons_template();
 		UnitFrameHealthBar_Update(VehicleMenuBarHealthBar, 'vehicle');
 		UnitFrameManaBar_Update(VehicleMenuBarPowerBar, 'vehicle');
 	elseif event == 'UNIT_DISPLAYPOWER' then
+		if unit ~= 'player' then return end
 		UnitFrameManaBar_Update(VehicleMenuBarPowerBar, 'vehicle');
 		vehiclebutton_position();
+	elseif event == 'UNIT_EXITED_VEHICLE' then
+		if unit ~= 'player' then return end
+		if GameTooltip:GetOwner() == vehicleLeave then
+			GameTooltip:Hide()
+		end
 	end
 end
 

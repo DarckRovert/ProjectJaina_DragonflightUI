@@ -163,20 +163,20 @@ function MainMenuMicroButtonMixin:bagbuttons_setup()
 	end
 end
 
-addon.package:RegisterEvents(function(self)
-	self:UnregisterEvent('PLAYER_ENTERING_WORLD')
-	if HasKey() then
+addon.package:RegisterEvents(function(self, event)
+	if HasKey and HasKey() then
 		KeyRingButton:Show();
 	else
 		KeyRingButton:Hide();
 	end
 	if config.style.bags == 'new' then
-		for _,bags in pairs(bagslots) do
+		for _, bags in pairs(bagslots) do
 			local icon = _G[bags:GetName()..'IconTexture']
-			local empty = icon:GetTexture() == 'interface\\paperdoll\\UI-PaperDoll-Slot-Bag'
+			local tex = icon and icon:GetTexture()
+			local empty = tex and string.lower(tex):find("ui%-paperdoll%-slot%-bag")
 			if empty then
 				icon:SetAlpha(0)
-			else
+			elseif icon then
 				icon:SetAlpha(1)
 			end
 		end
@@ -271,9 +271,9 @@ hooksecurefunc('MiniMapLFG_UpdateIsShown',function()
 	end
 end)
 
-MiniMapLFGFrame:SetScript('OnClick',function(self, button)
+MiniMapLFGFrame:SetScript('OnClick', function(self, button)
 	local mode, submode = GetLFGMode();
-	if ( button == "RightButton" or mode == "lfgparty" or mode == "abandonedInDungeon") then
+	if ( button == "RightButton" ) then
 		PlaySound("igMainMenuOpen");
 		local yOffset;
 		if ( mode == "queued" ) then
@@ -295,6 +295,10 @@ MiniMapLFGFrame:SetScript('OnClick',function(self, button)
 		ToggleLFDParentFrame();
 	elseif ( mode == "listed" ) then
 		ToggleLFRParentFrame();
+	elseif ( mode == "lfgparty" or mode == "abandonedInDungeon" ) then
+		if LFGTeleport and IsInLFGDungeon then
+			LFGTeleport(IsInLFGDungeon());
+		end
 	end
 end)
 

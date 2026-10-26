@@ -321,8 +321,9 @@ local function getOption(info)
 end
 
 local function setOption(info, value)
-    local key = info[1]
+    local key = info[#info]
     Module.db.profile[key] = value
+    db = Module.db.profile
     Module.ApplySettings()
 end
 
@@ -535,11 +536,12 @@ function Module.CreateNewCastbar()
     bg:SetSize(sizeX, sizeY)
     bg:SetPoint('TOP', f, 'BOTTOM', 0, 0)
 
-    local bgTex = bg:CreateTexture('ImprovedUICastbarNameBackground', 'ARTWORK')
+    local bgTex = bg:CreateTexture('ImprovedUICastbarNameBackground', 'BACKGROUND')
     bgTex:ClearAllPoints()
-    bgTex:SetTexture('Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\MinimapBorder')
-    bgTex:SetSize(sizeX, 30)
-    bgTex:SetPoint('TOP', f, 'BOTTOM', 2, 2)
+    bgTex:SetTexture('Interface\\ChatFrame\\ChatFrameBackground')
+    bgTex:SetVertexColor(0, 0, 0, 0.55)
+    bgTex:SetSize(sizeX, 18)
+    bgTex:SetPoint('TOP', f, 'BOTTOM', 0, 0)
 
     bg.tex = bgTex
     f.Background = bg
@@ -609,7 +611,8 @@ function Module.SetBarNormal()
     local name, _, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
         UnitCastingInfo('player')
 
-    frame.Castbar.Text:SetText(subWithDots(text, 22))
+    local spellDisplayName = (text and text ~= "") and text or (name or "")
+    frame.Castbar.Text:SetText(subWithDots(spellDisplayName, 22))
     frame.Castbar.Text:ClearAllPoints()
     frame.Castbar.Text:SetPoint('TOP', frame.Castbar, 'BOTTOM', 0, -1)
     frame.Castbar.Text:SetPoint('LEFT', frame.Castbar.Background, 'LEFT', 10, 0)
@@ -708,17 +711,22 @@ function Module.SetBarInterrupted()
 end
 
 function frame:OnEvent(event, arg1)
-    --print('event', event, arg1)
-    Module.ChangeDefaultCastbar()
     if event == 'PLAYER_ENTERING_WORLD' then
-    elseif (event == 'UNIT_SPELLCAST_START' and arg1 == 'player') then
+        Module.ChangeDefaultCastbar()
+        InitChannelTicks()
+        return
+    end
+
+    -- Descartar inmediatamente eventos de otras unidades
+    if arg1 ~= 'player' then return end
+
+    if event == 'UNIT_SPELLCAST_START' then
         Module.SetBarNormal()
         Module.HideAllTicks()
-    elseif (event == 'UNIT_SPELLCAST_INTERRUPTED' and arg1 == 'player') then
+    elseif event == 'UNIT_SPELLCAST_INTERRUPTED' then
         Module.SetBarInterrupted()
-    elseif (event == 'UNIT_SPELLCAST_CHANNEL_START' and arg1 == 'player') then
+    elseif event == 'UNIT_SPELLCAST_CHANNEL_START' then
         Module.SetBarChannel()
-    else
     end
 end
 frame:SetScript('OnEvent', frame.OnEvent)

@@ -33,21 +33,20 @@ function anchor:petbar_update()
 	if not InCombatLockdown() and not UnitAffectingCombat('player') then
 		self:ClearAllPoints();
 		if leftbar and rightbar then
-			self:SetPoint('TOPLEFT', pUiMainBar,'TOPLEFT', offsetX, leftOffset);
-		elseif leftbar then
-			self:SetPoint("TOPLEFT", pUiMainBar,'TOPLEFT', offsetX, rightOffset);
-		elseif rightbar then
-			self:SetPoint("TOPLEFT", pUiMainBar,'TOPLEFT', offsetX, leftOffset);
+			self:SetPoint('TOPLEFT', pUiMainBar, 'TOPLEFT', offsetX, leftOffset);
+		elseif leftbar or rightbar then
+			self:SetPoint('TOPLEFT', pUiMainBar, 'TOPLEFT', offsetX, rightOffset);
 		else
-			self:SetPoint("TOPLEFT", pUiMainBar,'TOPLEFT', offsetX, nobar);
+			self:SetPoint('TOPLEFT', pUiMainBar, 'TOPLEFT', offsetX, nobar);
 		end
 	end
 end
 
+-- Registro de ciclo de vida completo: Login, Recarga, Teletransporte y Salida de Combate
 event:RegisterEvents(function()
 	anchor:petbar_update();
 end,
-	'PLAYER_LOGIN','ADDON_LOADED'
+	'PLAYER_LOGIN', 'PLAYER_ENTERING_WORLD', 'PLAYER_REGEN_ENABLED', 'ADDON_LOADED'
 );
 
 for _,bar in pairs({MultiBarBottomLeft, MultiBarBottomRight}) do

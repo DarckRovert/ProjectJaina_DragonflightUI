@@ -47,10 +47,8 @@ function anchor:stancebar_update()
 		self:ClearAllPoints();
 		if leftbar and rightbar then
 			self:SetPoint('TOPLEFT', pUiMainBar, 'TOPLEFT', offsetX, leftOffset);
-		elseif leftbar then
+		elseif leftbar or rightbar then
 			self:SetPoint('TOPLEFT', pUiMainBar, 'TOPLEFT', offsetX, rightOffset);
-		elseif rightbar then
-			self:SetPoint('TOPLEFT', pUiMainBar, 'TOPLEFT', offsetX, leftOffset);
 		else
 			self:SetPoint('TOPLEFT', pUiMainBar, 'TOPLEFT', offsetX, nobar);
 		end
@@ -60,7 +58,7 @@ end
 event:RegisterEvents(function()
 	anchor:stancebar_update();
 end,
-	'PLAYER_LOGIN','ADDON_LOADED'
+	'PLAYER_LOGIN', 'PLAYER_ENTERING_WORLD', 'PLAYER_REGEN_ENABLED', 'ADDON_LOADED'
 );
 
 for _,bar in pairs({MultiBarBottomLeft, MultiBarBottomRight}) do
@@ -86,27 +84,38 @@ end
 
 local btnsize = config.additional.size;
 local space = config.additional.spacing;
+local isPositioned = false;
 local function stancebutton_position()
 	for index=1, NUM_SHAPESHIFT_SLOTS do
 		local button = _G['ShapeshiftButton'..index]
-		button:ClearAllPoints()
-		button:SetParent(stancebar)
-		button:SetSize(btnsize, btnsize)
-		if index == 1 then
-			button:SetPoint('BOTTOMLEFT', anchor, 'BOTTOMLEFT', 0, 0)
-		else
-			local previous = _G['ShapeshiftButton'..index-1]
-			button:SetPoint('LEFT', previous, 'RIGHT', space, 0)
-		end
-		local _,name = GetShapeshiftFormInfo(index)
-		if name then
-			button:Show()
-		else
-			button:Hide()
+		if button then
+			button:ClearAllPoints()
+			button:SetParent(stancebar)
+			button:SetSize(btnsize, btnsize)
+			if index == 1 then
+				button:SetPoint('BOTTOMLEFT', anchor, 'BOTTOMLEFT', 0, 0)
+			else
+				local previous = _G['ShapeshiftButton'..index-1]
+				if previous then
+					button:SetPoint('LEFT', previous, 'RIGHT', space, 0)
+				else
+					button:SetPoint('BOTTOMLEFT', anchor, 'BOTTOMLEFT', 0, 0)
+				end
+			end
+			local _,name = GetShapeshiftFormInfo(index)
+			if name then
+				button:Show()
+			else
+				button:Hide()
+			end
 		end
 	end
-	RegisterStateDriver(stancebar, 'visibility', stance[class] or 'hide')
-	hooksecurefunc('ShapeshiftBar_Update', stancebutton_update)
+	if not isPositioned then
+		isPositioned = true
+		local visibilityDriver = stance[class] and '[bonusbar:5][vehicleui] hide; show' or 'hide'
+		RegisterStateDriver(stancebar, 'visibility', visibilityDriver)
+		hooksecurefunc('ShapeshiftBar_Update', stancebutton_update)
+	end
 end
 
 local function stancebutton_updatestate()
@@ -157,17 +166,23 @@ local function stancebutton_setup()
 	stancebutton_updatestate();
 end
 
+local isTemplated = false;
 local function OnEvent(self,event,...)
-	if GetNumShapeshiftForms() < 1 then return; end
 	if event == 'PLAYER_LOGIN' then
 		stancebutton_position();
-	elseif event == 'UPDATE_SHAPESHIFT_FORMS' then
-		stancebutton_setup();
 	elseif event == 'PLAYER_ENTERING_WORLD' then
-		self:UnregisterEvent('PLAYER_ENTERING_WORLD');
-		addon.stancebuttons_template();
+		if not isTemplated and addon.stancebuttons_template then
+			addon.stancebuttons_template();
+			isTemplated = true;
+		end
+		stancebutton_setup();
+	elseif event == 'UPDATE_SHAPESHIFT_FORMS' then
+		stancebutton_position();
+		stancebutton_setup();
 	else
-		stancebutton_updatestate();
+		if GetNumShapeshiftForms() > 0 then
+			stancebutton_updatestate();
+		end
 	end
 end
 

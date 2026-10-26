@@ -10,7 +10,7 @@ Ficha técnica oficial de registro en la infraestructura multi-addon de **Projec
 |---|---|
 | **Nombre Técnico** | `ProjectJaina_DragonflightUI` |
 | **Carpeta Local** | `cDF` |
-| **Versión Actual** | `1.0.0` |
+| **Versión Actual** | `1.3.0` |
 | **Clasificación** | Cliente / Overhaul UI |
 | **Licencia Formal** | MIT / BSD |
 | **Repositorio GitHub** | [ProjectJaina_DragonflightUI](https://github.com/DarckRovert/ProjectJaina_DragonflightUI) |
