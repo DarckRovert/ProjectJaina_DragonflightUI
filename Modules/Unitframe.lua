@@ -1660,7 +1660,7 @@ function Module.HookPlayerStatus()
         end
     ) ]]
     local UpdateStatus = function()
-        if not frame.PlayerFrameDeco then
+        if not frame.PlayerFrameDeco or not frame.RestIcon then
             return
         end
 
@@ -1674,8 +1674,10 @@ function Module.HookPlayerStatus()
             frame.PlayerFrameDeco:Show()
             frame.PlayerFrameBorder:SetVertexColor(1.0, 1.0, 1.0, 1.0)
 
-            frame.RestIcon:Show()
-            frame.RestIconAnimation:Play()
+            if frame.RestIcon then
+                frame.RestIcon:Show()
+                if frame.RestIconAnimation then frame.RestIconAnimation:Play() end
+            end
 
             --PlayerStatusTexture:Show()
             --PlayerStatusTexture:SetVertexColor(1.0, 0.88, 0.25, 1.0)
@@ -1685,16 +1687,20 @@ function Module.HookPlayerStatus()
             --PlayerStatusTexture:SetVertexColor(1.0, 0, 0, 1.0)
             frame.PlayerFrameDeco:Hide()
 
-            frame.RestIcon:Hide()
-            frame.RestIconAnimation:Stop()
+            if frame.RestIcon then
+                frame.RestIcon:Hide()
+                if frame.RestIconAnimation then frame.RestIconAnimation:Stop() end
+            end
 
             frame.PlayerFrameBorder:SetVertexColor(1.0, 0, 0, 1.0)
             frame.PlayerFrameBackground:SetVertexColor(1.0, 0, 0, 1.0)
         elseif PlayerFrame.inCombat then
             frame.PlayerFrameDeco:Hide()
 
-            frame.RestIcon:Hide()
-            frame.RestIconAnimation:Stop()
+            if frame.RestIcon then
+                frame.RestIcon:Hide()
+                if frame.RestIconAnimation then frame.RestIconAnimation:Stop() end
+            end
 
             frame.PlayerFrameBackground:SetVertexColor(1.0, 0, 0, 1.0)
 
@@ -1704,8 +1710,10 @@ function Module.HookPlayerStatus()
         else
             frame.PlayerFrameDeco:Show()
 
-            frame.RestIcon:Hide()
-            frame.RestIconAnimation:Stop()
+            if frame.RestIcon then
+                frame.RestIcon:Hide()
+                if frame.RestIconAnimation then frame.RestIconAnimation:Stop() end
+            end
 
             frame.PlayerFrameBorder:SetVertexColor(1.0, 1.0, 1.0, 1.0)
             frame.PlayerFrameBackground:SetVertexColor(1.0, 1.0, 1.0, 1.0)
@@ -2685,13 +2693,13 @@ function frame:OnEvent(event, arg1)
     elseif event == 'PLAYER_ENTERING_WORLD' then
         --print('PLAYER_ENTERING_WORLD')
         Module.CreatePlayerFrameTextures()
+        Module.CreateRestFlipbook()
         Module.ChangePlayerframe()
         Module.ChangeTargetFrame()
         Module.ChangeToT()
         Module.ReApplyTargetFrame()
         Module.ReApplyToT()
         Module.ChangeStatusIcons()
-        Module.CreateRestFlipbook()
         --if DF.Wrath then
             Module.ChangeFocusFrame()
             Module.ChangeFocusToT()
