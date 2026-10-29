@@ -4,6 +4,14 @@ Todos los cambios notables de este proyecto están documentados en este archivo 
 
 ---
 
+## [1.3.1] — 2026-10-28
+### Corrección de Carrera en Icono de Descanso de Marco de Unidad (`RestIcon`)
+- **Marcos de Unidad (`Modules/Unitframe.lua`):** Resuelto error de desreferenciación `nil` en `frame.RestIcon` durante la ejecución del hook `PLAYER_ENTERING_WORLD` para clases y niveles sin barra de descanso activa.
+- **Blindaje Defensivo:** Inyectada guarda de verificación `if frame.RestIcon then` con captura de excepción `pcall`, asegurando la renderización fluida del marco del jugador sin excepciones de Lua ni cuelgues de interfaz.
+- **Validación de Tests:** Suite de pruebas unitarias `test_sanity.py` ejecutada con 100% de tests aprobados.
+
+---
+
 ## [1.3.0] — 2026-10-26
 ### Auditoría y Estabilización L9 — Resolución Integral de Bugs de Runtime e Integración Canónica
 - **Inicialización y Gobernanza del Addon (`Core.lua`, `Config.lua`):**
