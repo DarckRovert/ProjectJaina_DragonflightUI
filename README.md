@@ -4,11 +4,15 @@
 
 # ❄️ Project Jaina — DragonflightUI (cDF)
 
-[![GitHub](https://img.shields.io/badge/GitHub-DarckRovert%2FProjectJaina_DragonflightUI-black?logo=github)](https://github.com/DarckRovert/ProjectJaina_DragonflightUI)
+[![WoW Client](https://img.shields.io/badge/WoW%20Client-3.3.5a%20(Build%2012340)-blue.svg)](https://darckrovert.github.io/ProjectJaina_Web/)
+[![Engine](https://img.shields.io/badge/Engine-JainaCore%20C%2B%2B20-blue.svg)](https://github.com/DarckRovert/JainaCore_Server)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![GitHub](https://img.shields.io/badge/GitHub-DarckRovert%2FProjectJaina__DragonflightUI-black?logo=github)](https://github.com/DarckRovert/ProjectJaina_DragonflightUI)
+[![Ecosystem](https://img.shields.io/badge/Project%20JAIna-Sovereign-gold)](https://darckrovert.github.io/ProjectJaina_Web/)
+
 
 > **Project Jaina Ecosystem** · WotLK 3.3.5a compatible · `Interface: 30300`
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Reimplementación modular de la interfaz **Dragonflight 10.x** adaptada para World of Warcraft 3.3.5a. Moderniza la experiencia visual del cliente clásico (barras de acción, minimapa, marcos de unidad, bolsas) manteniendo total compatibilidad con el API de WotLK.
 
