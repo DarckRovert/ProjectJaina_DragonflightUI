@@ -705,9 +705,10 @@ function Module.SetBarInterrupted()
     local interruptedRef = 'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Castbar\\CastingBarInterrupted2'
     frame.Castbar.Bar:SetStatusBarTexture(interruptedRef)
 
-    frame.Castbar.Text:SetText('Interrupted')
+    frame.Castbar.Text:SetText(INTERRUPTED or 'Interrumpido')
     frame.Castbar.Text:ClearAllPoints()
     frame.Castbar.Text:SetPoint('TOP', frame.Castbar, 'BOTTOM', 0, -1)
+    Module.HideAllTicks()
 end
 
 function frame:OnEvent(event, arg1)
@@ -727,6 +728,9 @@ function frame:OnEvent(event, arg1)
         Module.SetBarInterrupted()
     elseif event == 'UNIT_SPELLCAST_CHANNEL_START' then
         Module.SetBarChannel()
+    elseif event == 'UNIT_SPELLCAST_CHANNEL_STOP' or event == 'UNIT_SPELLCAST_STOP' or event == 'UNIT_SPELLCAST_FAILED' then
+        frame.Castbar.bChanneling = false
+        Module.HideAllTicks()
     end
 end
 frame:SetScript('OnEvent', frame.OnEvent)
