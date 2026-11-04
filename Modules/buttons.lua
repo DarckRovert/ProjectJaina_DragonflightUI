@@ -168,11 +168,8 @@ local function main_buttons(button)
 	if border then
 		border:set_atlas('_ui-hud-actionbar-iconborder-checked')
 		if normal then border:SetAllPoints(normal) end
-		if IsEquippedAction(button.action) then
-			border:SetAlpha(1)
-		else
-			border:SetAlpha(0)
-		end
+		local isEquipped = button.action and IsEquippedAction(button.action)
+		border:SetAlpha(isEquipped and 1 or 0)
 	end
 	
 	-- apply textures
@@ -280,6 +277,15 @@ local function actionbuttons_update(button)
 	local name = button:GetName();
 	if not name or name:find('MultiCast') then return; end
 	button:SetNormalTexture(config.assets.normal);
+
+	local border = name and _G[name..'Border']
+	if border then
+		if button.action and IsEquippedAction(button.action) then
+			border:SetAlpha(1)
+		else
+			border:SetAlpha(0)
+		end
+	end
 end
 
 -- main buttons

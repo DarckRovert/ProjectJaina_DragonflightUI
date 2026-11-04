@@ -67,7 +67,10 @@ pUiMainBarArt:SetFrameLevel(pUiMainBar:GetFrameLevel() + 4);
 pUiMainBarArt:SetAllPoints(pUiMainBar);
 
 function MainMenuBarMixin:actionbutton_setup()
-	for _,obj in ipairs({MainMenuBar:GetChildren(),MainMenuBarArtFrame:GetChildren()}) do
+	for _, obj in ipairs({MainMenuBar:GetChildren()}) do
+		obj:SetParent(pUiMainBar)
+	end
+	for _, obj in ipairs({MainMenuBarArtFrame:GetChildren()}) do
 		obj:SetParent(pUiMainBar)
 	end
 	
@@ -259,19 +262,25 @@ hooksecurefunc('ReputationWatchBar_Update',function()
 	end
 end)
 
+local pendingActionBarUpdate = false
+
 -- method update position
 function pUiMainBar:actionbar_update()
+	if InCombatLockdown() or UnitAffectingCombat('player') then
+		pendingActionBarUpdate = true
+		return
+	end
+	pendingActionBarUpdate = false
+
 	local xpbar = MainMenuExpBar:IsShown();
 	local repbar = ReputationWatchBar:IsShown();
-	if not InCombatLockdown() and not UnitAffectingCombat('player') then
-		self:ClearAllPoints();
-		if xpbar and repbar then
-			self:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, both);
-		elseif xpbar or repbar then
-			self:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, single);
-		else
-			self:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, nobar);
-		end
+	self:ClearAllPoints();
+	if xpbar and repbar then
+		self:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, both);
+	elseif xpbar or repbar then
+		self:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, single);
+	else
+		self:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, nobar);
 	end
 end
 
@@ -280,6 +289,14 @@ event:RegisterEvents(function()
 	MainMenuBarMixin:actionbar_art_setup();
 end,
 	'PLAYER_LOGIN','PLAYER_ENTERING_WORLD','ADDON_LOADED'
+);
+
+event:RegisterEvents(function()
+	if pendingActionBarUpdate then
+		pUiMainBar:actionbar_update();
+	end
+end,
+	'PLAYER_REGEN_ENABLED'
 );
 
 for _,bar in pairs({MainMenuExpBar, ReputationWatchBar}) do

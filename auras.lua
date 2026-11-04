@@ -72,9 +72,9 @@ function AuraFrameMixin:UpdateBuffsAnchor()
 			AuraFrameMixin:UpdateFirstButton(buff)
 		elseif numBuffs > 1 and mod(numTotal, BUFFS_PER_ROW) == 1 then
 			if numTotal == BUFFS_PER_ROW + 1 then
-				buff:SetPoint('TOP', TempEnchant1, 'BOTTOM', 0, -BUFF_ROW_SPACING)
+				buff:SetPoint('TOPRIGHT', TempEnchant1, 'BOTTOMRIGHT', 0, -BUFF_ROW_SPACING)
 			else
-				buff:SetPoint('TOP', aboveBuff, 'BOTTOM', 0, -BUFF_ROW_SPACING)
+				buff:SetPoint('TOPRIGHT', aboveBuff, 'BOTTOMRIGHT', 0, -BUFF_ROW_SPACING)
 			end
 			aboveBuff = buff
 		else
@@ -102,15 +102,16 @@ function AuraFrameMixin.UpdateDeBuffsAnchor(buttonName, index)
 	if not buff then return end
 	buff:ClearAllPoints()
 	if index > 1 and mod(index, BUFFS_PER_ROW) == 1 then
-		buff:SetPoint('TOP', _G[buttonName..(index-BUFFS_PER_ROW)], 'BOTTOM', 0, -BUFF_ROW_SPACING);
+		buff:SetPoint('TOPRIGHT', _G[buttonName..(index-BUFFS_PER_ROW)], 'BOTTOMRIGHT', 0, -BUFF_ROW_SPACING);
 	elseif index == 1 then
-		if numRows < 2 then
-			buff:SetPoint('TOPRIGHT', ConsolidatedBuffs, 'BOTTOMRIGHT', -80, -1*((2*BUFF_ROW_SPACING)+buffHeight));
+		local startAnchor = TempEnchant1 or ConsolidatedBuffs
+		if numRows == 0 then
+			buff:SetPoint('TOPRIGHT', startAnchor, 'TOPRIGHT', 0, 0);
 		else
-			buff:SetPoint('TOPRIGHT', ConsolidatedBuffs, 'BOTTOMRIGHT', -80, -numRows*(BUFF_ROW_SPACING+buffHeight));
+			buff:SetPoint('TOPRIGHT', startAnchor, 'BOTTOMRIGHT', 0, -numRows*(BUFF_ROW_SPACING+buffHeight));
 		end
 	else
-		buff:SetPoint('RIGHT', _G[buttonName..(index-1)], 'LEFT', -5, 0);
+		buff:SetPoint('TOPRIGHT', _G[buttonName..(index-1)], 'TOPLEFT', -5, 0);
 	end
 end
 
