@@ -1,8 +1,8 @@
-local DF = LibStub('AceAddon-3.0'):GetAddon('cDF')
-local config = DF.config
+local DF = LibStub and LibStub('AceAddon-3.0', true) and LibStub('AceAddon-3.0'):GetAddon('cDF', true)
 local unpack = unpack
 local select = select
 local pairs = pairs
+local ipairs = ipairs
 local assert = assert
 local next = next
 
@@ -17,7 +17,7 @@ local WHITE_LIST = {
 	'MiniMapBattlefieldFrame','MiniMapTrackingButton','MiniMapMailFrame','HelpOpenTicketButton',
 	'GatherMatePin','HandyNotesPin','TimeManagerClockButton','Archy','GatherNote','MinimMap',
 	'Spy_MapNoteList_mini','ZGVMarker','poiWorldMapPOIFrame','WorldMapPOIFrame','QuestMapPOI',
-	'GameTimeFrame','ZygorGuidesViewerMapIcon'
+	'GameTimeFrame','ZygorGuidesViewerMapIcon','ProjectJaina','MultiBot','PJ_'
 }
 local BUTTON_POINTS = {}
 
@@ -89,14 +89,15 @@ addon.SetSkin = function(button)
 	end
 	
 	local frameName = button:GetName();
-	for i,buttons in pairs(WHITE_LIST) do
-		if frameName ~= nil then
-			if frameName:match(buttons) then return end
+	if frameName then
+		for _, pattern in ipairs(WHITE_LIST) do
+			if frameName:find(pattern) then return end
 		end
 	end
-	for index=1,button:GetNumRegions() do
+
+	for index=1, button:GetNumRegions() do
 		local region = select(index, button:GetRegions());
-		if region:GetObjectType() == 'Texture' then
+		if region and region:GetObjectType() == 'Texture' then
 			local name = region:GetTexture()
 			if name and (name:find('Border') or name:find('Background') or name:find('AlphaMask')) then
 				region:SetTexture(nil)
@@ -117,12 +118,13 @@ addon.SetSkin = function(button)
 	button:SetDisabledTexture(nil)
 	button:SetSize(20, 20)
 	
-	button.circle = button:CreateTexture(nil, 'OVERLAY')
+	if not button.circle then
+		button.circle = button:CreateTexture(nil, 'OVERLAY')
+	end
 	button.circle:SetSize(20, 20)
 	button.circle:SetPoint('CENTER', button)
 	button.circle:SetTexture(addon._dir..'border_buttons.tga')
-	button:SetAlpha(1)
-	--review
+	
 	if config.map and config.map.fade_button then
 		button:SetAlpha(0.2)
 		button:HookScript('OnEnter', fadein)

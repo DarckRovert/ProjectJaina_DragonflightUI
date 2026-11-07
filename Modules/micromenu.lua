@@ -232,12 +232,14 @@ do
 			pushed:set_atlas('bag-arrow-2x')
 			highlight:set_atlas('bag-arrow-2x')
 			for _,bags in pairs(bagslots) do bags:Hide(); end
+			if KeyRingButton then KeyRingButton:Hide(); end
 			arrow:SetChecked(true)
 		else
 			normal:set_atlas('bag-arrow-invert-2x')
 			pushed:set_atlas('bag-arrow-invert-2x')
 			highlight:set_atlas('bag-arrow-invert-2x')
 			for _,bags in pairs(bagslots) do bags:Show(); end
+			if KeyRingButton and HasKey and HasKey() then KeyRingButton:Show(); end
 			arrow:SetChecked(false)
 		end
 	end
@@ -271,39 +273,43 @@ hooksecurefunc('MiniMapLFG_UpdateIsShown',function()
 	end
 end)
 
-MiniMapLFGFrame:SetScript('OnClick', function(self, button)
-	local mode, submode = GetLFGMode();
-	if ( button == "RightButton" ) then
-		PlaySound("igMainMenuOpen");
-		local yOffset;
-		if ( mode == "queued" ) then
-			MiniMapLFGFrameDropDown.point = "BOTTOMRIGHT";
-			MiniMapLFGFrameDropDown.relativePoint = "TOPLEFT";
-			yOffset = 105;
-		else
-			MiniMapLFGFrameDropDown.point = nil;
-			MiniMapLFGFrameDropDown.relativePoint = nil;
-			yOffset = 110;
+if MiniMapLFGFrame then
+	MiniMapLFGFrame:SetScript('OnClick', function(self, button)
+		local mode, submode = GetLFGMode();
+		if ( button == "RightButton" ) then
+			PlaySound("igMainMenuOpen");
+			local yOffset;
+			if ( mode == "queued" ) then
+				MiniMapLFGFrameDropDown.point = "BOTTOMRIGHT";
+				MiniMapLFGFrameDropDown.relativePoint = "TOPLEFT";
+				yOffset = 105;
+			else
+				MiniMapLFGFrameDropDown.point = nil;
+				MiniMapLFGFrameDropDown.relativePoint = nil;
+				yOffset = 110;
+			end
+			ToggleDropDownMenu(1, nil, MiniMapLFGFrameDropDown, "MiniMapLFGFrame", -60, yOffset);
+		elseif ( mode == "proposal" ) then
+			if ( not LFDDungeonReadyPopup:IsShown() ) then
+				PlaySound("igCharacterInfoTab");
+				StaticPopupSpecial_Show(LFDDungeonReadyPopup);
+			end
+		elseif ( mode == "queued" or mode == "rolecheck" ) then
+			ToggleLFDParentFrame();
+		elseif ( mode == "listed" ) then
+			ToggleLFRParentFrame();
+		elseif ( mode == "lfgparty" or mode == "abandonedInDungeon" ) then
+			if LFGTeleport and IsInLFGDungeon then
+				LFGTeleport(IsInLFGDungeon());
+			end
 		end
-		ToggleDropDownMenu(1, nil, MiniMapLFGFrameDropDown, "MiniMapLFGFrame", -60, yOffset);
-	elseif ( mode == "proposal" ) then
-		if ( not LFDDungeonReadyPopup:IsShown() ) then
-			PlaySound("igCharacterInfoTab");
-			StaticPopupSpecial_Show(LFDDungeonReadyPopup);
-		end
-	elseif ( mode == "queued" or mode == "rolecheck" ) then
-		ToggleLFDParentFrame();
-	elseif ( mode == "listed" ) then
-		ToggleLFRParentFrame();
-	elseif ( mode == "lfgparty" or mode == "abandonedInDungeon" ) then
-		if LFGTeleport and IsInLFGDungeon then
-			LFGTeleport(IsInLFGDungeon());
-		end
-	end
-end)
+	end)
+end
 
-LFDSearchStatus:SetParent(MinimapBackdrop)
-LFDSearchStatus:SetClearPoint('TOPRIGHT', MinimapBackdrop, 'TOPLEFT')
+if LFDSearchStatus and MinimapBackdrop then
+	LFDSearchStatus:SetParent(MinimapBackdrop)
+	LFDSearchStatus:SetClearPoint('TOPRIGHT', MinimapBackdrop, 'TOPLEFT')
+end
 
 hooksecurefunc('CharacterMicroButton_SetPushed',function()
 	MicroButtonPortrait:SetTexCoord(0,0,0,0);
@@ -336,9 +342,16 @@ function MainMenuMicroButtonMixin:OnUpdate(elapsed)
 end
 
 function MainMenuMicroButtonMixin:CreateBar()
-	local latencybar = CreateFrame('StatusBar', nil, HelpMicroButton)
-	latencybar:SetSize(14, 39)
-	latencybar:SetPoint('BOTTOM', HelpMicroButton, 'BOTTOM', 0, -4)
+	if MainMenuBarPerformanceBarFrame then
+		MainMenuBarPerformanceBarFrame:Hide()
+	end
+	if MainMenuBarPerformanceBar then
+		MainMenuBarPerformanceBar:SetAlpha(0)
+	end
+
+	local latencybar = CreateFrame('StatusBar', 'pUiPerformanceBar', MainMenuMicroButton)
+	latencybar:SetSize(14, 18)
+	latencybar:SetPoint('BOTTOM', MainMenuMicroButton, 'BOTTOM', 0, -2)
 	latencybar:SetStatusBarTexture(addon._dir..'ui-mainmenubar-performancebar')
 	latencybar:SetMinMaxValues(0, 1)
 	latencybar:SetValue(1)

@@ -208,21 +208,27 @@ end
 
 -- identical to string.upper except it knows about unicode simple case conversions
 local function utf8upper(s)
-    return utf8replace(s, utf8_lc_uc)
+    if utf8_lc_uc then
+        return utf8replace(s, utf8_lc_uc)
+    end
+    return string.upper(s)
 end
 
 -- install in the string library
-if not string.utf8upper and utf8_lc_uc then
+if not string.utf8upper then
     string.utf8upper = utf8upper
 end
 
 -- identical to string.lower except it knows about unicode simple case conversions
 local function utf8lower(s)
-    return utf8replace(s, utf8_uc_lc)
+    if utf8_uc_lc then
+        return utf8replace(s, utf8_uc_lc)
+    end
+    return string.lower(s)
 end
 
 -- install in the string library
-if not string.utf8lower and utf8_uc_lc then
+if not string.utf8lower then
     string.utf8lower = utf8lower
 end
 
@@ -297,8 +303,8 @@ local defaults = {
         scale = 1,
         x = 0,
         y = 245,
-        sizeX = 460,
-        sizeY = 207,
+        sizeX = 250,
+        sizeY = 15,
         preci = 1,
         preciMax = 1
     }
@@ -437,6 +443,9 @@ function Module:ApplySettings()
     if Module.frame and Module.frame.Castbar then
         Module.frame.Castbar:ClearAllPoints()
         Module.frame.Castbar:SetPoint('CENTER', UIParent, 'BOTTOM', (db and db.x) or 0, (db and db.y) or 245)
+        if db and db.scale then
+            Module.frame.Castbar:SetScale(db.scale)
+        end
     end
 end
 
@@ -444,24 +453,39 @@ local frame = CreateFrame('FRAME', 'ImprovedUICastbarFrame', UIParent)
 Module.frame = frame
 
 function Module.ChangeDefaultCastbar()
-    CastingBarFrame:ClearAllPoints()
-    CastingBarFrame:SetPoint('BOTTOM', UIParent, 'BOTTOM', 0, -100)
+    if not CastingBarFrame then return end
 
-    CastingBarFrame:GetStatusBarTexture():SetVertexColor(0, 0, 0, 0)
-    CastingBarFrame:GetStatusBarTexture():SetAlpha(0)
+    -- Neutralizar regiones visuales impidiendo que CastingBarFrame_OnEvent las vuelva a mostrar
+    local elementsToSilence = {
+        CastingBarFrame.Text or CastingBarFrameText,
+        CastingBarFrame.Border or CastingBarFrameBorder,
+        CastingBarFrame.BorderShield or CastingBarFrameBorderShield,
+        CastingBarFrame.Spark or CastingBarFrameSpark,
+        CastingBarFrame.Flash or CastingBarFrameFlash,
+        CastingBarFrame.Icon or CastingBarFrameIcon
+    }
 
-    -- CastingBarFrame.Border:Hide()
-    -- CastingBarFrame.BorderShield:Hide()
-    -- CastingBarFrame.Text:Hide()
-    -- CastingBarFrame.Icon:Hide()
-    -- CastingBarFrame.Spark:Hide()
-    -- CastingBarFrame.Flash:Hide()
-
-    local children = {CastingBarFrame:GetRegions()}
-    for i, child in pairs(children) do
-        --print('child', child:GetName())
-        child:Hide()
+    for _, element in ipairs(elementsToSilence) do
+        if element then
+            element:Hide()
+            element:SetAlpha(0)
+            element.Show = function() end
+        end
     end
+
+    -- Suprimir la textura de la barra nativa y bloquear re-coloreado de FrameXML
+    local barTex = CastingBarFrame:GetStatusBarTexture()
+    if barTex then
+        barTex:SetTexture("")
+        barTex:SetAlpha(0)
+        barTex.SetTexture = function() end
+        barTex.SetVertexColor = function() end
+    end
+    CastingBarFrame.SetStatusBarColor = function() end
+
+    -- Aislar posición fuera del viewport sin romper el ciclo de eventos
+    CastingBarFrame:ClearAllPoints()
+    CastingBarFrame:SetPoint('BOTTOM', UIParent, 'BOTTOM', 0, -5000)
 end
 
 function Module.CreateNewCastbar()
@@ -479,6 +503,7 @@ function Module.CreateNewCastbar()
     local tex = f:CreateTexture('Background', 'ARTWORK')
     tex:SetAllPoints()
     tex:SetTexture(backgroundRef)
+    f.BackgroundTex = tex
     f.Background = tex
 
     -- actual status bar, child of parent above
@@ -544,6 +569,7 @@ function Module.CreateNewCastbar()
     bgTex:SetPoint('TOP', f, 'BOTTOM', 0, 0)
 
     bg.tex = bgTex
+    f.TextContainer = bg
     f.Background = bg
 
     local text = bg:CreateFontString('ImprovedUICastbarText', 'OVERLAY', 'GameFontHighlight')

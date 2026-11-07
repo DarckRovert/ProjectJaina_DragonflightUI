@@ -16,19 +16,29 @@ local hooksecurefunc = hooksecurefunc;
 
 local AuraFrameMixin = {};
 
-TempEnchant1:ClearAllPoints()
-TempEnchant1:SetPoint('TOPRIGHT', Minimap, 'TOPLEFT', -80, 24)
-
-TempEnchant2:ClearAllPoints()
-TempEnchant2:SetPoint('TOPRIGHT', TempEnchant1, 'TOPLEFT', -5, 0)
-
-if TempEnchant3 then
-	TempEnchant3:ClearAllPoints()
-	TempEnchant3:SetPoint('TOPRIGHT', TempEnchant2, 'TOPLEFT', -5, 0)
+function AuraFrameMixin:UpdateTempEnchantAnchors()
+	if TempEnchant1 then
+		TempEnchant1:ClearAllPoints()
+		TempEnchant1:SetPoint('TOPRIGHT', Minimap, 'TOPLEFT', -80, 24)
+	end
+	if TempEnchant2 and TempEnchant1 then
+		TempEnchant2:ClearAllPoints()
+		TempEnchant2:SetPoint('TOPRIGHT', TempEnchant1, 'TOPLEFT', -5, 0)
+	end
+	if TempEnchant3 and TempEnchant2 then
+		TempEnchant3:ClearAllPoints()
+		TempEnchant3:SetPoint('TOPRIGHT', TempEnchant2, 'TOPLEFT', -5, 0)
+	end
+	if ConsolidatedBuffs and TempEnchant1 then
+		ConsolidatedBuffs:ClearAllPoints()
+		ConsolidatedBuffs:SetPoint('TOPRIGHT', TempEnchant1)
+	end
 end
+AuraFrameMixin:UpdateTempEnchantAnchors();
 
-ConsolidatedBuffs:ClearAllPoints()
-ConsolidatedBuffs:SetPoint('TOPRIGHT', TempEnchant1)
+hooksecurefunc('BuffFrame_Update', function()
+	AuraFrameMixin:UpdateTempEnchantAnchors()
+end)
 
 function AuraFrameMixin:UpdateFirstButton(button)
 	if button and button:IsShown() then
@@ -62,25 +72,25 @@ function AuraFrameMixin:UpdateBuffsAnchor()
 	
 	for index=1, actualDisplay do
 		local buff = _G['BuffButton'..index]
-		if not buff then return end
-		
-		numBuffs = numBuffs + 1
-		numTotal = numTotal + 1
-        
-		buff:ClearAllPoints()
-		if numBuffs == 1 then
-			AuraFrameMixin:UpdateFirstButton(buff)
-		elseif numBuffs > 1 and mod(numTotal, BUFFS_PER_ROW) == 1 then
-			if numTotal == BUFFS_PER_ROW + 1 then
-				buff:SetPoint('TOPRIGHT', TempEnchant1, 'BOTTOMRIGHT', 0, -BUFF_ROW_SPACING)
+		if buff then
+			numBuffs = numBuffs + 1
+			numTotal = numTotal + 1
+
+			buff:ClearAllPoints()
+			if numBuffs == 1 then
+				AuraFrameMixin:UpdateFirstButton(buff)
+			elseif numBuffs > 1 and mod(numTotal, BUFFS_PER_ROW) == 1 then
+				if numTotal == BUFFS_PER_ROW + 1 then
+					buff:SetPoint('TOPRIGHT', TempEnchant1, 'BOTTOMRIGHT', 0, -BUFF_ROW_SPACING)
+				else
+					buff:SetPoint('TOPRIGHT', aboveBuff, 'BOTTOMRIGHT', 0, -BUFF_ROW_SPACING)
+				end
+				aboveBuff = buff
 			else
-				buff:SetPoint('TOPRIGHT', aboveBuff, 'BOTTOMRIGHT', 0, -BUFF_ROW_SPACING)
+				buff:SetPoint('TOPRIGHT', previousBuff, 'TOPLEFT', -5, 0)
 			end
-			aboveBuff = buff
-		else
-			buff:SetPoint('TOPRIGHT', previousBuff, 'TOPLEFT', -5, 0)
+			previousBuff = buff
 		end
-		previousBuff = buff
 	end
 end
 
@@ -168,7 +178,9 @@ end
 AuraFrameMixin:UpdateCollapseAndExpandButtonAnchor();
 
 function AuraFrameMixin:RefreshCollapseExpandButtonState(numBuffs)
-	shown(self.arrow, (numBuffs or 0) > 0);
+	local numEnchants = (BuffFrame and BuffFrame.numEnchants) or 0
+	local totalAuras = (numBuffs or 0) + numEnchants
+	shown(self.arrow, totalAuras > 0);
 	if self.arrow and self.arrow.collapse then
 		BuffFrame:Hide()
 	end

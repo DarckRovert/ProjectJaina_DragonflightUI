@@ -286,6 +286,8 @@ local function actionbuttons_update(button)
 			border:SetAlpha(0)
 		end
 	end
+
+	actionbuttons_hotkey(button);
 end
 
 -- main buttons
@@ -300,14 +302,15 @@ addon.package:RegisterEvents(function()
 		actionbuttons_hotkey(button)
 	end
 end,
-	'UPDATE_BINDINGS'
+	'UPDATE_BINDINGS', 'PLAYER_LOGIN', 'PLAYER_ENTERING_WORLD'
 );
 
 -- vehicle buttons
 function addon.vehiclebuttons_template()
-	if UnitHasVehicleUI('player') then
-		for index=1, VEHICLE_MAX_ACTIONBUTTONS do
-			main_buttons(_G['VehicleMenuBarActionButton'..index])
+	for index = 1, VEHICLE_MAX_ACTIONBUTTONS do
+		local btn = _G['VehicleMenuBarActionButton'..index]
+		if btn then
+			main_buttons(btn)
 		end
 	end
 end

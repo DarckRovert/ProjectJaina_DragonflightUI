@@ -2591,52 +2591,33 @@ end
 
 function Module.CreateRestFlipbook()
     if not frame.RestIcon then
-        if DF.Wrath then
-            local rest = CreateFrame('Frame', 'DragonflightUIRestFlipbook')
-            rest:SetSize(20, 20)
-            rest:SetPoint('CENTER', PlayerPortrait, 'TOPRIGHT', 0, 0)
+        local rest = CreateFrame('Frame', 'DragonflightUIRestFlipbook', PlayerFrame)
+        rest:SetSize(20, 20)
+        rest:SetPoint('CENTER', PlayerPortrait, 'TOPRIGHT', 0, 0)
 
-            local restTexture = rest:CreateTexture('DragonflightUIRestFlipbookTexture')
-            restTexture:SetAllPoints()
-            restTexture:SetTexture(1, 1, 1, 1)
-            restTexture:SetTexture('Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\uiunitframerestingflipbook')
+        local restTexture = rest:CreateTexture('DragonflightUIRestFlipbookTexture', 'OVERLAY')
+        restTexture:SetAllPoints()
+        restTexture:SetTexture('Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\uiunitframerestingflipbook')
+        restTexture:SetTexCoord(128 / 1024, 192 / 1024, 0, 64 / 128)
 
-            local animationGroup = restTexture:CreateAnimationGroup()
-            local animation = animationGroup:CreateAnimation('Flipbook', 'RestFlipbookAnimation')
+        -- Animación de pulsación suave nativa 3.3.5a (Zero Crash, Zero Flipbook retail)
+        local animGroup = rest:CreateAnimationGroup()
+        animGroup:SetLooping('REPEAT')
 
-            animationGroup:SetLooping('REPEAT')
-            animation:SetFlipBookFrameWidth(64)
-            animation:SetFlipBookFrameHeight(64)
-            animation:SetFlipBookRows(1)
-            animation:SetFlipBookColumns(8)
-            animation:SetFlipBookFrames(8)
-            animation:SetDuration(2)
+        local alphaDown = animGroup:CreateAnimation('Alpha')
+        alphaDown:SetChange(-0.4)
+        alphaDown:SetDuration(1.0)
+        alphaDown:SetOrder(1)
 
-            frame.RestIcon = rest
-            frame.RestIconAnimation = animationGroup
+        local alphaUp = animGroup:CreateAnimation('Alpha')
+        alphaUp:SetChange(0.4)
+        alphaUp:SetDuration(1.0)
+        alphaUp:SetOrder(2)
 
-            PlayerFrame_UpdateStatus()
-        else
-            local rest = CreateFrame('Frame', 'DragonflightUIRestFlipbook')
-            rest:SetSize(20, 20)
-            rest:SetPoint('CENTER', PlayerPortrait, 'TOPRIGHT', 0, 0)
+        frame.RestIcon = rest
+        frame.RestIconAnimation = animGroup
 
-            local restTexture = rest:CreateTexture('DragonflightUIRestFlipbookTexture')
-            restTexture:SetAllPoints()
-            restTexture:SetTexture(1, 1, 1, 1)
-            restTexture:SetTexture('Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\uiunitframerestingflipbook')
-            restTexture:SetTexCoord(128 / 1024, 192 / 1024, 0, 64 / 128)
-
-            local animationGroup = restTexture:CreateAnimationGroup()
-            -- flipbook doesn't seem to be supported on Era :/   lua error when calling 'SetFlipBookFrameWidth' etc
-            -- @TODO: maybe other animation, better than static rest icon
-
-            frame.RestIcon = rest
-            -- 'pointless', but saves multiple 'If DF.Wrath...' to eliminate lua error in HookRestFunctions
-            frame.RestIconAnimation = animationGroup
-
-            PlayerFrame_UpdateStatus()
-        end
+        PlayerFrame_UpdateStatus()
     end
 end
 
@@ -2671,8 +2652,12 @@ function Module.HookRestFunctions()
             if visible then
                 PlayerFrame_UpdateStatus()
             else
-                frame.RestIcon:Hide()
-                frame.RestIconAnimation:Stop()
+                if frame.RestIcon then
+                    frame.RestIcon:Hide()
+                end
+                if frame.RestIconAnimation and frame.RestIconAnimation.Stop then
+                    frame.RestIconAnimation:Stop()
+                end
             end
         end
     )
@@ -2713,13 +2698,16 @@ function frame:OnEvent(event, arg1)
         Module.ReApplyToT()
         Module.ChangePlayerframe()
     elseif event == 'UNIT_ENTERED_VEHICLE' then
-        Module.ChangePlayerframe()
-        Module.MovePlayerFrame()
-        PlayerFrame:SetUserPlaced(true)
+        if arg1 == 'player' then
+            Module.ChangePlayerframe()
+            Module.MovePlayerFrame()
+            PlayerFrame:SetUserPlaced(true)
+        end
     elseif event == 'UNIT_EXITED_VEHICLE' then
-        Module.ChangePlayerframe()
-        Module.MovePlayerFrame()
-        
+        if arg1 == 'player' then
+            Module.ChangePlayerframe()
+            Module.MovePlayerFrame()
+        end
     elseif event == 'ZONE_CHANGED' or event == 'ZONE_CHANGED_INDOORS' or event == 'ZONE_CHANGED_NEW_AREA' then
         Module.ChangePlayerframe()
         Module.MovePlayerFrame()

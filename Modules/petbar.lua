@@ -152,26 +152,40 @@ local function petbutton_position()
 	hooksecurefunc('PetActionBar_Update', petbutton_updatestate);
 end
 
-local function OnEvent(self,event,...)
+local isTemplated = false;
+local function OnEvent(self, event, ...)
 	-- if not UnitIsVisible('pet') then return; end
 	local arg1 = ...;
 	if event == 'PLAYER_LOGIN' then
 		petbutton_position();
+	elseif event == 'PLAYER_ENTERING_WORLD' then
+		if not isTemplated and addon.petbuttons_template then
+			addon.petbuttons_template();
+			isTemplated = true;
+		end
+		petbutton_updatestate();
 	elseif event == 'PET_BAR_UPDATE'
-	or event == 'UNIT_PET' and arg1 == 'player'
+	or event == 'PET_BAR_UPDATE_USABLE'
+	or (event == 'UNIT_PET' and arg1 == 'player')
 	or event == 'PLAYER_CONTROL_LOST'
 	or event == 'PLAYER_CONTROL_GAINED'
 	or event == 'PLAYER_FARSIGHT_FOCUS_CHANGED'
 	or event == 'UNIT_FLAGS'
-	or arg1 == 'pet' and event == 'UNIT_AURA' then
+	or (event == 'UNIT_AURA' and arg1 == 'pet') then
+		if not isTemplated and addon.petbuttons_template then
+			addon.petbuttons_template();
+			isTemplated = true;
+		end
 		petbutton_updatestate();
 	elseif event == 'PET_BAR_UPDATE_COOLDOWN' then
 		PetActionBar_UpdateCooldowns();
-	else
-		addon.petbuttons_template();
+	elseif event == 'PET_BAR_HIDE' then
+		-- Estado pasivo de ocultamiento
 	end
 end
 
+petbar:RegisterEvent('PLAYER_LOGIN');
+petbar:RegisterEvent('PLAYER_ENTERING_WORLD');
 petbar:RegisterEvent('PET_BAR_HIDE');
 petbar:RegisterEvent('PET_BAR_UPDATE');
 petbar:RegisterEvent('PET_BAR_UPDATE_COOLDOWN');
@@ -179,8 +193,7 @@ petbar:RegisterEvent('PET_BAR_UPDATE_USABLE');
 petbar:RegisterEvent('PLAYER_CONTROL_GAINED');
 petbar:RegisterEvent('PLAYER_CONTROL_LOST');
 petbar:RegisterEvent('PLAYER_FARSIGHT_FOCUS_CHANGED');
-petbar:RegisterEvent('PLAYER_LOGIN');
 petbar:RegisterEvent('UNIT_AURA');
 petbar:RegisterEvent('UNIT_FLAGS');
 petbar:RegisterEvent('UNIT_PET');
-petbar:SetScript('OnEvent',OnEvent);
+petbar:SetScript('OnEvent', OnEvent);

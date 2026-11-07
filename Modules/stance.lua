@@ -21,9 +21,11 @@ local UnitAffectingCombat = UnitAffectingCombat;
 local stance = {
 	['DEATHKNIGHT'] = 'show',
 	['DRUID'] = 'show',
+	['HUNTER'] = 'show',
 	['PALADIN'] = 'show',
 	['PRIEST'] = 'show',
 	['ROGUE'] = 'show',
+	['SHAMAN'] = 'show',
 	['WARLOCK'] = 'show',
 	['WARRIOR'] = 'show'
 };
@@ -75,6 +77,8 @@ end;
 local stancebar = CreateFrame('Frame', 'pUiStanceBar', anchor, 'SecureHandlerStateTemplate')
 stancebar:SetAllPoints(anchor)
 
+local pendingReposition = false;
+
 local function stancebutton_update()
 	if not InCombatLockdown() and _G.ShapeshiftButton1 then
 		_G.ShapeshiftButton1:ClearAllPoints()
@@ -85,7 +89,12 @@ end
 local btnsize = config.additional.size;
 local space = config.additional.spacing;
 local isPositioned = false;
+
 local function stancebutton_position()
+	if InCombatLockdown() then
+		pendingReposition = true
+		return
+	end
 	for index=1, NUM_SHAPESHIFT_SLOTS do
 		local button = _G['ShapeshiftButton'..index]
 		if button then
@@ -116,6 +125,7 @@ local function stancebutton_position()
 		RegisterStateDriver(stancebar, 'visibility', visibilityDriver)
 		hooksecurefunc('ShapeshiftBar_Update', stancebutton_update)
 	end
+	pendingReposition = false
 end
 
 local function stancebutton_updatestate()
@@ -156,11 +166,13 @@ local function stancebutton_setup()
 	if InCombatLockdown() then return end
 	for index=1, NUM_SHAPESHIFT_SLOTS do
 		local button = _G['ShapeshiftButton'..index]
-		local _, name = GetShapeshiftFormInfo(index)
-		if name then
-			button:Show()
-		else
-			button:Hide()
+		if button then
+			local _, name = GetShapeshiftFormInfo(index)
+			if name then
+				button:Show()
+			else
+				button:Hide()
+			end
 		end
 	end
 	stancebutton_updatestate();
@@ -175,10 +187,16 @@ local function OnEvent(self,event,...)
 			addon.stancebuttons_template();
 			isTemplated = true;
 		end
+		stancebutton_position();
 		stancebutton_setup();
 	elseif event == 'UPDATE_SHAPESHIFT_FORMS' then
 		stancebutton_position();
 		stancebutton_setup();
+	elseif event == 'PLAYER_REGEN_ENABLED' then
+		if pendingReposition then
+			stancebutton_position();
+			stancebutton_setup();
+		end
 	else
 		if GetNumShapeshiftForms() > 0 then
 			stancebutton_updatestate();
@@ -193,4 +211,5 @@ stancebar:RegisterEvent('UPDATE_SHAPESHIFT_USABLE');
 stancebar:RegisterEvent('UPDATE_SHAPESHIFT_COOLDOWN');
 stancebar:RegisterEvent('UPDATE_SHAPESHIFT_FORM');
 stancebar:RegisterEvent('ACTIONBAR_PAGE_CHANGED');
+stancebar:RegisterEvent('PLAYER_REGEN_ENABLED');
 stancebar:SetScript('OnEvent', OnEvent);

@@ -281,12 +281,22 @@ do
 	end)
 end
 
---Quest Objectives
-if WatchFrameHeader then
-	WatchFrameHeader:ClearAllPoints()
-	WatchFrameHeader:SetPoint("CENTER", Minimap, -100, -110)
-	if WatchFrameCollapseExpandButton then
+-- Quest Objectives (WatchFrame)
+local function UpdateWatchFramePosition()
+	local tracker = _G.WatchFrame
+	if tracker then
+		tracker:ClearAllPoints()
+		tracker:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -10, -25)
+	end
+	if WatchFrameHeader and WatchFrameTitle and WatchFrameCollapseExpandButton then
+		WatchFrameHeader:ClearAllPoints()
+		WatchFrameHeader:SetPoint("TOPLEFT", WatchFrame, "TOPLEFT", 0, 0)
 		WatchFrameCollapseExpandButton:ClearAllPoints()
-		WatchFrameCollapseExpandButton:SetPoint("CENTER", WatchFrameHeader, 60, 1)
+		WatchFrameCollapseExpandButton:SetPoint("LEFT", WatchFrameTitle, "RIGHT", 4, 0)
 	end
 end
+
+if hooksecurefunc and _G.WatchFrame_SetPosition then
+	hooksecurefunc("WatchFrame_SetPosition", UpdateWatchFramePosition)
+end
+UpdateWatchFramePosition()

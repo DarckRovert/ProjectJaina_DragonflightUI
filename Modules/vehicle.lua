@@ -201,7 +201,16 @@ local function vehiclebar_layout_setup()
 	end
 end
 
+local isPositioned = false;
+local pendingVehiclePosition = false;
+
 local function vehiclebutton_position()
+	if InCombatLockdown() then
+		pendingVehiclePosition = true
+		return
+	end
+	if isPositioned then return end
+
 	for index = 1, VEHICLE_MAX_ACTIONBUTTONS do
 		local button = _G['VehicleMenuBarActionButton'..index]
 		if button then
@@ -221,6 +230,8 @@ local function vehiclebutton_position()
 			end
 		end
 	end
+	isPositioned = true
+	pendingVehiclePosition = false
 end
 
 local function vehiclebutton_state(self)
@@ -298,17 +309,22 @@ local function OnEvent(self, event, unit, ...)
 		if unit ~= 'player' then return end
 		vehiclebar_layout_setup();
 		vehiclebutton_position();
-		addon.vehiclebuttons_template();
+		if addon.vehiclebuttons_template then
+			addon.vehiclebuttons_template();
+		end
 		UnitFrameHealthBar_Update(VehicleMenuBarHealthBar, 'vehicle');
 		UnitFrameManaBar_Update(VehicleMenuBarPowerBar, 'vehicle');
 	elseif event == 'UNIT_DISPLAYPOWER' then
 		if unit ~= 'player' then return end
 		UnitFrameManaBar_Update(VehicleMenuBarPowerBar, 'vehicle');
-		vehiclebutton_position();
 	elseif event == 'UNIT_EXITED_VEHICLE' then
 		if unit ~= 'player' then return end
 		if GameTooltip:GetOwner() == vehicleLeave then
 			GameTooltip:Hide()
+		end
+	elseif event == 'PLAYER_REGEN_ENABLED' then
+		if pendingVehiclePosition then
+			vehiclebutton_position()
 		end
 	end
 end
@@ -354,6 +370,7 @@ local function vehiclebar_initialize()
 		vehiclebar:RegisterEvent('UNIT_DISPLAYPOWER');
 		vehiclebar:RegisterEvent('PLAYER_LOGIN');
 		vehiclebar:RegisterEvent('PLAYER_ENTERING_WORLD');
+		vehiclebar:RegisterEvent('PLAYER_REGEN_ENABLED');
 		vehiclebar:SetScript('OnEvent', OnEvent);
 		
 		vehiclebar_power_setup();

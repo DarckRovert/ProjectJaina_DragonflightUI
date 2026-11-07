@@ -214,32 +214,46 @@ function MainMenuBarMixin:statusbar_setup()
 	end
 end
 
-event:RegisterEvents(function(self)
-	self:UnregisterEvent('PLAYER_ENTERING_WORLD');
-	local exhaustionStateID = GetRestState();
-	ExhaustionTick:SetParent(pUiMainBar);
-	ExhaustionTick:SetFrameLevel(MainMenuExpBar:GetFrameLevel() +2);
-	if new then
-		ExhaustionLevelFillBar:SetHeight(MainMenuExpBar:GetHeight());
-		ExhaustionLevelFillBar:set_atlas('ui-hud-experiencebar-fill-prediction');
-		ExhaustionTick:SetSize(10, 14);
-		ExhaustionTick:SetClearPoint('CENTER', ExhaustionLevelFillBar, 'RIGHT', 0, 2);
+local exhaustionLayoutDone = false
 
-		MainMenuExpBar:SetStatusBarTexture(addon._dir..'uiexperiencebar');
+local function UpdateExhaustionState()
+	local exhaustionStateID = GetRestState();
+
+	if not exhaustionLayoutDone then
+		ExhaustionTick:SetParent(pUiMainBar);
+		ExhaustionTick:SetFrameLevel(MainMenuExpBar:GetFrameLevel() + 2);
+		if new then
+			ExhaustionLevelFillBar:SetHeight(MainMenuExpBar:GetHeight());
+			ExhaustionLevelFillBar:set_atlas('ui-hud-experiencebar-fill-prediction');
+			ExhaustionTick:SetSize(10, 14);
+			ExhaustionTick:SetClearPoint('CENTER', ExhaustionLevelFillBar, 'RIGHT', 0, 2);
+			MainMenuExpBar:SetStatusBarTexture(addon._dir..'uiexperiencebar');
+		end
+		exhaustionLayoutDone = true;
+	end
+
+	if new then
 		if exhaustionStateID == 1 then
 			ExhaustionTick:Show();
 			MainMenuExpBar:GetStatusBarTexture():SetTexCoord(574/2048, 1137/2048, 34/64, 43/64);
 			ExhaustionLevelFillBar:SetVertexColor(0.0, 0, 1, 0.45);
 		elseif exhaustionStateID == 2 then
+			ExhaustionTick:Hide();
 			MainMenuExpBar:GetStatusBarTexture():SetTexCoord(1/2048, 570/2048, 42/64, 51/64);
 			ExhaustionLevelFillBar:SetVertexColor(0.58, 0.0, 0.55, 0.45);
+		else
+			ExhaustionTick:Hide();
 		end
 	else
 		if exhaustionStateID == 1 then
 			ExhaustionTick:Show();
+		else
+			ExhaustionTick:Hide();
 		end
 	end
-end,
+end
+
+event:RegisterEvents(UpdateExhaustionState,
 	'PLAYER_ENTERING_WORLD',
 	'UPDATE_EXHAUSTION'
 );

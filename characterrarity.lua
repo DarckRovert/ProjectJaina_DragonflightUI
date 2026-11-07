@@ -88,31 +88,57 @@ local function SetInspectBorderColor()
     end
 end
 
--- Hook nativo a la actualización de casillas de FrameXML
+-- Hook seguro e idempotente para la interfaz de inspección (Blizzard_InspectUI)
+local inspectHooked = false
+local function HookInspectUI()
+    if inspectHooked then return end
+    if not (IsAddOnLoaded and IsAddOnLoaded("Blizzard_InspectUI")) and not InspectFrame then
+        return
+    end
+
+    if InspectPaperDollItemSlotButton_Update then
+        hooksecurefunc("InspectPaperDollItemSlotButton_Update", function(button)
+            local unit = (InspectFrame and InspectFrame.unit) or "target"
+            UpdateButtonBorder(button, unit)
+        end)
+    end
+
+    if InspectFrame and InspectFrame.HookScript then
+        InspectFrame:HookScript("OnShow", SetInspectBorderColor)
+    end
+
+    inspectHooked = true
+end
+
+-- Hook nativo a la actualización de casillas locales de FrameXML
 hooksecurefunc("PaperDollItemSlotButton_Update", function(button)
     if button then
         UpdateButtonBorder(button, "player")
     end
 end)
 
--- Listener de eventos reactivos con soporte de caché asíncrona
+-- Listener de eventos reactivos con soporte de red e inspección asíncrona
 local f = CreateFrame("Frame", "ProjectJaina_CharRarity_Watcher")
 f:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 f:RegisterEvent("UNIT_INVENTORY_CHANGED")
 f:RegisterEvent("PLAYER_LOGIN")
 f:RegisterEvent("GET_ITEM_INFO_RECEIVED")
+f:RegisterEvent("INSPECT_READY")
 f:RegisterEvent("ADDON_LOADED")
 
 f:SetScript("OnEvent", function(self, event, arg1)
     if event == "UNIT_INVENTORY_CHANGED" and arg1 ~= "player" then return end
-    
-    if event == "ADDON_LOADED" and arg1 == "Blizzard_InspectUI" then
-        if InspectPaperDollItemSlotButton_Update then
-            hooksecurefunc("InspectPaperDollItemSlotButton_Update", function(button)
-                local unit = (InspectFrame and InspectFrame.unit) or "target"
-                UpdateButtonBorder(button, unit)
-            end)
+
+    if event == "ADDON_LOADED" then
+        if arg1 == "Blizzard_InspectUI" then
+            HookInspectUI()
+            SetInspectBorderColor()
         end
+        return
+    end
+
+    if event == "INSPECT_READY" then
+        SetInspectBorderColor()
         return
     end
 
@@ -127,3 +153,6 @@ end
 if PaperDollFrame then
     PaperDollFrame:HookScript("OnShow", SetCharacterBorderColor)
 end
+
+-- Inicialización preventiva por si Blizzard_InspectUI ya fue cargado por otro AddOn
+HookInspectUI()
