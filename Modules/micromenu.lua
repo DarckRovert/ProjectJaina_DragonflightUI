@@ -34,6 +34,7 @@ if not _G.CollectionsMicroButton then
 	btn:SetScript('OnClick', function(self, mouseButton)
 		if IsShiftKeyDown() then
 			-- Acceso directo al Centro de Control del Reino (/hub)
+			PlaySound("igMainMenuOptionCheckBoxOn")
 			if SlashCmdList['JAINA_COMP'] then
 				SlashCmdList['JAINA_COMP']('')
 			elseif SlashCmdList['WPCOMP'] then
@@ -41,11 +42,19 @@ if not _G.CollectionsMicroButton then
 			end
 		elseif mouseButton == 'RightButton' then
 			-- Apertura nativa de la pestaña de Monturas y Compañeros en WoW 3.3.5a
-			if ToggleCharacter then
-				ToggleCharacter("PetPaperDollFrame")
+			PlaySound("igSpellBookOpen")
+			if ToggleSpellBook then
+				local mountCount = (GetNumCompanions and GetNumCompanions("MOUNT")) or 0
+				local critterCount = (GetNumCompanions and GetNumCompanions("CRITTER")) or 0
+				local targetBookType = (mountCount > 0) and (BOOKTYPE_MOUNT or "mount")
+					or ((critterCount > 0) and (BOOKTYPE_COMPANION or "companions") or (BOOKTYPE_MOUNT or "mount"))
+				ToggleSpellBook(targetBookType)
+			elseif ToggleCharacter then
+				ToggleCharacter("PaperDollFrame")
 			end
 		else
 			-- Apertura del Guardarropa (Transfiguración)
+			PlaySound("igCharacterInfoTab")
 			if SlashCmdList['JAINA_WARDROBE'] then
 				SlashCmdList['JAINA_WARDROBE']('')
 			elseif SlashCmdList['WP_WARDROBEV2'] then

@@ -621,6 +621,7 @@ function SOCD_OptionsPanel_OnLoad(panel)
     panel.refresh = SOCD_OptionsPanel_OnRefresh;
 end
 
-SLASH_SUSHISORT1 = "/SS";
+SLASH_SUSHISORT1 = "/sushisort";
+SLASH_SUSHISORT2 = "/bagsort";
 SlashCmdList["SUSHISORT"] = SOCD_SlashCommand;
 
