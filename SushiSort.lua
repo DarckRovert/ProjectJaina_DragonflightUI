@@ -9,9 +9,14 @@ local t = 0;
 local current = nil;
 local log = {};
 
-local function Log(msg)
-    table.insert(log, msg);
+local DEBUG_LOG = false
 
+local function Log(msg)
+    if not DEBUG_LOG then return end
+    table.insert(log, msg);
+    if #log > 200 then
+        table.remove(log, 1)
+    end
     if (SOCD ~= nil) then
         SOCD.log = log;
     end
@@ -19,11 +24,27 @@ end
 
 local function ClearLog()
     log = {};
+    if SOCD ~= nil then
+        SOCD.log = nil
+    end
 end
 
 function SOCD_SlashCommand(cmd, arg2)
-    Log("SOCD_SlashCommand("..tostring(cmd)..", "..tostring(arg2)..")");
-    InterfaceOptionsFrame_OpenToCategory("Sushi Sort"); 
+    local subCmd = (cmd or ""):lower():match("^%s*(%S+)") or ""
+    if subCmd == "config" or subCmd == "options" or subCmd == "opt" or subCmd == "menu" then
+        InterfaceOptionsFrame_OpenToCategory("Sushi Sort")
+    elseif subCmd == "bank" or subCmd == "banco" then
+        if BankFrame and BankFrame:IsShown() and SOCD_BankSortButton then
+            SOCD_BankSortButton()
+        else
+            DEFAULT_CHAT_FRAME:AddMessage("|cFFFFD100[SushiSort]|r Abre la ventana del banco antes de ordenar el inventario de banco.")
+        end
+    else
+        if SOCD_BagSortButton then
+            SOCD_BagSortButton()
+            DEFAULT_CHAT_FRAME:AddMessage("|cFF00FFCC[SushiSort]|r Mochilas organizadas correctamente.")
+        end
+    end
 end
 
 local function GetIDFromLink(link)
