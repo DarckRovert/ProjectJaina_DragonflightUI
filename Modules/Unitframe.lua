@@ -2515,7 +2515,7 @@ function Module.ChangePetFrame()
         'Interface\\AddOns\\ProjectJaina_DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Health'
     )
     PetFrameHealthBar:SetStatusBarColor(1, 1, 1, 1)
-    PetFrameHealthBar.SetStatusBarColor = noop
+    PetFrameHealthBar.SetStatusBarColor = function() end
 
     PetFrameHealthBarText:SetPoint('CENTER', PetFrameHealthBar, 'CENTER', 0, 0)
 

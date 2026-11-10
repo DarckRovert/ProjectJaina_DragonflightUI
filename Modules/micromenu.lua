@@ -42,15 +42,16 @@ if not _G.CollectionsMicroButton then
 			end
 		elseif mouseButton == 'RightButton' then
 			-- Apertura nativa de la pestaña de Monturas y Compañeros en WoW 3.3.5a
-			PlaySound("igSpellBookOpen")
-			if ToggleSpellBook then
-				local mountCount = (GetNumCompanions and GetNumCompanions("MOUNT")) or 0
-				local critterCount = (GetNumCompanions and GetNumCompanions("CRITTER")) or 0
-				local targetBookType = (mountCount > 0) and (BOOKTYPE_MOUNT or "mount")
-					or ((critterCount > 0) and (BOOKTYPE_COMPANION or "companions") or (BOOKTYPE_MOUNT or "mount"))
-				ToggleSpellBook(targetBookType)
-			elseif ToggleCharacter then
-				ToggleCharacter("PaperDollFrame")
+			PlaySound("igCharacterInfoTab")
+			if ToggleCharacter then
+				ToggleCharacter("PetPaperDollFrame")
+				pcall(function()
+					if PetPaperDollFrameTab2 and PetPaperDollFrameTab2:IsShown() then
+						PetPaperDollFrameTab2:Click()
+					elseif PetPaperDollFrameTab1 and PetPaperDollFrameTab1:IsShown() then
+						PetPaperDollFrameTab1:Click()
+					end
+				end)
 			end
 		else
 			-- Apertura del Guardarropa (Transfiguración)

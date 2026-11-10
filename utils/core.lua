@@ -126,18 +126,18 @@ end
 
 addon.functions.SetThreeSlice = function(button)
 	local parent = button:GetParent()
-	parent.divider_top = parent:CreateTexture(nil, 'BORDER')
-	parent.divider_top:SetPoint('TOPLEFT', button, 'BOTTOMRIGHT', -3, 39)
-	parent.divider_top:set_atlas('ui-hud-actionbar-frame-divider-threeslice-edgetop', true)
+	button.divider_top = parent:CreateTexture(nil, 'BORDER')
+	button.divider_top:SetPoint('TOPLEFT', button, 'BOTTOMRIGHT', -3, 39)
+	button.divider_top:set_atlas('ui-hud-actionbar-frame-divider-threeslice-edgetop', true)
 	
-	parent.divider_bottom = parent:CreateTexture(nil, 'BORDER')
-	parent.divider_bottom:SetPoint('TOPLEFT', button, 'BOTTOMRIGHT', -3, 9)
-	parent.divider_bottom:set_atlas('ui-hud-actionbar-frame-divider-threeslice-edgebottom', true)
+	button.divider_bottom = parent:CreateTexture(nil, 'BORDER')
+	button.divider_bottom:SetPoint('TOPLEFT', button, 'BOTTOMRIGHT', -3, 9)
+	button.divider_bottom:set_atlas('ui-hud-actionbar-frame-divider-threeslice-edgebottom', true)
 	
-	parent.divider_mid = parent:CreateTexture(nil, 'BORDER')
-	parent.divider_mid:SetPoint('CENTER', parent.divider_top, 0, -15)
-	parent.divider_mid:SetPoint('CENTER', parent.divider_bottom, 0, 15)
-	parent.divider_mid:set_atlas('!ui-hud-actionbar-frame-divider-threeslice-center', true)
+	button.divider_mid = parent:CreateTexture(nil, 'BORDER')
+	button.divider_mid:SetPoint('TOP', button.divider_top, 'BOTTOM', 0, 0)
+	button.divider_mid:SetPoint('BOTTOM', button.divider_bottom, 'TOP', 0, 0)
+	button.divider_mid:set_atlas('!ui-hud-actionbar-frame-divider-threeslice-center', true)
 end
 
 addon.functions.SetNumPagesButton = function(self, parent, direct, yOffset)

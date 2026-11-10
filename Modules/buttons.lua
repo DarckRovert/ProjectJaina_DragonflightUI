@@ -1,357 +1,360 @@
-local addon = select(2,...);
-local config = addon.config;
-local action = addon.functions;
-local unpack = unpack;
-local select = select;
-local format = string.format;
-local match = string.match;
-local NUM_PET_ACTION_SLOTS = NUM_PET_ACTION_SLOTS;
-local NUM_SHAPESHIFT_SLOTS = NUM_SHAPESHIFT_SLOTS;
-local NUM_POSSESS_SLOTS = NUM_POSSESS_SLOTS;
-local VEHICLE_MAX_ACTIONBUTTONS = VEHICLE_MAX_ACTIONBUTTONS;
-local hooksecurefunc = hooksecurefunc;
-local GetName = GetName;
-local _G = getfenv(0);
-
--- RANGE_INDICATOR = "•";
-
-local actionbars = {
-	'ActionButton',
-	'MultiBarBottomLeftButton',
-	'MultiBarBottomRightButton',
-	'MultiBarRightButton',
-	'MultiBarLeftButton',
-};
-
-local function actionbuttons_iterator()
-	local index = 0
-	local barIndex = 1
-	return function()
-		index = index + 1
-		if index > 12 then
-			index = 1
-			barIndex = barIndex + 1
-		end
-		if actionbars[barIndex] then
-			return _G[actionbars[barIndex]..index]
-		end
-	end
-end
-
-local function actionbuttons_grid()
-	for _, bar in ipairs({'ActionButton', 'MultiBarBottomLeftButton', 'MultiBarBottomRightButton'}) do
-		for index=1, NUM_ACTIONBAR_BUTTONS do
-			local ActionButtons = _G[format('%s%d', bar, index)]
-			if ActionButtons then
-				ActionButtons:SetAttribute('showgrid', 1)
-				ActionButton_ShowGrid(ActionButtons)
-			end
-		end
-	end
-end
-
-local function is_petaction(self, name)
-	local btnName = self and self.GetName and self:GetName()
-	return (btnName and btnName:match(name)) and true or false
-end
-
-local function fix_texture(self, texture)
-	if texture and texture ~= config.assets.normal then
-		self:SetNormalTexture(config.assets.normal)
-	end
-end
-
-local function setup_background(button, anchor, shadow)
-	if not button or button.shadow then return; end
-	if shadow and not button.shadow then
-		local shadow = button:CreateTexture(nil, 'ARTWORK', nil, 1)
-		shadow:SetPoint('TOPRIGHT', anchor, 3.8, 3.8)
-		shadow:SetPoint('BOTTOMLEFT', anchor, -3.8, -3.8)
-		shadow:set_atlas('ui-hud-actionbar-iconframe-flyoutbordershadow', true)
-		button.shadow = shadow;
-	end
-
-	local background = button:CreateTexture(nil, 'BACKGROUND');
-	background:SetAllPoints(anchor);
-	background:Hide();
-
-	local parentFrame = button and button.GetParent and button:GetParent()
-	local parent = parentFrame and parentFrame.GetName and parentFrame:GetName()
-	local isAction = (parent == 'pUiMainBar' or parent == 'MultiBarBottomLeft' or parent == 'MultiBarBottomRight') and config.buttons.only_actionbackground;
-	if isAction then
-		background:set_atlas('ui-hud-actionbar-iconframe-slot');
-		background:Show();
-	elseif not config.buttons.only_actionbackground then
-		background:set_atlas('ui-hud-actionbar-iconframe-slot');
-		background:Show();
-	else
-		background:SetTexture(addon._dir..'uiactionbarbackground2x');
-		background:Show();
-	end
-	return background;
-end
-
-local function actionbuttons_hotkey(button)
-	if not button then return; end
-	local name = button:GetName();
-	if not name then return; end
-	local hotkey = _G[name..'HotKey'];
-	if not hotkey then return; end
-	local text = hotkey:GetText();
-	if not text then return; end
-	if text == RANGE_INDICATOR then
-		if config.buttons.hotkey.range then
-			hotkey:SetText(RANGE_INDICATOR);
-		else
-			hotkey:SetText'';
-		end
-	else
-		if not config.buttons.hotkey.show then hotkey:SetAlpha(0) end
-		hotkey:SetText(addon.GetKeyText(text))
-		hotkey:SetFont(unpack(config.buttons.hotkey.font))
-		hotkey:SetShadowOffset(-1.3, -1.1)
-		hotkey:SetShadowColor(unpack(config.buttons.hotkey.shadow))
-	end
-end
-
-local function main_buttons(button)
-	if not button or button.__styled then return; end
-
-	local name = button:GetName();
-	local normal = (name and _G[name..'NormalTexture']) or (button.GetNormalTexture and button:GetNormalTexture());
-	local icon = name and _G[name..'Icon']
-	local flash = name and _G[name..'Flash']
-	local count = name and _G[name..'Count']
-	local macros = name and _G[name..'Name']
-	local cooldown = name and _G[name..'Cooldown']
-	local border = name and _G[name..'Border']
-	
-	if normal then
-		normal:ClearAllPoints()
-		normal:SetPoint('TOPRIGHT', button, 2.2, 2.3)
-		normal:SetPoint('BOTTOMLEFT', button, -2.2, -2.2)
-		normal:SetVertexColor(1, 1, 1, 1)
-		normal:SetDrawLayer('OVERLAY')
-	end
-
-	if macros then
-		if not config.buttons.macros.show then macros:SetAlpha(0) end
-		macros:SetFont(unpack(config.buttons.macros.font))
-		macros:SetVertexColor(unpack(config.buttons.macros.color))
-		macros:SetDrawLayer('OVERLAY')
-	end
-
-	if count then
-		if not config.buttons.count.show then count:SetAlpha(0) end
-		count:SetPoint(unpack(config.buttons.count.position))
-		count:SetFont(unpack(config.buttons.count.font))
-		count:SetDrawLayer('OVERLAY')
-	end
-
-	if flash then
-		flash:set_atlas('ui-hud-actionbar-iconframe-flash')
-	end
-
-	if icon then
-		icon:SetTexCoord(.05, .95, .05, .95)
-		icon:SetDrawLayer('BORDER')
-	end
-
-	if cooldown then
-		cooldown:ClearAllPoints()
-		cooldown:SetPoint('TOPRIGHT', button, -1, -1)
-		cooldown:SetPoint('BOTTOMLEFT', button, 1, 1)
-		local btnLevel = button.GetFrameLevel and button:GetFrameLevel() or 1
-		cooldown:SetFrameLevel(btnLevel + 1)
-	end
-	
-	if border then
-		border:set_atlas('_ui-hud-actionbar-iconborder-checked')
-		if normal then border:SetAllPoints(normal) end
-		local isEquipped = button.action and IsEquippedAction(button.action)
-		border:SetAlpha(isEquipped and 1 or 0)
-	end
-	
-	-- apply textures
-	local checked = button:GetCheckedTexture()
-	if checked then
-		checked:set_atlas('_ui-hud-actionbar-iconborder-checked')
-		if normal then checked:SetAllPoints(normal) end
-		checked:SetDrawLayer('OVERLAY')
-	end
-
-	local pushed = button:GetPushedTexture()
-	if pushed then
-		pushed:set_atlas('_ui-hud-actionbar-iconborder-pushed')
-		if normal then pushed:SetAllPoints(normal) end
-		pushed:SetDrawLayer('OVERLAY')
-	end
-
-	if config.assets.highlight then
-		button:SetHighlightTexture(config.assets.highlight)
-		local highlight = button:GetHighlightTexture()
-		if highlight and normal then
-			highlight:SetAllPoints(normal)
-		end
-	end
-
-	button.background = setup_background(button, normal or button, true)
-	
-	button.__styled = true
-	-- button:SetSize(37, 37)
-end
-
-local function additional_buttons(button)
-	if not button then return; end
-	
-	button:SetNormalTexture(config.assets.normal)
-	if button.background then return; end
-
-	local name = button:GetName();
-	local icon = name and _G[name..'Icon']
-	local flash = name and _G[name..'Flash']
-	local normal = (name and (_G[name..'NormalTexture2'] or _G[name..'NormalTexture'])) or (button.GetNormalTexture and button:GetNormalTexture())
-	local cooldown = name and _G[name..'Cooldown']
-	local castable = name and _G[name..'AutoCastable']
-
-	if normal then
-		normal:ClearAllPoints()
-		normal:SetPoint('TOPRIGHT', button, 2.2, 2.3)
-		normal:SetPoint('BOTTOMLEFT', button, -2.2, -2.2)
-	end
-
-	-- apply textures defensivamente
-	local checked = button:GetCheckedTexture()
-	if checked then
-		checked:set_atlas('_ui-hud-actionbar-iconborder-checked')
-		if normal then checked:SetAllPoints(normal) end
-	end
-
-	local pushed = button:GetPushedTexture()
-	if pushed then
-		pushed:set_atlas('_ui-hud-actionbar-iconborder-pushed')
-		if normal then pushed:SetAllPoints(normal) end
-	end
-
-	if config.assets.highlight then
-		button:SetHighlightTexture(config.assets.highlight)
-		local highlight = button:GetHighlightTexture()
-		if highlight and normal then
-			highlight:SetAllPoints(normal)
-		end
-	end
-
-	if cooldown then
-		cooldown:ClearAllPoints()
-		cooldown:SetPoint('TOPRIGHT', button, -1, -1)
-		cooldown:SetPoint('BOTTOMLEFT', button, 1, 1)
-		local btnLevel = button.GetFrameLevel and button:GetFrameLevel() or 1
-		cooldown:SetFrameLevel(btnLevel + 1)
-	end
-
-	if icon then
-		icon:SetTexCoord(.05, .95, .05, .95)
-		icon:SetPoint('TOPRIGHT', button, 1, 1)
-		icon:SetPoint('BOTTOMLEFT', button, -1, -1)
-		icon:SetDrawLayer('BORDER')
-	end
-
-	if flash then
-		flash:set_atlas('ui-hud-actionbar-iconframe-flash')
-	end
-	
-	if castable then
-		castable:ClearAllPoints()
-		castable:SetPoint('TOP', 0, 14)
-		castable:SetPoint('BOTTOM', 0, -15)
-	end
-
-	if is_petaction(button, 'PetActionButton') then
-		hooksecurefunc(button, "SetNormalTexture", fix_texture)
-	end
-	button.background = setup_background(button, normal or button, false)
-end
-
-local function actionbuttons_update(button)
-	if not button then return; end
-	local name = button:GetName();
-	if not name or name:find('MultiCast') then return; end
-	button:SetNormalTexture(config.assets.normal);
-
-	local border = name and _G[name..'Border']
-	if border then
-		if button.action and IsEquippedAction(button.action) then
-			border:SetAlpha(1)
-		else
-			border:SetAlpha(0)
-		end
-	end
-
-	actionbuttons_hotkey(button);
-end
-
--- main buttons
-for button in actionbuttons_iterator() do
-	main_buttons(button)
-	button:SetSize(37, 37)
-end
-
--- i really don't want to do it with a hook
-addon.package:RegisterEvents(function()
-	for button in actionbuttons_iterator() do
-		actionbuttons_hotkey(button)
-	end
-end,
-	'UPDATE_BINDINGS', 'PLAYER_LOGIN', 'PLAYER_ENTERING_WORLD'
-);
-
--- vehicle buttons
-function addon.vehiclebuttons_template()
-	for index = 1, VEHICLE_MAX_ACTIONBUTTONS do
-		local btn = _G['VehicleMenuBarActionButton'..index]
-		if btn then
-			main_buttons(btn)
-		end
-	end
-end
-
--- possess buttons
-function addon.possessbuttons_template()
-	for index=1, NUM_POSSESS_SLOTS do
-		additional_buttons(_G['PossessButton'..index])
-	end
-end
-
--- petbar buttons
-function addon.petbuttons_template()
-	for index=1, NUM_PET_ACTION_SLOTS do
-		additional_buttons(_G['PetActionButton'..index])
-	end
-end
-
--- stancebar buttons
-function addon.stancebuttons_template()
-	for index=1, NUM_SHAPESHIFT_SLOTS do
-		additional_buttons(_G['ShapeshiftButton'..index])
-	end
-end
-
--- setup grid
-local function actionbuttons_showgrid(button)
-	if not button then return end
-	local name = button:GetName()
-	local normal = (name and _G[name..'NormalTexture']) or (button.GetNormalTexture and button:GetNormalTexture())
-	if normal and normal.SetVertexColor then
-		normal:SetVertexColor(unpack(config.buttons.border_color))
-	end
-end
-
-addon.package:RegisterEvents(function()
-	actionbuttons_grid();
-	collectgarbage();
-end,
-	'PLAYER_LOGIN'
-);
-
-hooksecurefunc('ActionButton_Update', actionbuttons_update);
+local addon = select(2,...);
+local config = addon.config;
+local action = addon.functions;
+local unpack = unpack;
+local select = select;
+local format = string.format;
+local match = string.match;
+local NUM_PET_ACTION_SLOTS = NUM_PET_ACTION_SLOTS;
+local NUM_SHAPESHIFT_SLOTS = NUM_SHAPESHIFT_SLOTS;
+local NUM_POSSESS_SLOTS = NUM_POSSESS_SLOTS;
+local VEHICLE_MAX_ACTIONBUTTONS = VEHICLE_MAX_ACTIONBUTTONS;
+local hooksecurefunc = hooksecurefunc;
+local GetName = GetName;
+local _G = getfenv(0);
+
+-- RANGE_INDICATOR = "•";
+
+local actionbars = {
+	'ActionButton',
+	'MultiBarBottomLeftButton',
+	'MultiBarBottomRightButton',
+	'MultiBarRightButton',
+	'MultiBarLeftButton',
+};
+
+local function actionbuttons_iterator()
+	local index = 0
+	local barIndex = 1
+	return function()
+		index = index + 1
+		if index > 12 then
+			index = 1
+			barIndex = barIndex + 1
+		end
+		if actionbars[barIndex] then
+			return _G[actionbars[barIndex]..index]
+		end
+	end
+end
+
+local function actionbuttons_grid()
+	for _, bar in ipairs({'ActionButton', 'MultiBarBottomLeftButton', 'MultiBarBottomRightButton'}) do
+		for index=1, NUM_ACTIONBAR_BUTTONS do
+			local ActionButtons = _G[format('%s%d', bar, index)]
+			if ActionButtons then
+				ActionButtons:SetAttribute('showgrid', 1)
+				ActionButton_ShowGrid(ActionButtons)
+			end
+		end
+	end
+end
+
+local function is_petaction(self, name)
+	local btnName = self and self.GetName and self:GetName()
+	return (btnName and btnName:match(name)) and true or false
+end
+
+local function fix_texture(self, texture)
+	if texture and texture ~= config.assets.normal then
+		self:SetNormalTexture(config.assets.normal)
+	end
+end
+
+local function setup_background(button, anchor, shadow)
+	if not button or button.background then return button and button.background; end
+	anchor = anchor or button;
+	if shadow and not button.shadow then
+		local shadowTex = button:CreateTexture(nil, 'ARTWORK', nil, 1)
+		shadowTex:SetPoint('TOPRIGHT', anchor, 3.8, 3.8)
+		shadowTex:SetPoint('BOTTOMLEFT', anchor, -3.8, -3.8)
+		shadowTex:set_atlas('ui-hud-actionbar-iconframe-flyoutbordershadow', true)
+		button.shadow = shadowTex;
+	end
+
+	local background = button:CreateTexture(nil, 'BACKGROUND');
+	background:SetAllPoints(anchor);
+	background:Hide();
+
+	local parentFrame = button and button.GetParent and button:GetParent()
+	local parent = parentFrame and parentFrame.GetName and parentFrame:GetName()
+	local isAction = (parent == 'pUiMainBar' or parent == 'MultiBarBottomLeft' or parent == 'MultiBarBottomRight') and config.buttons.only_actionbackground;
+	if isAction then
+		background:set_atlas('ui-hud-actionbar-iconframe-slot');
+		background:Show();
+	elseif not config.buttons.only_actionbackground then
+		background:set_atlas('ui-hud-actionbar-iconframe-slot');
+		background:Show();
+	else
+		background:SetTexture(addon._dir..'uiactionbarbackground2x');
+		background:Show();
+	end
+	return background;
+end
+
+local function actionbuttons_hotkey(button)
+	if not button then return; end
+	local name = button:GetName();
+	if not name then return; end
+	local hotkey = _G[name..'HotKey'];
+	if not hotkey then return; end
+	local text = hotkey:GetText();
+	if not text then return; end
+	if text == RANGE_INDICATOR then
+		if config.buttons.hotkey.range then
+			hotkey:SetText(RANGE_INDICATOR);
+		else
+			hotkey:SetText'';
+		end
+	else
+		if not config.buttons.hotkey.show then hotkey:SetAlpha(0) end
+		hotkey:SetText(addon.GetKeyText(text))
+		hotkey:SetFont(unpack(config.buttons.hotkey.font))
+		hotkey:SetShadowOffset(-1.3, -1.1)
+		hotkey:SetShadowColor(unpack(config.buttons.hotkey.shadow))
+	end
+end
+
+local function main_buttons(button)
+	if not button or button.__styled then return; end
+
+	local name = button:GetName();
+	local normal = (name and _G[name..'NormalTexture']) or (button.GetNormalTexture and button:GetNormalTexture());
+	local icon = name and _G[name..'Icon']
+	local flash = name and _G[name..'Flash']
+	local count = name and _G[name..'Count']
+	local macros = name and _G[name..'Name']
+	local cooldown = name and _G[name..'Cooldown']
+	local border = name and _G[name..'Border']
+	
+	if normal then
+		normal:ClearAllPoints()
+		normal:SetPoint('TOPRIGHT', button, 2.2, 2.3)
+		normal:SetPoint('BOTTOMLEFT', button, -2.2, -2.2)
+		normal:SetVertexColor(1, 1, 1, 1)
+		normal:SetDrawLayer('OVERLAY')
+	end
+
+	if macros then
+		if not config.buttons.macros.show then macros:SetAlpha(0) end
+		macros:SetFont(unpack(config.buttons.macros.font))
+		macros:SetVertexColor(unpack(config.buttons.macros.color))
+		macros:SetDrawLayer('OVERLAY')
+	end
+
+	if count then
+		if not config.buttons.count.show then count:SetAlpha(0) end
+		count:SetPoint(unpack(config.buttons.count.position))
+		count:SetFont(unpack(config.buttons.count.font))
+		count:SetDrawLayer('OVERLAY')
+	end
+
+	if flash then
+		flash:set_atlas('ui-hud-actionbar-iconframe-flash')
+	end
+
+	if icon then
+		icon:SetTexCoord(.05, .95, .05, .95)
+		icon:SetDrawLayer('BORDER')
+	end
+
+	if cooldown then
+		cooldown:ClearAllPoints()
+		cooldown:SetPoint('TOPRIGHT', button, -1, -1)
+		cooldown:SetPoint('BOTTOMLEFT', button, 1, 1)
+		local btnLevel = button.GetFrameLevel and button:GetFrameLevel() or 1
+		cooldown:SetFrameLevel(btnLevel + 1)
+	end
+	
+	local anchor = normal or button
+
+	if border then
+		border:set_atlas('_ui-hud-actionbar-iconborder-checked')
+		border:SetAllPoints(anchor)
+		local isEquipped = button.action and IsEquippedAction(button.action)
+		border:SetAlpha(isEquipped and 1 or 0)
+	end
+	
+	-- apply textures
+	local checked = button:GetCheckedTexture()
+	if checked then
+		checked:set_atlas('_ui-hud-actionbar-iconborder-checked')
+		checked:SetAllPoints(anchor)
+		checked:SetDrawLayer('OVERLAY')
+	end
+
+	local pushed = button:GetPushedTexture()
+	if pushed then
+		pushed:set_atlas('_ui-hud-actionbar-iconborder-pushed')
+		pushed:SetAllPoints(anchor)
+		pushed:SetDrawLayer('OVERLAY')
+	end
+
+	if config.assets.highlight then
+		button:SetHighlightTexture(config.assets.highlight)
+		local highlight = button:GetHighlightTexture()
+		if highlight then
+			highlight:SetAllPoints(anchor)
+		end
+	end
+
+	button.background = setup_background(button, anchor, true)
+	
+	button.__styled = true
+	-- button:SetSize(37, 37)
+end
+
+local function additional_buttons(button)
+	if not button or button.background then return; end
+	
+	button:SetNormalTexture(config.assets.normal)
+
+	local name = button:GetName();
+	local icon = name and _G[name..'Icon']
+	local flash = name and _G[name..'Flash']
+	local normal = (name and (_G[name..'NormalTexture2'] or _G[name..'NormalTexture'])) or (button.GetNormalTexture and button:GetNormalTexture())
+	local cooldown = name and _G[name..'Cooldown']
+	local castable = name and _G[name..'AutoCastable']
+	local anchor = normal or button
+
+	if normal then
+		normal:ClearAllPoints()
+		normal:SetPoint('TOPRIGHT', button, 2.2, 2.3)
+		normal:SetPoint('BOTTOMLEFT', button, -2.2, -2.2)
+	end
+
+	-- apply textures defensivamente
+	local checked = button:GetCheckedTexture()
+	if checked then
+		checked:set_atlas('_ui-hud-actionbar-iconborder-checked')
+		checked:SetAllPoints(anchor)
+	end
+
+	local pushed = button:GetPushedTexture()
+	if pushed then
+		pushed:set_atlas('_ui-hud-actionbar-iconborder-pushed')
+		pushed:SetAllPoints(anchor)
+	end
+
+	if config.assets.highlight then
+		button:SetHighlightTexture(config.assets.highlight)
+		local highlight = button:GetHighlightTexture()
+		if highlight then
+			highlight:SetAllPoints(anchor)
+		end
+	end
+
+	if cooldown then
+		cooldown:ClearAllPoints()
+		cooldown:SetPoint('TOPRIGHT', button, -1, -1)
+		cooldown:SetPoint('BOTTOMLEFT', button, 1, 1)
+		local btnLevel = button.GetFrameLevel and button:GetFrameLevel() or 1
+		cooldown:SetFrameLevel(btnLevel + 1)
+	end
+
+	if icon then
+		icon:SetTexCoord(.05, .95, .05, .95)
+		icon:SetPoint('TOPRIGHT', button, 1, 1)
+		icon:SetPoint('BOTTOMLEFT', button, -1, -1)
+		icon:SetDrawLayer('BORDER')
+	end
+
+	if flash then
+		flash:set_atlas('ui-hud-actionbar-iconframe-flash')
+	end
+	
+	if castable then
+		castable:ClearAllPoints()
+		castable:SetPoint('TOP', 0, 14)
+		castable:SetPoint('BOTTOM', 0, -15)
+	end
+
+	if is_petaction(button, 'PetActionButton') then
+		hooksecurefunc(button, "SetNormalTexture", fix_texture)
+	end
+	button.background = setup_background(button, anchor, false)
+end
+
+local function actionbuttons_update(button)
+	if not button then return; end
+	local name = button:GetName();
+	if not name or name:find('MultiCast') then return; end
+	button:SetNormalTexture(config.assets.normal);
+
+	local border = name and _G[name..'Border']
+	if border then
+		if button.action and IsEquippedAction(button.action) then
+			border:SetAlpha(1)
+		else
+			border:SetAlpha(0)
+		end
+	end
+
+	actionbuttons_hotkey(button);
+end
+
+-- main buttons
+for button in actionbuttons_iterator() do
+	main_buttons(button)
+	button:SetSize(37, 37)
+end
+
+-- i really don't want to do it with a hook
+addon.package:RegisterEvents(function()
+	for button in actionbuttons_iterator() do
+		actionbuttons_hotkey(button)
+	end
+end,
+	'UPDATE_BINDINGS', 'PLAYER_LOGIN', 'PLAYER_ENTERING_WORLD'
+);
+
+-- vehicle buttons
+function addon.vehiclebuttons_template()
+	for index = 1, VEHICLE_MAX_ACTIONBUTTONS do
+		local btn = _G['VehicleMenuBarActionButton'..index]
+		if btn then
+			main_buttons(btn)
+		end
+	end
+end
+
+-- possess buttons
+function addon.possessbuttons_template()
+	for index=1, NUM_POSSESS_SLOTS do
+		additional_buttons(_G['PossessButton'..index])
+	end
+end
+
+-- petbar buttons
+function addon.petbuttons_template()
+	for index=1, NUM_PET_ACTION_SLOTS do
+		additional_buttons(_G['PetActionButton'..index])
+	end
+end
+
+-- stancebar buttons
+function addon.stancebuttons_template()
+	for index=1, NUM_SHAPESHIFT_SLOTS do
+		additional_buttons(_G['ShapeshiftButton'..index])
+	end
+end
+
+-- setup grid
+local function actionbuttons_showgrid(button)
+	if not button then return end
+	local name = button:GetName()
+	local normal = (name and _G[name..'NormalTexture']) or (button.GetNormalTexture and button:GetNormalTexture())
+	if normal and normal.SetVertexColor then
+		normal:SetVertexColor(unpack(config.buttons.border_color))
+	end
+end
+
+addon.package:RegisterEvents(function()
+	actionbuttons_grid();
+	collectgarbage();
+end,
+	'PLAYER_LOGIN'
+);
+
+hooksecurefunc('ActionButton_Update', actionbuttons_update);
 hooksecurefunc('ActionButton_ShowGrid', actionbuttons_showgrid);

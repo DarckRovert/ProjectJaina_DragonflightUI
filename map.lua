@@ -239,6 +239,7 @@ local m_cos = math.cos
 local m_sin = math.sin
 local function RotateBorder()
 	local angle = GetPlayerFacing()
+	if not angle then return end
 	Minimap.Circle:SetTexCoord(
 		m_cos(angle + m_pi*3/4) + 0.5, -m_sin(angle + m_pi*3/4) + 0.5,
 		m_cos(angle - m_pi*3/4) + 0.5, -m_sin(angle - m_pi*3/4) + 0.5,
@@ -250,7 +251,8 @@ end
 local MinimapRotate = CreateFrame("Frame")
 MinimapRotate:Hide()
 MinimapRotate:SetScript("OnUpdate", RotateBorder)
-hooksecurefunc('Minimap_UpdateRotationSetting',function()
+
+local function UpdateMinimapRotation()
 	if (GetCVar("rotateMinimap") == "1") then
 		MinimapRotate:Show()
 		Minimap.Circle:SetSize(200 * 2^0.5, 200 * 2^0.5)
@@ -259,7 +261,9 @@ hooksecurefunc('Minimap_UpdateRotationSetting',function()
 		Minimap.Circle:SetTexCoord(0, 1, 0, 1)
 		Minimap.Circle:SetSize(BORDER_SIZE, BORDER_SIZE)
 	end
-end)
+end
+hooksecurefunc('Minimap_UpdateRotationSetting', UpdateMinimapRotation)
+UpdateMinimapRotation()
 
 -- mousewheel zooming
 Minimap:EnableMouseWheel(true)
@@ -275,7 +279,7 @@ end)
 -- Original code taken from AntiRadarJam by Lombra with permission.
 do
 	MinimapPing:HookScript("OnUpdate", function(self, elapsed)
-		if self.fadeOut or self.timer > MINIMAPPING_FADE_TIMER then
+		if self.fadeOut or (self.timer and self.timer > (MINIMAPPING_FADE_TIMER or 0.5)) then
 			Minimap_SetPing(Minimap:GetPingPosition())
 		end
 	end)
