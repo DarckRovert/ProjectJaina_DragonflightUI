@@ -14,6 +14,9 @@ local TempEnchant2 = TempEnchant2;
 local UnitHasVehicleUI = UnitHasVehicleUI;
 local hooksecurefunc = hooksecurefunc;
 
+local BUFFS_PER_ROW = BUFFS_PER_ROW or 8;
+local BUFF_ROW_SPACING = 15;
+
 local AuraFrameMixin = {};
 
 function AuraFrameMixin:UpdateTempEnchantAnchors()
@@ -103,7 +106,7 @@ function AuraFrameMixin.UpdateDeBuffsAnchor(buttonName, index)
 
 	local isCollapsed = AuraFrameMixin.arrow and AuraFrameMixin.arrow.collapse
 	local actualBuffs = BUFF_ACTUAL_DISPLAY or 0
-	local numEnchants = BuffFrame.numEnchants or 0
+	local numEnchants = (BuffFrame and BuffFrame.numEnchants) or 0
 	local numBuffs = isCollapsed and numEnchants or (actualBuffs + numEnchants)
 	local numRows = ceil(numBuffs/BUFFS_PER_ROW)
 	local buffHeight = TempEnchant1 and TempEnchant1:GetHeight() or 30
@@ -114,12 +117,8 @@ function AuraFrameMixin.UpdateDeBuffsAnchor(buttonName, index)
 	if index > 1 and mod(index, BUFFS_PER_ROW) == 1 then
 		buff:SetPoint('TOPRIGHT', _G[buttonName..(index-BUFFS_PER_ROW)], 'BOTTOMRIGHT', 0, -BUFF_ROW_SPACING);
 	elseif index == 1 then
-		local startAnchor = TempEnchant1 or ConsolidatedBuffs
-		if numRows == 0 then
-			buff:SetPoint('TOPRIGHT', startAnchor, 'TOPRIGHT', 0, 0);
-		else
-			buff:SetPoint('TOPRIGHT', startAnchor, 'BOTTOMRIGHT', 0, -numRows*(BUFF_ROW_SPACING+buffHeight));
-		end
+		local startAnchor = TempEnchant1 or ConsolidatedBuffs or BuffFrame
+		buff:SetPoint('TOPRIGHT', startAnchor, 'TOPRIGHT', 0, -numRows * (BUFF_ROW_SPACING + buffHeight));
 	else
 		buff:SetPoint('TOPRIGHT', _G[buttonName..(index-1)], 'TOPLEFT', -5, 0);
 	end
@@ -180,9 +179,11 @@ AuraFrameMixin:UpdateCollapseAndExpandButtonAnchor();
 function AuraFrameMixin:RefreshCollapseExpandButtonState(numBuffs)
 	local numEnchants = (BuffFrame and BuffFrame.numEnchants) or 0
 	local totalAuras = (numBuffs or 0) + numEnchants
-	shown(self.arrow, totalAuras > 0);
-	if self.arrow and self.arrow.collapse then
-		BuffFrame:Hide()
+	if self.arrow then
+		shown(self.arrow, totalAuras > 0);
+		if self.arrow.collapse then
+			BuffFrame:Hide()
+		end
 	end
 end
 

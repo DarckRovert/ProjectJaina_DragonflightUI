@@ -45,8 +45,12 @@ MiniMapBattlefieldFrame:SetNormalTexture''
 MiniMapBattlefieldFrame:SetPushedTexture''
 
 local function UpdateBattlefieldFaction()
-	local rawFaction = UnitFactionGroup('player')
-	local faction = rawFaction and strlower(rawFaction) or 'alliance'
+	local locFaction, engFaction = UnitFactionGroup('player')
+	local raw = engFaction or locFaction or 'Alliance'
+	local faction = 'alliance'
+	if raw == 'Horde' or raw == 'Horda' or strlower(raw) == 'horde' or strlower(raw) == 'horda' then
+		faction = 'horde'
+	end
 	local normTex = MiniMapBattlefieldFrame:GetNormalTexture()
 	if normTex then
 		atlas(normTex, 'ui-hud-minimap-pvp-'..faction..'-up', true)
@@ -207,7 +211,11 @@ MiniMapTrackingButton:SetScript('OnClick', function()
 	ToggleDropDownMenu(1, nil, MiniMapTrackingDropDown, "MiniMapTracking", 0, -5);
 	PlaySound("igMainMenuOptionCheckBoxOn");
 end)
-MiniMapTrackingButton:HookScript('OnEvent', Tracking_Update)
+if hooksecurefunc and _G.MiniMapTracking_Update then
+	hooksecurefunc("MiniMapTracking_Update", Tracking_Update)
+else
+	MiniMapTracking:HookScript('OnEvent', Tracking_Update)
+end
 
 -- LFG update
 if (not IsAddOnLoaded('pretty_actionbar')) then
