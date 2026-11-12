@@ -31,8 +31,8 @@ local function possessbutton_position()
 	if addon.possessbuttons_template then
 		addon.possessbuttons_template();
 	end
-	-- Macro-condición autoritativa: solo visible bajo posesión real y fuera de vehículos
-	RegisterStateDriver(possessbar, 'visibility', '[vehicleui][bonusbar:5] hide; [possessbar] show; hide');
+	-- Macro-condición autoritativa para 3.3.5a: bonusbar:5 es la barra de posesión en WotLK
+	RegisterStateDriver(possessbar, 'visibility', '[vehicleui] hide; [bonusbar:5] show; hide');
 end
 possessbutton_position();
 
