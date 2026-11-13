@@ -2154,12 +2154,12 @@ function Module.ChangeFocusFrame()
     local deltaSize = 132 - 125
 
     FocusFrameTextureFrameHealthBarText:ClearAllPoints()
-    FocusFrameTextureFrameHealthBarText:SetPoint('CENTER', FocusFrameHealthBar, 0, 0)
+    FocusFrameTextureFrameHealthBarText:SetPoint('CENTER', FocusFrameHealthBar, 'CENTER', 0, 0)
     --FocusFrameTextureFrame.HealthBarTextLeft:SetPoint('LEFT', FocusFrameHealthBar, 'LEFT', dx, 0)
     --FocusFrameTextureFrame.HealthBarTextRight:SetPoint('RIGHT', FocusFrameHealthBar, 'RIGHT', -dx, 0)
 
     FocusFrameTextureFrameManaBarText:ClearAllPoints()
-    FocusFrameTextureFrameManaBarText:SetPoint('CENTER', FocusFrameManaBar, -deltaSize / 2, 0)
+    FocusFrameTextureFrameManaBarText:SetPoint('CENTER', FocusFrameManaBar, 'CENTER', -deltaSize / 2, 0)
     --FocusFrameTextureFrame.ManaBarTextLeft:SetPoint('LEFT', FocusFrameManaBar, 'LEFT', dx, 0)
     --FocusFrameTextureFrame.ManaBarTextRight:SetPoint('RIGHT', FocusFrameManaBar, 'RIGHT', -deltaSize - dx, 0)
 
@@ -2196,7 +2196,7 @@ function Module.ChangeFocusFrame()
 
         local t = FocusFrameHealthBarDummy:CreateFontString('FocusFrameHealthBarText', 'OVERLAY', 'TextStatusBarText')
 
-        t:SetPoint('CENTER', FocusFrameHealthBarDummy, 0, 0)
+        t:SetPoint('CENTER', FocusFrameHealthBarDummy, 'CENTER', 0, 0)
         t:SetText('HP')
         t:Hide()
         frame.FocusFrameHealthBarText = t
@@ -2235,7 +2235,7 @@ function Module.ChangeFocusFrame()
 
         local t = FocusFrameManaBarDummy:CreateFontString('FocusFrameManaBarText', 'OVERLAY', 'TextStatusBarText')
 
-        t:SetPoint('CENTER', FocusFrameManaBarDummy, -dx, 0)
+        t:SetPoint('CENTER', FocusFrameManaBarDummy, 'CENTER', -dx, 0)
         t:SetText('MANA')
         t:Hide()
         frame.FocusFrameManaBarText = t
