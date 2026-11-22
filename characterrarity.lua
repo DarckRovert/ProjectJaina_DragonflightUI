@@ -122,7 +122,7 @@ local f = CreateFrame("Frame", "ProjectJaina_CharRarity_Watcher")
 f:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 f:RegisterEvent("UNIT_INVENTORY_CHANGED")
 f:RegisterEvent("PLAYER_LOGIN")
-f:RegisterEvent("GET_ITEM_INFO_RECEIVED")
+pcall(f.RegisterEvent, f, "GET_ITEM_INFO_RECEIVED")
 f:RegisterEvent("INSPECT_READY")
 f:RegisterEvent("ADDON_LOADED")
 

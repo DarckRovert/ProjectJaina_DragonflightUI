@@ -4,6 +4,13 @@ Todos los cambios notables de este proyecto están documentados en este archivo 
 
 ---
 
+## [1.3.2] — 2026-11-22
+### Blindaje `pcall` en Registro de Evento `GET_ITEM_INFO_RECEIVED` (Hito #386)
+- **Compatibilidad WotLK 3.3.5a (`characterrarity.lua`, `itemrarity.lua`):**
+  - Envuelto `RegisterEvent("GET_ITEM_INFO_RECEIVED")` dentro de `pcall` para impedir fallos silenciosos o excepciones en builds 3.3.5a donde dicho evento post-Cataclysm (4.0.1) no existe nativamente.
+
+---
+
 ## [1.3.1] — 2026-10-28
 ### Corrección de Carrera en Icono de Descanso de Marco de Unidad (`RestIcon`)
 - **Marcos de Unidad (`Modules/Unitframe.lua`):** Resuelto error de desreferenciación `nil` en `frame.RestIcon` durante la ejecución del hook `PLAYER_ENTERING_WORLD` para clases y niveles sin barra de descanso activa.

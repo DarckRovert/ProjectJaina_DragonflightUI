@@ -127,7 +127,7 @@ f:RegisterEvent("BAG_UPDATE_COOLDOWN")
 f:RegisterEvent("PLAYER_LOGIN")
 f:RegisterEvent("BANKFRAME_OPENED")
 f:RegisterEvent("PLAYERBANKSLOTS_CHANGED")
-f:RegisterEvent("GET_ITEM_INFO_RECEIVED")
+pcall(f.RegisterEvent, f, "GET_ITEM_INFO_RECEIVED")
 
 f:SetScript("OnEvent", function(self, event, arg1)
     if event == "BANKFRAME_OPENED" or event == "PLAYERBANKSLOTS_CHANGED" then
